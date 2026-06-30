@@ -1,52 +1,92 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from '../../app/hooks';
 import { fetchKpis } from '../../features/dashboard/kpiSlice'; 
 import { fetchCharts } from '../../features/dashboard/chartsSlice';
 import { fetchAlerts } from '../../features/dashboard/alertsSlice';
 import { fetchSystemSummary } from '../../features/dashboard/systemSummarySlice';
 import { fetchResourceUsage } from '../../features/dashboard/resourceUsageSlice';
+import { fetchDevices } from '../../features/dashboard/devicesSlice';
 import KpiGrid from '../../components/kpi/KpiGrid/KpiGrid';
 import ChartsSection from '../../components/charts/ChartsSection/ChartsSection';
 import AlertsSection from '../../components/alerts/AlertsSection/AlertsSection';
 import ResourceUsageList from '../../components/alerts/ResourceUsageList/ResourceUsageList';
+import DevicesSection from '../../components/devices/DevicesSection/DevicesSection';
+import Header from '../../components/layout/Header/index.js';
+import PageContainer from '../../components/layout/PageContainer/index.js';
+import { formatRelativeTime } from '../../utils/formatRelativeTime';
 
 function DashboardPage() {
   const dispatch = useAppDispatch();
-  
-  // DashboardPage serves as the "orchestrator" for the dashboard.
-  // It handles dispatching actions to fetch all data on mount.
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
+
+  // Merkezi veri yükleme fonksiyonu
+  const loadAllData = async () => {
+    setIsRefreshing(true);
+    try {
+      await Promise.all([
+        dispatch(fetchKpis()),
+        dispatch(fetchCharts()),
+        dispatch(fetchAlerts()),
+        dispatch(fetchSystemSummary()),
+        dispatch(fetchResourceUsage()),
+        dispatch(fetchDevices())
+      ]);
+      setLastUpdated(new Date().toISOString());
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchKpis());
-    dispatch(fetchCharts());
-    dispatch(fetchAlerts());
-    dispatch(fetchSystemSummary());
-    dispatch(fetchResourceUsage());
-  }, [dispatch]);
+    // Sayfa açıldığında tüm veriler eşzamanlı yüklenir (flickering önlenir)
+    loadAllData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="space-y-6">
-      {/* KPI Section */}
-      <section>
-        <KpiGrid />
-      </section>
+    <>
+      <Header
+        title="Monitoring Dashboard"
+        subtitle={`Son güncelleme: ${formatRelativeTime(lastUpdated)}`}
+        onRefresh={loadAllData}
+        isRefreshing={isRefreshing}
+      />
 
-      {/* Resource Usage Section */}
-      <section>
-        <ResourceUsageList />
-      </section>
+      <PageContainer>
+        <div className="space-y-6">
+          {/* KPI Section */}
+          <section>
+            <KpiGrid />
+          </section>
 
-      {/* Charts Section */}
-      <section>
-        <ChartsSection />
-      </section>
+          {/* Charts Section */}
+          <section>
+            <ChartsSection />
+          </section>
 
-      {/* Alerts and System Summary Section */}
-      <section>
-        <AlertsSection />
-      </section>
+          {/* Alerts and System Summary Section */}
+          <section>
+            <AlertsSection />
+          </section>
 
-      {/* TODO: Add Devices Section */}
-    </div>
+          {/* Devices and Resource Usage Grid */}
+          <section>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Cihaz Tablosu (2/3 alan) - overflow-hidden ile taşma engellendi */}
+              <div className="lg:col-span-2 min-w-0 overflow-hidden">
+                <DevicesSection />
+              </div>
+              
+              {/* Kaynak Kullanımı (1/3 alan) */}
+              <div className="lg:col-span-1">
+                <ResourceUsageList />
+              </div>
+            </div>
+          </section>
+        </div>
+      </PageContainer>
+    </>
   );
 }
 

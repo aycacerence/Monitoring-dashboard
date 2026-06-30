@@ -1,5 +1,5 @@
 // Cihaz tablosu verisini, arama terimini ve sayfalama durumunu yonetir.
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, createSelector } from '@reduxjs/toolkit';
 import { fetchDevicesData } from '../../data/fakeApi.js';
 
 const initialState = {
@@ -50,46 +50,53 @@ const devicesSlice = createSlice({
 
 export const { setSearchTerm, setCurrentPage, setItemsPerPage } = devicesSlice.actions;
 
-export const selectFilteredDevices = (state) => {
-  const { data, searchTerm } = state.devices;
-  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+export const selectDevicesData = (state) => state.devices.data;
+export const selectSearchTerm = (state) => state.devices.searchTerm;
+export const selectCurrentPage = (state) => state.devices.currentPage;
+export const selectItemsPerPage = (state) => state.devices.itemsPerPage;
 
-  if (!normalizedSearchTerm) {
-    return data;
+export const selectFilteredDevices = createSelector(
+  [selectDevicesData, selectSearchTerm],
+  (data, searchTerm) => {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearchTerm) {
+      return data;
+    }
+
+    return data.filter((device) => {
+      const searchableValues = [
+        device.name,
+        device.ipAddress,
+        device.type,
+        device.status,
+      ];
+
+      return searchableValues.some((value) =>
+        value.toLowerCase().includes(normalizedSearchTerm),
+      );
+    });
   }
+);
 
-  return data.filter((device) => {
-    const searchableValues = [
-      device.name,
-      device.ipAddress,
-      device.type,
-      device.status,
-    ];
+export const selectPaginatedDevices = createSelector(
+  [selectFilteredDevices, selectCurrentPage, selectItemsPerPage],
+  (filteredDevices, currentPage, itemsPerPage) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredDevices.slice(startIndex, startIndex + itemsPerPage);
+  }
+);
 
-    return searchableValues.some((value) =>
-      value.toLowerCase().includes(normalizedSearchTerm),
-    );
-  });
-};
-
-export const selectPaginatedDevices = (state) => {
-  const filteredDevices = selectFilteredDevices(state);
-  const { currentPage, itemsPerPage } = state.devices;
-  const startIndex = (currentPage - 1) * itemsPerPage;
-
-  return filteredDevices.slice(startIndex, startIndex + itemsPerPage);
-};
-
-export const selectDevicesPagination = (state) => {
-  const filteredDevices = selectFilteredDevices(state);
-  const { currentPage, itemsPerPage } = state.devices;
-
-  return {
-    currentPage,
-    itemsPerPage,
-    totalItems: filteredDevices.length,
-    totalPages: Math.ceil(filteredDevices.length / itemsPerPage),
-  };
-};
+export const selectDevicesPagination = createSelector(
+  [selectFilteredDevices, selectCurrentPage, selectItemsPerPage],
+  (filteredDevices, currentPage, itemsPerPage) => {
+    return {
+      currentPage,
+      itemsPerPage,
+      totalItems: filteredDevices.length,
+      totalPages: Math.ceil(filteredDevices.length / itemsPerPage),
+    };
+  }
+);
 
 export default devicesSlice.reducer;
