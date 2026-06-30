@@ -13,12 +13,13 @@ import ResourceUsageList from '../../components/alerts/ResourceUsageList/Resourc
 import DevicesSection from '../../components/devices/DevicesSection/DevicesSection';
 import Header from '../../components/layout/Header/index.js';
 import PageContainer from '../../components/layout/PageContainer/index.js';
-import { formatRelativeTime } from '../../utils/formatRelativeTime';
+import { formatDateTime } from '../../utils/formatDateTime';
 
 function DashboardPage() {
   const dispatch = useAppDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
+  const [timeRange, setTimeRange] = useState('24h');
 
   // Merkezi veri yükleme fonksiyonu
   const loadAllData = async () => {
@@ -48,7 +49,9 @@ function DashboardPage() {
     <>
       <Header
         title="Monitoring Dashboard"
-        subtitle={`Son güncelleme: ${formatRelativeTime(lastUpdated)}`}
+        lastUpdated={formatDateTime(lastUpdated)}
+        timeRange={timeRange}
+        onTimeRangeChange={setTimeRange}
         onRefresh={loadAllData}
         isRefreshing={isRefreshing}
       />

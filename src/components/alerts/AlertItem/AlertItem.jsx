@@ -4,7 +4,7 @@ import { formatRelativeTime } from '../../../utils/formatRelativeTime';
 const severityConfig = {
   critical: { color: 'bg-red-500', text: 'text-red-700' },
   warning: { color: 'bg-amber-500', text: 'text-amber-700' },
-  info: { color: 'bg-blue-500', text: 'text-blue-700' },
+  info: { color: 'bg-brand-500', text: 'text-brand-700' },
 };
 
 function AlertItem({ deviceName, message, severity, timestamp }) {

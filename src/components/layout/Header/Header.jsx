@@ -1,43 +1,103 @@
 import PropTypes from 'prop-types';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Button } from '@mui/material';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { Button, Select, MenuItem } from '@mui/material';
+
+const TIME_RANGE_OPTIONS = [
+  { value: '1h',  label: 'Son 1 Saat' },
+  { value: '24h', label: 'Son 24 Saat' },
+  { value: '7d',  label: 'Son 7 Gün' },
+  { value: '30d', label: 'Son 30 Gün' },
+];
 
 /**
- * Dashboard sayfasinin minimalist baslik ve yenileme aksiyon alanini yonetir.
+ * Dashboard üst çubuğu — başlık (sol), son güncelleme + filtre + yenile (sağ).
  *
- * @param {object} props
- * @param {string} props.title Sayfa basligi.
- * @param {string} [props.subtitle] Sayfa alt basligi.
- * @param {() => void} props.onRefresh Yenile butonu tiklandiginda calisir.
- * @param {boolean} props.isRefreshing Yenileme ikonunun loading animasyonunu belirler.
- * @returns {JSX.Element}
+ * @param {object}   props
+ * @param {string}   props.title        Sayfa başlığı.
+ * @param {string}   [props.lastUpdated] Son güncelleme tam tarih metni.
+ * @param {string}   props.timeRange    Seçili zaman aralığı değeri.
+ * @param {Function} props.onTimeRangeChange Filtre değişince çağrılır.
+ * @param {Function} props.onRefresh    Yenile butonu tıklandığında çalışır.
+ * @param {boolean}  props.isRefreshing Yenileme animasyonunu yönetir.
  */
-function Header({ title, subtitle, onRefresh, isRefreshing }) {
+function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing }) {
   return (
-    <header className="sticky top-0 z-20 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
-      <div className="flex min-h-20 items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 w-full" style={{ backgroundColor: '#a42350' }}>
+      <div className="flex min-h-16 items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+
+        {/* Sol: Sayfa başlığı */}
         <div className="min-w-0">
-          <h1 className="truncate text-xl font-bold tracking-normal text-slate-950 sm:text-2xl">
+          <h1 className="truncate text-xl font-bold tracking-normal text-white sm:text-2xl">
             {title}
           </h1>
-          {subtitle && <p className="mt-1 text-sm font-medium text-slate-500">{subtitle}</p>}
         </div>
 
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={onRefresh}
-          aria-label="Verileri Yenile"
-          startIcon={
-            <RefreshIcon
-              fontSize="small"
-              className={isRefreshing ? 'animate-spin' : ''}
-            />
-          }
-          className="shrink-0 border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        >
-          Yenile
-        </Button>
+        {/* Sağ: Son güncelleme + Filtre + Yenile */}
+        <div className="flex items-center gap-3 shrink-0">
+
+          {/* Son güncelleme tarihi */}
+          {lastUpdated && (
+            <span className="hidden md:block text-xs font-medium text-white/75">
+              Son güncelleme: {lastUpdated}
+            </span>
+          )}
+
+          {/* Zaman aralığı filtresi */}
+          <Select
+            size="small"
+            value={timeRange}
+            onChange={(e) => onTimeRangeChange(e.target.value)}
+            aria-label="Zaman aralığı filtresi"
+            startAdornment={
+              <CalendarTodayIcon sx={{ fontSize: 14, mr: 0.5, color: '#a42350' }} />
+            }
+            sx={{
+              backgroundColor: '#ffffff',
+              color: '#1e293b',
+              fontWeight: 500,
+              fontSize: '0.8125rem',
+              borderRadius: '8px',
+              height: '32px',
+              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+              '& .MuiSelect-icon': { color: '#64748b' },
+              '& .MuiSelect-select': { paddingLeft: '6px', paddingRight: '28px !important' },
+            }}
+          >
+            {TIME_RANGE_OPTIONS.map((opt) => (
+              <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.8125rem' }}>
+                {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+
+          {/* Yenile butonu */}
+          <Button
+            variant="contained"
+            size="small"
+            onClick={onRefresh}
+            aria-label="Verileri Yenile"
+            startIcon={
+              <RefreshIcon
+                fontSize="small"
+                className={isRefreshing ? 'animate-spin' : ''}
+              />
+            }
+            sx={{
+              backgroundColor: '#ffffff',
+              color: '#000000',
+              '&:hover': { backgroundColor: '#f1f1f1' },
+              boxShadow: 'none',
+              fontWeight: 600,
+              fontSize: '0.8125rem',
+              textTransform: 'none',
+              borderRadius: '8px',
+              minWidth: 'auto',
+            }}
+          >
+            Yenile
+          </Button>
+        </div>
       </div>
     </header>
   );
@@ -45,7 +105,9 @@ function Header({ title, subtitle, onRefresh, isRefreshing }) {
 
 Header.propTypes = {
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string,
+  lastUpdated: PropTypes.string,
+  timeRange: PropTypes.string.isRequired,
+  onTimeRangeChange: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   isRefreshing: PropTypes.bool.isRequired,
 };

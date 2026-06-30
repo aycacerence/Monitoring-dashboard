@@ -19,7 +19,7 @@ function AlertsCard({ count, children }) {
       <div className="px-5 py-3 border-t border-slate-100 mt-2">
         <a 
           href="#alerts" 
-          className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded transition-colors w-max"
+          className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700 focus:ring-2 focus:ring-brand-500 focus:outline-none rounded transition-colors w-max"
           aria-label="Tüm alarmları görüntüle"
         >
           Tüm alarmları görüntüle

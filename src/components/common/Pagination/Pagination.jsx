@@ -15,10 +15,9 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     <MuiPagination
       page={currentPage}
       count={Math.max(totalPages, 1)}
-      color="primary"
       shape="rounded"
       onChange={(_, page) => onPageChange(page)}
-      className="flex justify-center"
+      className="flex justify-center [&_.Mui-selected]:!bg-brand-500 [&_.Mui-selected]:!text-white [&_.Mui-selected:hover]:!bg-brand-600"
     />
   );
 }

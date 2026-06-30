@@ -4,7 +4,7 @@ export const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#2563eb',
+      main: '#a42350',
     },
     success: {
       main: '#22c55e',
@@ -16,7 +16,7 @@ export const theme = createTheme({
       main: '#ef4444',
     },
     info: {
-      main: '#3b82f6',
+      main: '#6366f1',
     },
     background: {
       default: '#f8fafc',

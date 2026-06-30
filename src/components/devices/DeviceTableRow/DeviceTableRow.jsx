@@ -40,7 +40,7 @@ function DeviceTableRow({ device }) {
       </TableCell>
       <TableCell sx={{ minWidth: 120, borderBottomColor: '#f1f5f9' }}>
         {device.diskUsage !== null ? (
-          <ProgressBar value={device.diskUsage} color="#3b82f6" className="h-1.5" />
+          <ProgressBar value={device.diskUsage} color="#c026d3" className="h-1.5" />
         ) : (
           <span className="text-sm text-slate-400">-</span>
         )}

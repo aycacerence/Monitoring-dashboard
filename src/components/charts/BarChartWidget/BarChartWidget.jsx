@@ -39,7 +39,7 @@ function BarChartWidget({ data, height = '300px' }) {
           type: 'bar',
           data: incoming,
           itemStyle: {
-            color: '#3b82f6', // blue-500
+            color: '#6366f1', // indigo-500
             borderRadius: [4, 4, 0, 0],
           },
           barMaxWidth: 16,

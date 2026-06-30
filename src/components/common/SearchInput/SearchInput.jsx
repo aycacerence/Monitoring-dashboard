@@ -28,7 +28,7 @@ function SearchInput({ value, onChange, placeholder = 'Ara...' }) {
       }}
       inputProps={{
         'aria-label': placeholder,
-        className: 'focus:ring-2 focus:ring-blue-500 focus:outline-none',
+        className: 'focus:ring-2 focus:ring-brand-500 focus:outline-none',
       }}
       sx={{
         '& .MuiOutlinedInput-root': {

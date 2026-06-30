@@ -10,7 +10,7 @@
     "changeLabel": "gecen aya gore",
     "icon": "devices",
     "sparklineData": [112, 114, 116, 118, 121, 124, 126, 128],
-    "color": "#2563eb"
+    "color": "#4f46e5"
   },
   {
     "id": "online-devices",
@@ -75,6 +75,6 @@
     "changeLabel": "gecen aya gore",
     "icon": "storage",
     "sparklineData": [62, 61, 60, 59, 58, 58, 57, 57],
-    "color": "#3b82f6"
+    "color": "#c026d3"
   }
 ]
