@@ -1,4 +1,4 @@
-// Dashboard ust KPI kartlarinda gosterilecek ozet metrikleri yonetir.
+// src/features/dashboard/kpiSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { fetchKpiData } from '../../data/fakeApi.js';
 
@@ -8,8 +8,10 @@ const initialState = {
   error: null,
 };
 
+// Async Thunk tanımlaması
 export const fetchKpis = createAsyncThunk('kpi/fetchKpis', async () => {
-  return fetchKpiData();
+  const data = await fetchKpiData();
+  return data;
 });
 
 const kpiSlice = createSlice({
@@ -32,5 +34,6 @@ const kpiSlice = createSlice({
       });
   },
 });
+
 
 export default kpiSlice.reducer;
