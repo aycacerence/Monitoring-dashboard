@@ -1,0 +1,80 @@
+[
+  {
+    "id": "total-devices",
+    "title": "Toplam Cihaz",
+    "value": 128,
+    "unit": "adet",
+    "changePercentage": 12.5,
+    "changeDirection": "up",
+    "trendColor": "success",
+    "changeLabel": "gecen aya gore",
+    "icon": "devices",
+    "sparklineData": [112, 114, 116, 118, 121, 124, 126, 128],
+    "color": "#2563eb"
+  },
+  {
+    "id": "online-devices",
+    "title": "Çevrimiçi Cihaz",
+    "value": 102,
+    "unit": "adet",
+    "changePercentage": 8.3,
+    "changeDirection": "up",
+    "trendColor": "success",
+    "changeLabel": "gecen aya gore",
+    "icon": "checkCircle",
+    "sparklineData": [90, 91, 94, 96, 97, 99, 101, 102],
+    "color": "#22c55e"
+  },
+  {
+    "id": "active-alarms",
+    "title": "Aktif Alarm",
+    "value": 7,
+    "unit": "adet",
+    "changePercentage": 16.7,
+    "changeDirection": "up",
+    "trendColor": "success",
+    "changeLabel": "gecen aya gore",
+    "icon": "notifications",
+    "sparklineData": [3, 4, 4, 5, 6, 5, 7, 7],
+    "color": "#ef4444"
+  },
+  {
+    "id": "average-cpu",
+    "title": "CPU Kullanımı",
+    "value": 42,
+    "unit": "%",
+    "changePercentage": 5.4,
+    "changeDirection": "down",
+    "trendColor": "error",
+    "changeLabel": "gecen aya gore",
+    "icon": "cpu",
+    "sparklineData": [48, 46, 45, 44, 43, 42, 41, 42],
+    "color": "#8b5cf6"
+  },
+  {
+    "id": "average-memory",
+    "title": "Bellek Kullanımı",
+    "value": 68,
+    "unit": "%",
+    "changePercentage": 3.1,
+    "changeDirection": "up",
+    "trendColor": "success",
+    "changeLabel": "gecen aya gore",
+    "icon": "memory",
+    "sparklineData": [61, 62, 63, 65, 66, 67, 69, 68],
+    "color": "#f59e0b"
+  },
+  {
+    "id": "average-disk",
+    "title": "Disk Kullanımı",
+    "value": 57,
+    "unit": "%",
+    "changePercentage": 2.8,
+    "changeDirection": "down",
+    "trendColor": "error",
+    "changeLabel": "gecen aya gore",
+    "icon": "storage",
+    "sparklineData": [62, 61, 60, 59, 58, 58, 57, 57],
+    "color": "#3b82f6"
+  }
+]

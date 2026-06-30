@@ -1,0 +1,5 @@
+[
+  { "status": "Çevrimiçi", "count": 102, "color": "#22c55e" },
+  { "status": "Uyarı", "count": 18, "color": "#f59e0b" },
+  { "status": "Çevrimdışı", "count": 8, "color": "#ef4444" }
+]

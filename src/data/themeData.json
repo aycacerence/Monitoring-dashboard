@@ -1,0 +1,17 @@
+{
+  "colors": {
+    "primary": "#2563eb",
+    "success": "#22c55e",
+    "warning": "#f59e0b",
+    "error": "#ef4444",
+    "info": "#3b82f6",
+    "background": "#f8fafc"
+  },
+  "iconMap": {
+    "devices": "DevicesIcon",
+    "cpu": "MemoryIcon",
+    "storage": "StorageIcon",
+    "alarm": "WarningAmberIcon",
+    "network": "SettingsEthernetIcon"
+  }
+}

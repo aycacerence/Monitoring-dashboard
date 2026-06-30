@@ -1,0 +1,58 @@
+[
+  {
+    "id": "alert-001",
+    "deviceName": "FW-EDGE-01",
+    "message": "Dis agdan gelen anormal port tarama aktivitesi tespit edildi; 443 ve 3389 portlarina yogun deneme yapiliyor.",
+    "severity": "critical",
+    "timestamp": "2026-06-30T07:42:18+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-002",
+    "deviceName": "SRV-APP-03",
+    "message": "CPU kullanimi 15 dakikadir yuzde 92 uzerinde seyrediyor; uygulama kuyruk gecikmesi artiyor.",
+    "severity": "warning",
+    "timestamp": "2026-06-30T07:18:44+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-003",
+    "deviceName": "RTR-CORE-01",
+    "message": "Beklenmeyen ulke kaynakli yuksek hacimli outbound trafik tespit edildi; veri sizintisi ihtimali incelenmeli.",
+    "severity": "critical",
+    "timestamp": "2026-06-30T06:55:03+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-004",
+    "deviceName": "DB-PRD-01",
+    "message": "Veritabani disk kullanim orani yuzde 86 seviyesine ulasti; log arsivleme politikasi kontrol edilmeli.",
+    "severity": "warning",
+    "timestamp": "2026-06-30T06:21:36+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-005",
+    "deviceName": "VPN-GW-01",
+    "message": "Ayni kullanici hesabiyla 5 basarisiz MFA denemesi yapildi; yetkisiz erisim girisimi olabilir.",
+    "severity": "critical",
+    "timestamp": "2026-06-30T05:47:29+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-006",
+    "deviceName": "SW-ACCESS-07",
+    "message": "Switch portunda beklenmeyen MAC adresi degisikligi algilandi; fiziksel ag erisimi dogrulanmali.",
+    "severity": "info",
+    "timestamp": "2026-06-30T04:12:50+03:00",
+    "isResolved": true
+  },
+  {
+    "id": "alert-007",
+    "deviceName": "IDS-01",
+    "message": "Imza tabanli saldiri tespiti: olasi SQL injection payloadlari web uygulama trafiginde tekrarli olarak goruldu.",
+    "severity": "warning",
+    "timestamp": "2026-06-29T23:38:11+03:00",
+    "isResolved": false
+  }
+]

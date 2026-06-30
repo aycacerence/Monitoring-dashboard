@@ -1,0 +1,14 @@
+[
+  { "time": "00:00", "incoming": 820, "outgoing": 540 },
+  { "time": "02:00", "incoming": 760, "outgoing": 510 },
+  { "time": "04:00", "incoming": 690, "outgoing": 480 },
+  { "time": "06:00", "incoming": 880, "outgoing": 620 },
+  { "time": "08:00", "incoming": 1120, "outgoing": 790 },
+  { "time": "10:00", "incoming": 1260, "outgoing": 850 },
+  { "time": "12:00", "incoming": 1350, "outgoing": 910 },
+  { "time": "14:00", "incoming": 1180, "outgoing": 830 },
+  { "time": "16:00", "incoming": 1420, "outgoing": 960 },
+  { "time": "18:00", "incoming": 1300, "outgoing": 870 },
+  { "time": "20:00", "incoming": 980, "outgoing": 690 },
+  { "time": "22:00", "incoming": 910, "outgoing": 640 }
+]
