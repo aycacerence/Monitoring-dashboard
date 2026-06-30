@@ -24,21 +24,21 @@ const TIME_RANGE_OPTIONS = [
 function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing }) {
   return (
     <header className="sticky top-0 z-20 w-full" style={{ backgroundColor: '#a42350' }}>
-      <div className="flex min-h-16 items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="flex flex-nowrap min-h-16 items-center justify-between gap-2 px-4 py-3 sm:px-6 lg:px-8">
 
         {/* Sol: Sayfa başlığı */}
         <div className="min-w-0">
-          <h1 className="truncate text-xl font-bold tracking-normal text-white sm:text-2xl">
+          <h1 className="truncate text-base font-bold tracking-normal text-white sm:text-xl lg:text-2xl">
             {title}
           </h1>
         </div>
 
         {/* Sağ: Son güncelleme + Filtre + Yenile */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
 
           {/* Son güncelleme tarihi */}
           {lastUpdated && (
-            <span className="hidden md:block text-xs font-medium text-white/75">
+            <span className="hidden lg:block text-xs font-medium text-white/75 whitespace-nowrap">
               Son güncelleme: {lastUpdated}
             </span>
           )}

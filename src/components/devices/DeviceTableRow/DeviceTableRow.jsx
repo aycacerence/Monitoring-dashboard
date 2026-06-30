@@ -4,50 +4,84 @@ import StatusBadge from '../../common/Badge/StatusBadge';
 import ProgressBar from '../../common/ProgressBar/ProgressBar';
 import { formatRelativeTime } from '../../../utils/formatRelativeTime';
 
+// Ortak body hücre padding — DeviceTable thSx ile senkronize
+const tdBase = { borderBottomColor: '#f1f5f9', padding: '10px 16px' };
+
 function DeviceTableRow({ device }) {
   return (
     <TableRow hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+
+      {/* Cihaz Adı — sticky, her zaman görünür */}
       <TableCell
         component="th"
         scope="row"
         className="sticky left-0 z-10 bg-white"
-        sx={{ fontWeight: 600, color: 'text.primary', borderBottomColor: '#f1f5f9', whiteSpace: 'nowrap' }}
+        sx={{ ...tdBase, fontWeight: 600, color: 'text.primary', whiteSpace: 'nowrap' }}
       >
         {device.name}
       </TableCell>
-      <TableCell sx={{ color: 'text.secondary', borderBottomColor: '#f1f5f9', whiteSpace: 'nowrap' }}>
+
+      {/* IP Adresi — her zaman görünür */}
+      <TableCell sx={{ ...tdBase, color: 'text.secondary', whiteSpace: 'nowrap' }}>
         {device.ipAddress}
       </TableCell>
-      <TableCell sx={{ color: 'text.secondary', borderBottomColor: '#f1f5f9', whiteSpace: 'nowrap' }}>
+
+      {/* Tür — sadece lg+ */}
+      <TableCell
+        className="hidden lg:table-cell"
+        sx={{ ...tdBase, color: 'text.secondary', whiteSpace: 'nowrap' }}
+      >
         {device.type}
       </TableCell>
-      <TableCell sx={{ borderBottomColor: '#f1f5f9', whiteSpace: 'nowrap' }}>
+
+      {/* Durum — her zaman görünür */}
+      <TableCell sx={{ ...tdBase, whiteSpace: 'nowrap' }}>
         <StatusBadge status={device.status} />
       </TableCell>
-      <TableCell sx={{ minWidth: 120, borderBottomColor: '#f1f5f9' }}>
+
+      {/* CPU — her zaman görünür */}
+      <TableCell sx={{ ...tdBase, minWidth: 120 }}>
         {device.cpuUsage !== null ? (
           <ProgressBar value={device.cpuUsage} color="#8b5cf6" className="h-1.5" />
         ) : (
           <span className="text-sm text-slate-400">-</span>
         )}
       </TableCell>
-      <TableCell sx={{ minWidth: 120, borderBottomColor: '#f1f5f9' }}>
+
+      {/* Bellek — her zaman görünür */}
+      <TableCell sx={{ ...tdBase, minWidth: 120 }}>
         {device.memoryUsage !== null ? (
           <ProgressBar value={device.memoryUsage} color="#f59e0b" className="h-1.5" />
         ) : (
           <span className="text-sm text-slate-400">-</span>
         )}
       </TableCell>
-      <TableCell sx={{ minWidth: 120, borderBottomColor: '#f1f5f9' }}>
+
+      {/* Disk — sadece lg+, sol kenarlık ile ayrılmış */}
+      <TableCell
+        className="hidden lg:table-cell"
+        sx={{
+          ...tdBase,
+          minWidth: 130,
+          paddingLeft: '20px',
+          borderLeft: '1px solid #f1f5f9',
+        }}
+      >
         {device.diskUsage !== null ? (
           <ProgressBar value={device.diskUsage} color="#c026d3" className="h-1.5" />
         ) : (
           <span className="text-sm text-slate-400">-</span>
         )}
       </TableCell>
-      <TableCell sx={{ color: 'text.secondary', borderBottomColor: '#f1f5f9', whiteSpace: 'nowrap' }}>
+
+      {/* Son Güncelleme — sadece lg+ */}
+      <TableCell
+        className="hidden lg:table-cell"
+        sx={{ ...tdBase, color: 'text.secondary', whiteSpace: 'nowrap' }}
+      >
         {formatRelativeTime(device.lastUpdated)}
       </TableCell>
+
     </TableRow>
   );
 }
