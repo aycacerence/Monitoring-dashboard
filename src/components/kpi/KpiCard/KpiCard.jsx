@@ -63,7 +63,7 @@ function KpiCard({
   };
 
   return (
-    <Card className="flex flex-col justify-between h-full hover:-translate-y-1 transition-transform duration-300">
+    <Card hoverable className="flex flex-col justify-between h-full">
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>

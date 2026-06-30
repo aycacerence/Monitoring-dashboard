@@ -3,7 +3,7 @@ import Card from '../../common/Card';
 
 function SystemSummaryCard({ items }) {
   return (
-    <Card title="Sistem Özeti" className="h-full">
+    <Card hoverable title="Sistem Özeti" className="h-full">
       <div className="grid grid-cols-2 gap-4 h-full content-start mt-2">
         {items.map((item, index) => (
           <div key={index} className="bg-slate-50 rounded-lg p-4 flex flex-col justify-center">

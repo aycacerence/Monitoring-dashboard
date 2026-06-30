@@ -66,6 +66,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
         <TableHead className="bg-slate-50">
           <TableRow>
             <TableCell 
+              scope="col"
               className="sticky left-0 z-10 bg-slate-50"
               sx={{ 
                 minWidth: 120, 
@@ -82,6 +83,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
             {headCells.slice(1).map((headCell) => (
               <TableCell 
                 key={headCell.id}
+                scope="col"
                 sx={{ 
                   minWidth: headCell.minWidth, 
                   fontWeight: 600, 

@@ -26,10 +26,17 @@ function SearchInput({ value, onChange, placeholder = 'Ara...' }) {
           </InputAdornment>
         ),
       }}
+      inputProps={{
+        'aria-label': placeholder,
+        className: 'focus:ring-2 focus:ring-blue-500 focus:outline-none',
+      }}
       sx={{
         '& .MuiOutlinedInput-root': {
           borderRadius: '8px',
           backgroundColor: '#ffffff',
+          '&.Mui-focused fieldset': {
+            border: 'none',
+          },
         },
       }}
     />

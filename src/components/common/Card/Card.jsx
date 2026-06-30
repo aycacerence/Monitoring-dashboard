@@ -12,13 +12,16 @@ import { Paper } from '@mui/material';
  * @param {boolean} [props.noPadding] Icerik padding'ini kaldirir ve tasmalari gizler.
  * @returns {JSX.Element}
  */
-function Card({ children, className = '', title, action, noPadding = false }) {
+function Card({ children, className = '', title, action, noPadding = false, hoverable = false }) {
   const paddingClass = noPadding ? 'overflow-hidden' : 'p-5';
+  const hoverClass = hoverable 
+    ? 'transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50' 
+    : 'transition-shadow duration-200 hover:shadow-sm';
 
   return (
     <Paper
       elevation={0}
-      className={`rounded-lg border border-slate-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-lg ${paddingClass} ${className}`}
+      className={`rounded-lg border border-slate-200 bg-white shadow-sm ${hoverClass} ${paddingClass} ${className}`}
     >
       {(title || action) && (
         <div className={`flex items-center justify-between gap-3 ${noPadding ? 'px-5 pt-5' : 'mb-4'}`}>
@@ -37,6 +40,7 @@ Card.propTypes = {
   title: PropTypes.string,
   action: PropTypes.node,
   noPadding: PropTypes.bool,
+  hoverable: PropTypes.bool,
 };
 
 export default Card;

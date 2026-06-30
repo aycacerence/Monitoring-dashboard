@@ -5,7 +5,7 @@ import { Tooltip } from '@mui/material';
 
 function ChartCard({ title, subtitle, action, children, infoText }) {
   return (
-    <Card className="flex flex-col h-full" noPadding>
+    <Card hoverable className="flex flex-col h-full" noPadding>
       <div className="flex items-center justify-between px-5 pt-5 mb-4">
         <div>
           <div className="flex items-center gap-2">

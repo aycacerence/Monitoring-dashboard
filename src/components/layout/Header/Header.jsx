@@ -27,13 +27,14 @@ function Header({ title, subtitle, onRefresh, isRefreshing }) {
           variant="outlined"
           size="small"
           onClick={onRefresh}
+          aria-label="Verileri Yenile"
           startIcon={
             <RefreshIcon
               fontSize="small"
               className={isRefreshing ? 'animate-spin' : ''}
             />
           }
-          className="shrink-0 border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50"
+          className="shrink-0 border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         >
           Yenile
         </Button>

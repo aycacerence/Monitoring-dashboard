@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
   setSearchTerm,
@@ -6,15 +6,17 @@ import {
   setItemsPerPage,
   selectPaginatedDevices,
   selectDevicesPagination,
+  fetchDevices,
 } from '../../../features/dashboard/devicesSlice';
 import Card from '../../common/Card';
 import DeviceTable from '../DeviceTable/DeviceTable';
 import DevicesCardHeader from '../DevicesCardHeader/DevicesCardHeader';
 import Pagination from '../../common/Pagination/Pagination';
+import ErrorState from '../../common/ErrorState/ErrorState';
 
 function DevicesSection() {
   const dispatch = useAppDispatch();
-  const { status, searchTerm } = useAppSelector((state) => state.devices);
+  const { status, searchTerm, error } = useAppSelector((state) => state.devices);
   
   // Memoized selectors üzerinden verileri çekiyoruz
   const paginatedDevices = useAppSelector(selectPaginatedDevices);
@@ -33,6 +35,10 @@ function DevicesSection() {
     dispatch(setCurrentPage(page));
   };
 
+  if (status === 'failed') {
+    return <ErrorState message={error || "Cihaz verileri yüklenirken bir hata oluştu."} onRetry={() => dispatch(fetchDevices())} />;
+  }
+
   // '1-5 / 128' gibi bilgi metni hesaplaması
   const { currentPage, itemsPerPage, totalItems, totalPages } = paginationState;
   const startIndex = (currentPage - 1) * itemsPerPage + 1;
@@ -42,7 +48,7 @@ function DevicesSection() {
     : '0 cihaz';
 
   return (
-    <Card noPadding>
+    <Card noPadding className="transition-opacity duration-500 ease-in opacity-100">
       <DevicesCardHeader 
         title="Cihaz Yönetimi" 
         searchTerm={searchTerm} 

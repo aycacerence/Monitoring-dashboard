@@ -1,14 +1,16 @@
-import { useAppSelector } from '../../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { Skeleton } from '@mui/material';
 import ChartCard from '../ChartCard/ChartCard';
 import LineChartWidget from '../LineChartWidget/LineChartWidget';
 import BarChartWidget from '../BarChartWidget/BarChartWidget';
 import PieChartWidget from '../PieChartWidget/PieChartWidget';
 import PieLegendList from '../PieChartWidget/PieLegendList';
-import DashboardGrid from '../../layout/DashboardGrid/index.js'; // Fallback layout usage if needed
+import ErrorState from '../../common/ErrorState/ErrorState';
+import { fetchCharts } from '../../../features/dashboard/chartsSlice';
 
 function ChartsSection() {
-  const { data, status } = useAppSelector((state) => state.charts);
+  const dispatch = useAppDispatch();
+  const { data, status, error } = useAppSelector((state) => state.charts);
 
   if (status === 'loading' || status === 'idle') {
     return (
@@ -30,8 +32,12 @@ function ChartsSection() {
     );
   }
 
+  if (status === 'failed') {
+    return <ErrorState message={error || "Grafik verileri yüklenirken bir hata oluştu."} onRetry={() => dispatch(fetchCharts())} />;
+  }
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 transition-opacity duration-500 ease-in opacity-100">
       {/* Sol Sütun: Line ve Bar Grafikleri (Geniş ekranlarda 2/3 alan) */}
       <div className="lg:col-span-2 flex flex-col gap-6">
         <ChartCard 

@@ -13,7 +13,7 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
   else if (percentage >= 60) progressColor = '#f59e0b'; // amber-500
 
   return (
-    <Card className="hover:-translate-y-1 transition-transform duration-300">
+    <Card hoverable className="h-full">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
           <IconComponent fontSize="small" />
