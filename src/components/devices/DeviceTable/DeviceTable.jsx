@@ -1,39 +1,50 @@
 import PropTypes from 'prop-types';
-import { Skeleton } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Skeleton } from '@mui/material';
 import DeviceTableRow from '../DeviceTableRow/DeviceTableRow';
 import EmptyState from '../../common/EmptyState';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 
+const headCells = [
+  { id: 'name', label: 'Cihaz Adı', minWidth: 120 },
+  { id: 'ip', label: 'IP Adresi', minWidth: 120 },
+  { id: 'type', label: 'Tür', minWidth: 100 },
+  { id: 'status', label: 'Durum', minWidth: 100 },
+  { id: 'cpu', label: 'CPU', minWidth: 120 },
+  { id: 'mem', label: 'Bellek', minWidth: 120 },
+  { id: 'disk', label: 'Disk', minWidth: 120 },
+  { id: 'updated', label: 'Son Güncelleme', minWidth: 140 },
+];
+
 function DeviceTable({ devices, isLoading, searchTerm }) {
   if (isLoading) {
     return (
-      <div className="w-full overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-slate-200">
-              <th className="py-3 px-4">Cihaz Adı</th>
-              <th className="py-3 px-4">IP Adresi</th>
-              <th className="py-3 px-4">Tür</th>
-              <th className="py-3 px-4">Durum</th>
-              <th className="py-3 px-4">CPU</th>
-              <th className="py-3 px-4">Bellek</th>
-              <th className="py-3 px-4">Disk</th>
-              <th className="py-3 px-4">Son Güncelleme</th>
-            </tr>
-          </thead>
-          <tbody>
+      <TableContainer className="overflow-x-auto w-full">
+        <Table sx={{ minWidth: 800 }}>
+          <TableHead>
+            <TableRow>
+              {headCells.map((headCell) => (
+                <TableCell 
+                  key={headCell.id}
+                  sx={{ minWidth: headCell.minWidth, borderBottomColor: '#e2e8f0' }}
+                >
+                  <Skeleton variant="text" width="60%" />
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {[...Array(5)].map((_, i) => (
-              <tr key={i} className="border-b border-slate-100">
-                {[...Array(8)].map((_, j) => (
-                  <td key={j} className="py-3 px-4">
+              <TableRow key={i}>
+                {headCells.map((headCell, j) => (
+                  <TableCell key={j} sx={{ borderBottomColor: '#f1f5f9' }}>
                     <Skeleton variant="text" width={j === 0 ? "80%" : "60%"} />
-                  </td>
+                  </TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 
@@ -50,27 +61,49 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
   }
 
   return (
-    <div className="w-full overflow-x-auto relative">
-      <table className="w-full text-left border-collapse min-w-[800px]">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            <th className="py-3 px-4 sticky left-0 bg-slate-50 z-10 whitespace-nowrap">Cihaz Adı</th>
-            <th className="py-3 px-4 whitespace-nowrap">IP Adresi</th>
-            <th className="py-3 px-4 whitespace-nowrap">Tür</th>
-            <th className="py-3 px-4 whitespace-nowrap">Durum</th>
-            <th className="py-3 px-4 whitespace-nowrap">CPU</th>
-            <th className="py-3 px-4 whitespace-nowrap">Bellek</th>
-            <th className="py-3 px-4 whitespace-nowrap">Disk</th>
-            <th className="py-3 px-4 whitespace-nowrap">Son Güncelleme</th>
-          </tr>
-        </thead>
-        <tbody className="group">
+    <TableContainer className="overflow-x-auto w-full">
+      <Table sx={{ minWidth: 800 }}>
+        <TableHead className="bg-slate-50">
+          <TableRow>
+            <TableCell 
+              className="sticky left-0 z-10 bg-slate-50"
+              sx={{ 
+                minWidth: 120, 
+                fontWeight: 600, 
+                color: 'text.secondary', 
+                borderBottomColor: '#e2e8f0',
+                textTransform: 'uppercase',
+                fontSize: '0.75rem',
+                letterSpacing: '0.05em'
+              }}
+            >
+              Cihaz Adı
+            </TableCell>
+            {headCells.slice(1).map((headCell) => (
+              <TableCell 
+                key={headCell.id}
+                sx={{ 
+                  minWidth: headCell.minWidth, 
+                  fontWeight: 600, 
+                  color: 'text.secondary', 
+                  borderBottomColor: '#e2e8f0',
+                  textTransform: 'uppercase',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.05em'
+                }}
+              >
+                {headCell.label}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {devices.map((device) => (
             <DeviceTableRow key={device.id} device={device} />
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

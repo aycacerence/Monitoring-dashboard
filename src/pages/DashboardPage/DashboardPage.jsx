@@ -72,13 +72,13 @@ function DashboardPage() {
 
           {/* Devices and Resource Usage Grid */}
           <section>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Cihaz Tablosu (2/3 alan) - overflow-hidden ile taşma engellendi */}
-              <div className="lg:col-span-2 min-w-0 overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Cihaz Tablosu (3/4 alan) - overflow-hidden ile taşma engellendi */}
+              <div className="lg:col-span-3 min-w-0 overflow-hidden">
                 <DevicesSection />
               </div>
               
-              {/* Kaynak Kullanımı (1/3 alan) */}
+              {/* Kaynak Kullanımı (1/4 alan) */}
               <div className="lg:col-span-1">
                 <ResourceUsageList />
               </div>
