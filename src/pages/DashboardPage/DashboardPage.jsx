@@ -1,10 +1,14 @@
 import { useEffect } from 'react';
-import { useAppDispatch } from '../../app/hooks';
-// thunk ismini kpiSlice'taki export ile eşleştirdik (fetchKpis)
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { fetchKpis } from '../../features/dashboard/kpiSlice'; 
 import { fetchCharts } from '../../features/dashboard/chartsSlice';
+import { fetchAlerts } from '../../features/dashboard/alertsSlice';
+import { fetchSystemSummary } from '../../features/dashboard/systemSummarySlice';
+import { fetchResourceUsage } from '../../features/dashboard/resourceUsageSlice';
 import KpiGrid from '../../components/kpi/KpiGrid/KpiGrid';
 import ChartsSection from '../../components/charts/ChartsSection/ChartsSection';
+import AlertsSection from '../../components/alerts/AlertsSection/AlertsSection';
+import ResourceUsageList from '../../components/alerts/ResourceUsageList/ResourceUsageList';
 
 function DashboardPage() {
   const dispatch = useAppDispatch();
@@ -12,11 +16,11 @@ function DashboardPage() {
   // DashboardPage serves as the "orchestrator" for the dashboard.
   // It handles dispatching actions to fetch all data on mount.
   useEffect(() => {
-    // Burada fetchKpis thunk'ını çağırıyoruz
     dispatch(fetchKpis());
     dispatch(fetchCharts());
-    
-    // TODO: Dispatch other thunks (fetchSystemSummaryData, fetchChartsData, etc.) here
+    dispatch(fetchAlerts());
+    dispatch(fetchSystemSummary());
+    dispatch(fetchResourceUsage());
   }, [dispatch]);
 
   return (
@@ -26,10 +30,22 @@ function DashboardPage() {
         <KpiGrid />
       </section>
 
-      {/* TODO: Add other sections (Alerts, Devices) */}
+      {/* Resource Usage Section */}
+      <section>
+        <ResourceUsageList />
+      </section>
+
+      {/* Charts Section */}
       <section>
         <ChartsSection />
       </section>
+
+      {/* Alerts and System Summary Section */}
+      <section>
+        <AlertsSection />
+      </section>
+
+      {/* TODO: Add Devices Section */}
     </div>
   );
 }
