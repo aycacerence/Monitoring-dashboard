@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useAppDispatch } from '../../app/hooks';
+import { useEffect, useState, useRef } from 'react';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { fetchKpis } from '../../features/dashboard/kpiSlice'; 
 import { fetchCharts } from '../../features/dashboard/chartsSlice';
 import { fetchAlerts } from '../../features/dashboard/alertsSlice';
@@ -13,6 +13,7 @@ import ResourceUsageList from '../../components/alerts/ResourceUsageList/Resourc
 import DevicesSection from '../../components/devices/DevicesSection/DevicesSection';
 import Header from '../../components/layout/Header/index.js';
 import PageContainer from '../../components/layout/PageContainer/index.js';
+import SplashScreen from '../../components/common/SplashScreen/SplashScreen';
 import { formatDateTime } from '../../utils/formatDateTime';
 
 function DashboardPage() {
@@ -20,6 +21,35 @@ function DashboardPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
   const [timeRange, setTimeRange] = useState('24h');
+
+  // Redux status selectors
+  const kpiStatus = useAppSelector((state) => state.kpi.status);
+  const chartsStatus = useAppSelector((state) => state.charts.status);
+  const alertsStatus = useAppSelector((state) => state.alerts.status);
+  const summaryStatus = useAppSelector((state) => state.systemSummary.status);
+  const resourceStatus = useAppSelector((state) => state.resourceUsage.status);
+  const devicesStatus = useAppSelector((state) => state.devices.status);
+
+  const allStatuses = [kpiStatus, chartsStatus, alertsStatus, summaryStatus, resourceStatus, devicesStatus];
+  const isLoading = allStatuses.some((s) => s === 'loading' || s === 'idle');
+
+  const isInitialLoad = useRef(true);
+  const [minTimePassed, setMinTimePassed] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinTimePassed(true);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const isVisible = isInitialLoad.current && (!minTimePassed || isLoading);
+
+  useEffect(() => {
+    if (!isVisible) {
+      isInitialLoad.current = false;
+    }
+  }, [isVisible]);
 
   // Merkezi veri yükleme fonksiyonu
   const loadAllData = async () => {
@@ -47,6 +77,8 @@ function DashboardPage() {
 
   return (
     <>
+      <SplashScreen isVisible={isVisible} />
+      
       <Header
         title="Monitoring Dashboard"
         lastUpdated={formatDateTime(lastUpdated)}
