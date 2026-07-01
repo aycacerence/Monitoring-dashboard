@@ -13,10 +13,6 @@ function PieChartWidget({ data, height = '300px' }) {
     if (!data || data.length === 0) return {};
 
     const commonOptions = getCommonChartOptions(theme.palette.mode, theme.palette);
-    const tooltipBg = theme.palette.background.paper;
-    const borderColor = theme.palette.divider;
-    const textColor = theme.palette.text.primary;
-    const subtextColor = theme.palette.text.secondary;
     const itemBorderColor = theme.palette.background.paper;
 
     const chartData = data.map((item) => ({
@@ -25,30 +21,14 @@ function PieChartWidget({ data, height = '300px' }) {
       itemStyle: { color: item.color },
     }));
 
-    const total = data.reduce((acc, item) => acc + item.count, 0);
-
     return {
       tooltip: commonOptions.tooltip,
-      title: {
-        text: total.toString(),
-        subtext: 'Toplam',
-        left: 'center',
-        top: 'center',
-        textStyle: {
-          fontSize: 24,
-          fontWeight: 'bold',
-          color: textColor,
-        },
-        subtextStyle: {
-          fontSize: 12,
-          color: subtextColor,
-        },
-      },
       series: [
         {
           name: 'Cihaz Durumu',
           type: 'pie',
-          radius: ['60%', '80%'],
+          radius: ['62%', '78%'],
+          center: ['50%', '50%'],
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 4,
@@ -81,7 +61,7 @@ function PieChartWidget({ data, height = '300px' }) {
   }, [option]);
 
   return (
-    <div ref={containerRef} className="h-full min-h-[120px] w-full" style={{ height }}>
+    <div ref={containerRef} className="relative h-full min-h-[120px] w-full" style={{ height }}>
       <ReactECharts
         ref={chartRef}
         option={option}
@@ -90,6 +70,16 @@ function PieChartWidget({ data, height = '300px' }) {
         notMerge
         lazyUpdate
       />
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="rounded-full bg-white/80 px-2 py-1 text-center leading-none shadow-sm ring-1 ring-slate-100 dark:bg-slate-900/80 dark:ring-slate-800">
+          <div className="text-xl font-bold leading-5 text-slate-900 dark:text-white">
+            {data.reduce((acc, item) => acc + item.count, 0)}
+          </div>
+          <div className="mt-0.5 text-[10px] font-medium leading-3 text-slate-500 dark:text-slate-400">
+            Toplam
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

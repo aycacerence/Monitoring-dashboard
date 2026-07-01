@@ -31,7 +31,13 @@ function BarChartWidget({ data, height = '300px' }) {
           fontSize: 12,
         },
       },
-      grid: { ...base.grid, top: 30 },
+      grid: {
+        top: '15%',
+        bottom: '10%',
+        left: '2%',
+        right: '2%',
+        containLabel: true,
+      },
       xAxis: { ...base.xAxis, data: times },
       series: [
         {
@@ -66,11 +72,11 @@ function BarChartWidget({ data, height = '300px' }) {
   }, [option]);
 
   return (
-    <div ref={containerRef} className="h-full min-h-[120px] w-full" style={{ height }}>
+    <div ref={containerRef} className="flex-1 min-h-0 relative w-full mt-2" style={{ height }}>
       <ReactECharts
         ref={chartRef}
         option={option}
-        style={{ height: '100%', width: '100%' }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, height: '100%', width: '100%' }}
         opts={{ renderer: 'svg' }}
         notMerge
         lazyUpdate

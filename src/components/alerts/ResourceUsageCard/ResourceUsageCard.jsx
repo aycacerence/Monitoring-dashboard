@@ -14,10 +14,10 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
 
   return (
     <Card hoverable className="h-auto lg:h-full" noPadding>
-      <div className="flex h-auto flex-col justify-center p-3 lg:h-full">
-        <div className="flex justify-between items-start mb-2">
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
+      <div className="flex flex-col justify-between w-full h-full px-3 py-2">
+        <div className="flex flex-row justify-between items-center w-full">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
               <IconComponent fontSize="small" />
             </div>
             <div className="min-w-0">
@@ -31,12 +31,12 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
               </div>
             </div>
           </div>
-          <div className="shrink-0 pl-3 text-xl font-bold leading-none text-slate-900 dark:text-white">
+          <div className="shrink-0 pl-2 text-lg font-bold leading-none text-slate-900 dark:text-white">
             {percentage}%
           </div>
         </div>
         
-        <div className="w-full mt-auto">
+        <div className="w-full mt-1 shrink-0">
           <ProgressBar value={percentage} color={progressColor} showPercentage={false} />
         </div>
       </div>

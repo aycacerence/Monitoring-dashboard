@@ -4,22 +4,28 @@ function PieLegendList({ data }) {
   const total = data.reduce((acc, item) => acc + item.count, 0);
 
   return (
-    <div className="flex flex-col gap-3 justify-center">
+    <div className="flex min-w-0 flex-col gap-3">
       {data.map((item) => {
         const percentage = total > 0 ? Math.round((item.count / total) * 100) : 0;
         
         return (
-          <div key={item.status} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span 
-                className="w-3 h-3 rounded-full shrink-0" 
-                style={{ backgroundColor: item.color }} 
+          <div key={item.status} className="flex min-w-0 items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span
+                className="h-3 w-3 shrink-0 rounded-full"
+                style={{ backgroundColor: item.color }}
               />
-              <span className="text-sm font-medium text-slate-700">{item.status}</span>
+              <span className="min-w-0 truncate text-sm font-semibold text-slate-700 dark:text-slate-200">
+                {item.status}
+              </span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-bold text-slate-900">{item.count}</span>
-              <span className="text-xs font-medium text-slate-500 w-8 text-right">{percentage}%</span>
+            <div className="grid shrink-0 grid-cols-[2.5rem_2.75rem] items-baseline gap-3 text-right">
+              <span className="text-sm font-bold tabular-nums text-slate-900 dark:text-white">
+                {item.count}
+              </span>
+              <span className="text-xs font-medium tabular-nums text-slate-500 dark:text-slate-400">
+                {percentage}%
+              </span>
             </div>
           </div>
         );

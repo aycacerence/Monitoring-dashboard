@@ -62,11 +62,13 @@ function ChartsSection() {
           title="Cihaz Durum Dağılımı" 
           subtitle="Sistemdeki cihazların anlık erişilebilirlik durumu"
         >
-          <div className="flex flex-col gap-3 lg:h-full lg:min-h-0 lg:flex-row lg:items-center">
-            <div className="lg:min-h-0 lg:flex-1">
-              <PieChartWidget data={data.deviceStatusDistribution} height="100%" />
+          <div className="flex h-full min-h-[180px] items-center gap-5 lg:min-h-0">
+            <div className="flex w-36 shrink-0 justify-center">
+              <div className="h-32 w-32">
+                <PieChartWidget data={data.deviceStatusDistribution} height="100%" />
+              </div>
             </div>
-            <div className="shrink-0 border-t border-slate-100 pt-3 dark:border-slate-800 lg:w-40 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+            <div className="min-w-0 flex-1 border-l border-slate-100 pl-5 dark:border-slate-800">
               <PieLegendList data={data.deviceStatusDistribution} />
             </div>
           </div>
