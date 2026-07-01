@@ -48,7 +48,7 @@ function DevicesSection() {
     : '0 cihaz';
 
   return (
-    <Card noPadding className="flex h-auto flex-col overflow-hidden transition-opacity duration-500 ease-in opacity-100 lg:h-full">
+    <Card hoverable noPadding className="flex h-auto flex-col overflow-hidden transition-opacity duration-500 ease-in opacity-100 lg:h-full">
       <DevicesCardHeader 
         title="Cihaz Yönetimi" 
         searchTerm={searchTerm} 
