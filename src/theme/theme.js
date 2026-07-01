@@ -4,7 +4,10 @@ export const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#a42350',
+      main:          '#a42350', // Crimson — kurumsal kimlik birincil rengi
+      light:         '#cf5b7e', // açık ton
+      dark:          '#7a1a3c', // koyu ton
+      contrastText:  '#ffffff',
     },
     success: {
       main: '#22c55e',

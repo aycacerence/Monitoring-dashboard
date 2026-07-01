@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { Button, Select, MenuItem } from '@mui/material';
+import { Button, Select, MenuItem, Box } from '@mui/material';
 
 const TIME_RANGE_OPTIONS = [
   { value: '1h',  label: 'Son 1 Saat' },
@@ -23,7 +23,11 @@ const TIME_RANGE_OPTIONS = [
  */
 function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing }) {
   return (
-    <header className="sticky top-0 z-20 w-full" style={{ backgroundColor: '#a42350' }}>
+    <Box
+      component="header"
+      className="sticky top-0 z-20 w-full"
+      sx={{ bgcolor: 'primary.main' }}
+    >
       <div className="flex flex-nowrap min-h-16 items-center justify-between gap-2 px-4 py-3 sm:px-6 lg:px-8">
 
         {/* Sol: Sayfa başlığı */}
@@ -50,7 +54,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
             onChange={(e) => onTimeRangeChange(e.target.value)}
             aria-label="Zaman aralığı filtresi"
             startAdornment={
-              <CalendarTodayIcon sx={{ fontSize: 14, mr: 0.5, color: '#a42350' }} />
+              <CalendarTodayIcon sx={{ fontSize: 14, mr: 0.5, color: 'primary.main' }} />
             }
             sx={{
               backgroundColor: '#ffffff',
@@ -99,7 +103,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
           </Button>
         </div>
       </div>
-    </header>
+    </Box>
   );
 }
 
