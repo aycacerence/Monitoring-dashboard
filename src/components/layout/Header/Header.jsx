@@ -27,17 +27,17 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
       className="sticky top-0 z-20 w-full"
       sx={{ bgcolor: 'primary.main' }}
     >
-      <div className="flex flex-nowrap min-h-16 items-center justify-between gap-2 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="flex min-h-16 flex-wrap items-center justify-between gap-2 px-4 py-3 sm:flex-nowrap sm:px-6 lg:px-8">
 
         {/* Sol: Sayfa başlığı */}
-        <div className="min-w-0">
-          <h1 className="truncate text-base font-bold tracking-normal text-white sm:text-xl lg:text-2xl">
+        <div className="min-w-0 basis-full sm:basis-auto">
+          <h1 className="text-center whitespace-nowrap text-lg font-bold tracking-normal text-white sm:text-left sm:truncate sm:text-xl lg:text-2xl">
             {title}
           </h1>
         </div>
 
         {/* Sağ: Son güncelleme + Filtre + Mod Toggle + Yenile */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-2 sm:flex-initial sm:justify-end sm:shrink-0">
 
           {/* Son güncelleme tarihi */}
           {lastUpdated && (
@@ -59,9 +59,10 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               backgroundColor: '#ffffff',
               color: '#1e293b',
               fontWeight: 500,
-              fontSize: '0.8125rem',
+              fontSize: { xs: '0.75rem', sm: '0.8125rem' },
               borderRadius: '8px',
               height: '32px',
+              minWidth: { xs: 132, sm: 150 },
               '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
               '& .MuiSelect-icon': { color: '#64748b' },
               '& .MuiSelect-select': { paddingLeft: '6px', paddingRight: '28px !important' },
@@ -114,7 +115,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               '&:hover': { backgroundColor: '#f1f1f1' },
               boxShadow: 'none',
               fontWeight: 600,
-              fontSize: '0.8125rem',
+              fontSize: { xs: '0.75rem', sm: '0.8125rem' },
               textTransform: 'none',
               borderRadius: '8px',
               minWidth: 'auto',
