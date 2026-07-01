@@ -68,7 +68,7 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
   }, [option]);
 
   return (
-    <div ref={containerRef} className="flex-1 min-h-0 relative w-full mt-2" style={{ height }}>
+    <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
       <ReactECharts
         ref={chartRef}
         option={option}
