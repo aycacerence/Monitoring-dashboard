@@ -11,11 +11,11 @@ import InboxIcon from '@mui/icons-material/Inbox';
  */
 function EmptyState({ message, icon }) {
   return (
-    <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-400 shadow-sm">
+    <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1a1d27] px-4 py-8 text-center">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-slate-800 text-slate-400 shadow-sm">
         {icon ?? <InboxIcon fontSize="small" />}
       </div>
-      <p className="text-sm font-medium text-slate-600">{message}</p>
+      <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{message}</p>
     </div>
   );
 }

@@ -22,7 +22,7 @@ function TrendIndicator({ percentage, direction, label }) {
         <Icon sx={{ fontSize: 14 }} />
         {percentage}%
       </span>
-      {label && <span className="text-slate-500">{label}</span>}
+      {label && <span className="text-slate-500 dark:text-slate-400">{label}</span>}
     </div>
   );
 }

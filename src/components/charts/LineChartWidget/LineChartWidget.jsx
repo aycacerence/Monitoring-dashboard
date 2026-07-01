@@ -1,30 +1,28 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
-import { commonChartOptions } from '../../../utils/charts';
+import { useTheme } from '@mui/material/styles';
+import { getCommonChartOptions } from '../../../utils/charts';
 
 function LineChartWidget({ data, seriesName, color, height = '300px' }) {
+  const theme = useTheme();
+
   const option = useMemo(() => {
     if (!data || data.length === 0) return {};
 
-    const times = data.map((item) => item.time);
+    const base = getCommonChartOptions(theme.palette.mode, theme.palette);
+    const times  = data.map((item) => item.time);
     const values = data.map((item) => item.value);
 
     return {
-      ...commonChartOptions,
+      ...base,
       yAxis: {
-        ...commonChartOptions.yAxis,
+        ...base.yAxis,
         min: 0,
         max: 100,
-        axisLabel: {
-          ...commonChartOptions.yAxis.axisLabel,
-          formatter: '{value}%'
-        }
+        axisLabel: { ...base.yAxis.axisLabel, formatter: '{value}%' },
       },
-      xAxis: {
-        ...commonChartOptions.xAxis,
-        data: times,
-      },
+      xAxis: { ...base.xAxis, data: times },
       series: [
         {
           name: seriesName,
@@ -32,17 +30,10 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
           type: 'line',
           smooth: true,
           showSymbol: false,
-          lineStyle: {
-            color: color,
-            width: 3,
-          },
+          lineStyle: { color, width: 3 },
           areaStyle: {
             color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
+              type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
               colorStops: [
                 { offset: 0, color: `${color}60` },
                 { offset: 1, color: `${color}00` },
@@ -52,7 +43,7 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
         },
       ],
     };
-  }, [data, seriesName, color]);
+  }, [data, seriesName, color, theme.palette.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ height, width: '100%' }}>

@@ -1,18 +1,22 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
-import { commonChartOptions } from '../../../utils/charts';
+import { useTheme } from '@mui/material/styles';
+import { getCommonChartOptions } from '../../../utils/charts';
 
 function BarChartWidget({ data, height = '300px' }) {
+  const theme = useTheme();
+
   const option = useMemo(() => {
     if (!data || data.length === 0) return {};
 
-    const times = data.map((item) => item.time);
+    const base = getCommonChartOptions(theme.palette.mode, theme.palette);
+    const times    = data.map((item) => item.time);
     const incoming = data.map((item) => item.incoming);
     const outgoing = data.map((item) => item.outgoing);
 
     return {
-      ...commonChartOptions,
+      ...base,
       legend: {
         data: ['Gelen', 'Giden'],
         top: 0,
@@ -21,42 +25,30 @@ function BarChartWidget({ data, height = '300px' }) {
         itemWidth: 8,
         itemHeight: 8,
         textStyle: {
-          color: '#64748b', // slate-500
+          color: theme.palette.text.secondary,
           fontSize: 12,
         },
       },
-      grid: {
-        ...commonChartOptions.grid,
-        top: 30, // Make room for legend
-      },
-      xAxis: {
-        ...commonChartOptions.xAxis,
-        data: times,
-      },
+      grid: { ...base.grid, top: 30 },
+      xAxis: { ...base.xAxis, data: times },
       series: [
         {
           name: 'Gelen',
           type: 'bar',
           data: incoming,
-          itemStyle: {
-            color: '#6366f1', // indigo-500
-            borderRadius: [4, 4, 0, 0],
-          },
+          itemStyle: { color: '#6366f1', borderRadius: [4, 4, 0, 0] },
           barMaxWidth: 16,
         },
         {
           name: 'Giden',
           type: 'bar',
           data: outgoing,
-          itemStyle: {
-            color: '#10b981', // emerald-500
-            borderRadius: [4, 4, 0, 0],
-          },
+          itemStyle: { color: '#10b981', borderRadius: [4, 4, 0, 0] },
           barMaxWidth: 16,
         },
       ],
     };
-  }, [data]);
+  }, [data, theme.palette.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ height, width: '100%' }}>

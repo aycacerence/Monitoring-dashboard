@@ -9,14 +9,14 @@ function ChartCard({ title, subtitle, action, children, infoText }) {
       <div className="flex items-center justify-between px-5 pt-5 mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+            <h2 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h2>
             {infoText && (
               <Tooltip title={infoText} placement="top">
                 <InfoOutlinedIcon className="text-slate-400 hover:text-slate-600 cursor-help" sx={{ fontSize: 18 }} />
               </Tooltip>
             )}
           </div>
-          {subtitle && <p className="text-sm text-slate-500 mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{subtitle}</p>}
         </div>
         {action && <div className="shrink-0">{action}</div>}
       </div>

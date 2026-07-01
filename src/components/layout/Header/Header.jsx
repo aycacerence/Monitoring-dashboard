@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { Button, Select, MenuItem, Box } from '@mui/material';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { Button, Select, MenuItem, Box, IconButton, Tooltip } from '@mui/material';
+import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice';
 
 const TIME_RANGE_OPTIONS = [
   { value: '1h',  label: 'Son 1 Saat' },
@@ -11,17 +15,12 @@ const TIME_RANGE_OPTIONS = [
 ];
 
 /**
- * Dashboard üst çubuğu — başlık (sol), son güncelleme + filtre + yenile (sağ).
- *
- * @param {object}   props
- * @param {string}   props.title        Sayfa başlığı.
- * @param {string}   [props.lastUpdated] Son güncelleme tam tarih metni.
- * @param {string}   props.timeRange    Seçili zaman aralığı değeri.
- * @param {Function} props.onTimeRangeChange Filtre değişince çağrılır.
- * @param {Function} props.onRefresh    Yenile butonu tıklandığında çalışır.
- * @param {boolean}  props.isRefreshing Yenileme animasyonunu yönetir.
+ * Dashboard üst çubuğu — başlık (sol), son güncelleme + filtre + mod toggle + yenile (sağ).
  */
 function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing }) {
+  const dispatch = useDispatch();
+  const mode = useSelector(selectColorMode);
+
   return (
     <Box
       component="header"
@@ -37,7 +36,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
           </h1>
         </div>
 
-        {/* Sağ: Son güncelleme + Filtre + Yenile */}
+        {/* Sağ: Son güncelleme + Filtre + Mod Toggle + Yenile */}
         <div className="flex items-center gap-2 shrink-0">
 
           {/* Son güncelleme tarihi */}
@@ -74,6 +73,28 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               </MenuItem>
             ))}
           </Select>
+
+          {/* Dark / Light mode toggle */}
+          <Tooltip title={mode === 'dark' ? 'Açık Mod' : 'Koyu Mod'} arrow>
+            <IconButton
+              onClick={() => dispatch(toggleMode())}
+              aria-label={mode === 'dark' ? 'Açık moda geç' : 'Koyu moda geç'}
+              size="small"
+              sx={{
+                backgroundColor: 'rgba(255,255,255,0.15)',
+                color: '#ffffff',
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.25)' },
+                width: 32,
+                height: 32,
+              }}
+            >
+              {mode === 'dark' ? (
+                <LightModeIcon sx={{ fontSize: 18 }} />
+              ) : (
+                <DarkModeIcon sx={{ fontSize: 18 }} />
+              )}
+            </IconButton>
+          </Tooltip>
 
           {/* Yenile butonu */}
           <Button

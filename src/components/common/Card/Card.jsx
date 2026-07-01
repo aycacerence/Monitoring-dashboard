@@ -15,17 +15,17 @@ import { Paper } from '@mui/material';
 function Card({ children, className = '', title, action, noPadding = false, hoverable = false }) {
   const paddingClass = noPadding ? 'overflow-hidden' : 'p-5';
   const hoverClass = hoverable 
-    ? 'transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50' 
+    ? 'transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50' 
     : 'transition-shadow duration-200 hover:shadow-sm';
 
   return (
     <Paper
       elevation={0}
-      className={`rounded-lg border border-slate-200 bg-white shadow-sm ${hoverClass} ${paddingClass} ${className}`}
+      className={`rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a1d27] text-slate-800 dark:text-slate-100 shadow-sm ${hoverClass} ${paddingClass} ${className}`}
     >
       {(title || action) && (
         <div className={`flex items-center justify-between gap-3 ${noPadding ? 'px-5 pt-5' : 'mb-4'}`}>
-          {title && <h2 className="text-sm font-semibold text-slate-900">{title}</h2>}
+          {title && <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{title}</h2>}
           {action && <div className="shrink-0">{action}</div>}
         </div>
       )}

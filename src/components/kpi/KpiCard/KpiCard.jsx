@@ -66,10 +66,10 @@ function KpiCard({
     <Card hoverable className="flex flex-col justify-between h-full">
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
-          <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>
+          <p className="text-sm font-medium text-slate-900 dark:text-white mb-1">{title}</p>
           <div className="flex items-baseline gap-1">
-            <h3 className="text-2xl font-bold text-slate-900">{value}</h3>
-            {unit && <span className="text-sm font-medium text-slate-500">{unit}</span>}
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{value}</h3>
+            {unit && <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{unit}</span>}
           </div>
         </div>
         <div

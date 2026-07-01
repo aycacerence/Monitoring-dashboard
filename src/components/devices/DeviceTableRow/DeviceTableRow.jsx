@@ -9,27 +9,27 @@ const tdBase = { borderBottomColor: '#f1f5f9', padding: '10px 16px' };
 
 function DeviceTableRow({ device }) {
   return (
-    <TableRow hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+    <TableRow hover className="bg-white dark:bg-[#1a1d27] text-slate-800 dark:text-slate-200" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
 
       {/* Cihaz Adı — sticky, her zaman görünür */}
       <TableCell
         component="th"
         scope="row"
-        className="sticky left-0 z-10 bg-white"
-        sx={{ ...tdBase, fontWeight: 600, color: 'text.primary', whiteSpace: 'nowrap' }}
+        className="sticky left-0 z-10 bg-white dark:bg-[#1a1d27] text-slate-800 dark:text-slate-200"
+        sx={{ ...tdBase, fontWeight: 600, whiteSpace: 'nowrap' }}
       >
         {device.name}
       </TableCell>
 
       {/* IP Adresi — her zaman görünür */}
-      <TableCell sx={{ ...tdBase, color: 'text.secondary', whiteSpace: 'nowrap' }}>
+      <TableCell className="text-inherit" sx={{ ...tdBase, whiteSpace: 'nowrap' }}>
         {device.ipAddress}
       </TableCell>
 
       {/* Tür — sadece lg+ */}
       <TableCell
-        className="hidden lg:table-cell"
-        sx={{ ...tdBase, color: 'text.secondary', whiteSpace: 'nowrap' }}
+        className="hidden lg:table-cell text-inherit"
+        sx={{ ...tdBase, whiteSpace: 'nowrap' }}
       >
         {device.type}
       </TableCell>
@@ -76,8 +76,8 @@ function DeviceTableRow({ device }) {
 
       {/* Son Güncelleme — sadece lg+ */}
       <TableCell
-        className="hidden lg:table-cell"
-        sx={{ ...tdBase, color: 'text.secondary', whiteSpace: 'nowrap' }}
+        className="hidden lg:table-cell text-inherit"
+        sx={{ ...tdBase, whiteSpace: 'nowrap' }}
       >
         {formatRelativeTime(device.lastUpdated)}
       </TableCell>

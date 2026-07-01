@@ -1,10 +1,20 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
+import { useTheme } from '@mui/material/styles';
 
 function PieChartWidget({ data, height = '300px' }) {
+  const theme = useTheme();
+
   const option = useMemo(() => {
     if (!data || data.length === 0) return {};
+
+    const isDark = theme.palette.mode === 'dark';
+    const tooltipBg = isDark ? 'rgba(26,29,39,0.97)' : 'rgba(255, 255, 255, 0.95)';
+    const borderColor = isDark ? theme.palette.divider : '#e2e8f0';
+    const textColor = isDark ? theme.palette.text.primary : '#333';
+    const subtextColor = isDark ? theme.palette.text.secondary : '#666';
+    const itemBorderColor = isDark ? theme.palette.background.paper : '#fff';
 
     const chartData = data.map((item) => ({
       name: item.status,
@@ -17,10 +27,10 @@ function PieChartWidget({ data, height = '300px' }) {
     return {
       tooltip: {
         trigger: 'item',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        borderColor: '#e2e8f0',
+        backgroundColor: tooltipBg,
+        borderColor: borderColor,
         borderWidth: 1,
-        textStyle: { color: '#0f172a', fontSize: 12 },
+        textStyle: { color: textColor, fontSize: 12 },
         padding: [8, 12],
         extraCssText: 'box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border-radius: 6px;',
       },
@@ -32,11 +42,11 @@ function PieChartWidget({ data, height = '300px' }) {
         textStyle: {
           fontSize: 24,
           fontWeight: 'bold',
-          color: '#0f172a', // slate-900
+          color: textColor,
         },
         subtextStyle: {
           fontSize: 12,
-          color: '#64748b', // slate-500
+          color: subtextColor,
         },
       },
       series: [
@@ -47,7 +57,7 @@ function PieChartWidget({ data, height = '300px' }) {
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 4,
-            borderColor: '#fff',
+            borderColor: itemBorderColor,
             borderWidth: 2,
           },
           label: {
@@ -60,7 +70,7 @@ function PieChartWidget({ data, height = '300px' }) {
         },
       ],
     };
-  }, [data]);
+  }, [data, theme.palette.mode]);
 
   return (
     <div style={{ height, width: '100%' }}>

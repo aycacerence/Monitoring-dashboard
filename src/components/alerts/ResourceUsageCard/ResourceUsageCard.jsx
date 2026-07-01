@@ -15,11 +15,11 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
   return (
     <Card hoverable className="h-full">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
           <IconComponent fontSize="small" />
         </div>
         <div className="flex-1">
-          <h3 className="text-sm font-semibold text-slate-900">{label}</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{label}</h3>
           <div className="mt-1">
             <TrendIndicator 
               percentage={changePercentage} 
@@ -28,7 +28,7 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
             />
           </div>
         </div>
-        <div className="text-2xl font-bold text-slate-900">
+        <div className="text-2xl font-bold text-slate-900 dark:text-white">
           {percentage}%
         </div>
       </div>
