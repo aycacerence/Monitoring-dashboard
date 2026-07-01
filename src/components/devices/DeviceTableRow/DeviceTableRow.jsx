@@ -9,13 +9,13 @@ const tdBase = { borderBottomColor: '#f1f5f9', padding: '10px 16px' };
 
 function DeviceTableRow({ device }) {
   return (
-    <TableRow hover className="bg-white dark:bg-[#1a1d27] text-slate-800 dark:text-slate-200" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+    <TableRow hover className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
 
       {/* Cihaz Adı — sticky, her zaman görünür */}
       <TableCell
         component="th"
         scope="row"
-        className="sticky left-0 z-10 bg-white dark:bg-[#1a1d27] text-slate-800 dark:text-slate-200"
+        className="sticky left-0 z-10 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
         sx={{ ...tdBase, fontWeight: 600, whiteSpace: 'nowrap' }}
       >
         {device.name}

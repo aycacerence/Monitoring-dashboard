@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
+import { Box } from '@mui/material';
 import Card from '../../common/Card';
 import TrendIndicator from '../../common/TrendIndicator';
 import { getIconComponent } from '../../../utils/iconMap';
@@ -72,12 +73,12 @@ function KpiCard({
             {unit && <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{unit}</span>}
           </div>
         </div>
-        <div
+        <Box
           className="flex items-center justify-center w-10 h-10 rounded-lg shrink-0"
-          style={{ backgroundColor: `${color}15`, color: color }}
+          sx={{ backgroundColor: `${color}15`, color: color }}
         >
           <IconComponent fontSize="small" />
-        </div>
+        </Box>
       </div>
       
       <div className="flex-1 min-h-[40px] my-2">

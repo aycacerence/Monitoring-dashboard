@@ -5,12 +5,12 @@
  */
 export const getCommonChartOptions = (mode, palette) => {
   const isDark = mode === 'dark';
-  const tooltipBg   = isDark ? 'rgba(26,29,39,0.97)' : 'rgba(255,255,255,0.97)';
-  const borderColor = isDark ? palette.divider : '#e2e8f0';
-  const textColor   = isDark ? palette.text.primary : '#0f172a';
-  const axisColor   = isDark ? '#2d3348' : '#e2e8f0';
-  const labelColor  = isDark ? palette.text.secondary : '#64748b';
-  const gridLine    = isDark ? '#1e2235' : '#f1f5f9';
+  const tooltipBg   = palette.background.paper;
+  const borderColor = palette.divider;
+  const textColor   = palette.text.primary;
+  const axisColor   = palette.divider;
+  const labelColor  = palette.text.secondary;
+  const gridLine    = palette.divider;
 
   return {
     tooltip: {
@@ -45,4 +45,5 @@ export const getCommonChartOptions = (mode, palette) => {
 export const commonChartOptions = getCommonChartOptions('light', {
   divider: '#e2e8f0',
   text: { primary: '#0f172a', secondary: '#64748b' },
+  background: { paper: '#ffffff' },
 });

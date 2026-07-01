@@ -23,7 +23,7 @@ function App() {
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
-      <div className="min-h-screen bg-[#f4f6f8] dark:bg-[#0f1117] text-slate-800 dark:text-slate-100 transition-colors duration-300">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
         <DashboardPage />
       </div>
     </ThemeProvider>

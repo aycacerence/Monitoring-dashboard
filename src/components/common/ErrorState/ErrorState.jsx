@@ -23,7 +23,7 @@ function ErrorState({ message, onRetry }) {
           color="error"
           size="small"
           onClick={onRetry}
-          className="bg-white dark:bg-[#1a1d27] dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+          className="bg-white dark:bg-slate-900 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 focus:ring-2 focus:ring-brand-500 focus:outline-none"
           aria-label="Tekrar Dene"
         >
           Tekrar Dene

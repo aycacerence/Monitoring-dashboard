@@ -20,7 +20,7 @@ function SearchInput({ value, onChange, placeholder = 'Ara...' }) {
       placeholder={placeholder}
       onChange={(event) => onChange(event.target.value)}
       InputProps={{
-        className: "bg-white dark:bg-[#1a1d27] border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white",
+        className: "bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white",
         startAdornment: (
           <InputAdornment position="start">
             <SearchIcon fontSize="small" className="text-slate-400 dark:text-slate-500" />

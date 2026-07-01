@@ -21,7 +21,7 @@ function Card({ children, className = '', title, action, noPadding = false, hove
   return (
     <Paper
       elevation={0}
-      className={`rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a1d27] text-slate-800 dark:text-slate-100 shadow-sm ${hoverClass} ${paddingClass} ${className}`}
+      className={`rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm ${hoverClass} ${paddingClass} ${className}`}
     >
       {(title || action) && (
         <div className={`flex items-center justify-between gap-3 ${noPadding ? 'px-5 pt-5' : 'mb-4'}`}>

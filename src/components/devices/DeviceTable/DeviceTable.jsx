@@ -38,7 +38,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
   /* ── Loading skeleton ── */
   if (isLoading) {
     return (
-      <TableContainer className="overflow-x-auto w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-[#1a1d27] [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+      <TableContainer className="overflow-x-auto w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
         <Table sx={{ minWidth: 600 }}>
           <TableHead>
             <TableRow>
@@ -94,18 +94,18 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
 
   /* ── Data table ── */
   return (
-    <TableContainer className="overflow-x-auto w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-[#1a1d27] [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+    <TableContainer className="overflow-x-auto w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
       {/*
         Tablet  (md):  minWidth 600 → Tür / Disk / Son Güncelleme gizli, 5 sütun sığar
         Desktop (lg):  minWidth 900 → tüm 8 sütun görünür
       */}
       <Table sx={{ minWidth: 600 }}>
-        <TableHead className="bg-slate-100 dark:bg-[#242838]">
+        <TableHead className="bg-slate-100 dark:bg-slate-800">
           <TableRow>
             {/* Cihaz Adı — sticky */}
             <TableCell
               scope="col"
-              className="sticky left-0 z-10 bg-slate-100 dark:bg-[#242838] text-slate-700 dark:text-slate-200"
+              className="sticky left-0 z-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
               sx={{ ...thSx, minWidth: 130 }}
             >
               Cihaz Adı

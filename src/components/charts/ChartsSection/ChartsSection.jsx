@@ -16,12 +16,11 @@ function ChartsSection() {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <ChartCard title="Trafik Eğilimi" subtitle="Yükleniyor...">
-            <Skeleton variant="rectangular" height={300} className="w-full rounded" />
-          </ChartCard>
-          <ChartCard title="CPU Kullanımı" subtitle="Yükleniyor...">
-            <Skeleton variant="rectangular" height={300} className="w-full rounded" />
-          </ChartCard>
+          {[{ title: 'Trafik Eğilimi' }, { title: 'CPU Kullanımı' }].map((item, idx) => (
+            <ChartCard key={idx} title={item.title} subtitle="Yükleniyor...">
+              <Skeleton variant="rectangular" height={300} className="w-full rounded" />
+            </ChartCard>
+          ))}
         </div>
         <div className="lg:col-span-1">
           <ChartCard title="Cihaz Durumu" subtitle="Yükleniyor...">
