@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
@@ -6,6 +6,8 @@ import { getCommonChartOptions } from '../../../utils/charts';
 
 function LineChartWidget({ data, seriesName, color, height = '300px' }) {
   const theme = useTheme();
+  const containerRef = useRef(null);
+  const chartRef = useRef(null);
 
   const option = useMemo(() => {
     if (!data || data.length === 0) return {};
@@ -45,12 +47,28 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
     };
   }, [data, seriesName, color, theme.palette.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    const container = containerRef.current;
+    const chart = chartRef.current?.getEchartsInstance?.();
+    if (!container || !chart) return undefined;
+
+    const resizeChart = () => chart.resize();
+    const observer = new ResizeObserver(resizeChart);
+    observer.observe(container);
+    requestAnimationFrame(resizeChart);
+
+    return () => observer.disconnect();
+  }, [option]);
+
   return (
-    <div style={{ height, width: '100%' }}>
+    <div ref={containerRef} className="h-full min-h-[120px] w-full" style={{ height }}>
       <ReactECharts
+        ref={chartRef}
         option={option}
         style={{ height: '100%', width: '100%' }}
         opts={{ renderer: 'svg' }}
+        notMerge
+        lazyUpdate
       />
     </div>
   );

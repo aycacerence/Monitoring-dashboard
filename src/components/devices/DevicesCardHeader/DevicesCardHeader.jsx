@@ -3,8 +3,8 @@ import SearchInput from '../../common/SearchInput/SearchInput';
 
 function DevicesCardHeader({ title, searchTerm, onSearchChange }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 pt-5 mb-4">
-      <h2 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h2>
+    <div className="flex shrink-0 flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 pt-4 mb-3">
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{title}</h2>
       <div className="w-full sm:w-72 shrink-0">
         <SearchInput
           value={searchTerm}

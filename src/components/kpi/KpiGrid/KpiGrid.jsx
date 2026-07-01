@@ -10,9 +10,11 @@ function KpiGrid() {
 
   if (status === 'loading' || status === 'idle') {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:h-full lg:grid-cols-12">
         {[...Array(6)].map((_, index) => (
-          <KpiCardSkeleton key={index} />
+          <div key={index} className="lg:col-span-2 lg:min-h-0">
+            <KpiCardSkeleton />
+          </div>
         ))}
       </div>
     );
@@ -23,20 +25,21 @@ function KpiGrid() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 transition-opacity duration-500 ease-in opacity-100">
+    <div className="grid grid-cols-1 gap-4 transition-opacity duration-500 ease-in opacity-100 md:grid-cols-2 lg:h-full lg:grid-cols-12">
       {kpiData.map((kpi) => (
-        <KpiCard
-          key={kpi.id}
-          title={kpi.title}
-          value={kpi.value}
-          unit={kpi.unit}
-          changePercentage={kpi.changePercentage}
-          changeDirection={kpi.changeDirection}
-          changeLabel={kpi.changeLabel}
-          icon={kpi.icon}
-          sparklineData={kpi.sparklineData}
-          color={kpi.color}
-        />
+        <div key={kpi.id} className="lg:col-span-2 lg:min-h-0">
+          <KpiCard
+            title={kpi.title}
+            value={kpi.value}
+            unit={kpi.unit}
+            changePercentage={kpi.changePercentage}
+            changeDirection={kpi.changeDirection}
+            changeLabel={kpi.changeLabel}
+            icon={kpi.icon}
+            sparklineData={kpi.sparklineData}
+            color={kpi.color}
+          />
+        </div>
       ))}
     </div>
   );

@@ -14,19 +14,14 @@ function ChartsSection() {
 
   if (status === 'loading' || status === 'idle') {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {[{ title: 'Trafik Eğilimi' }, { title: 'CPU Kullanımı' }].map((item, idx) => (
-            <ChartCard key={idx} title={item.title} subtitle="Yükleniyor...">
-              <Skeleton variant="rectangular" height={300} className="w-full rounded" />
+      <div className="grid grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
+        {[{ title: 'CPU Kullanımı' }, { title: 'Ağ Trafiği' }, { title: 'Cihaz Durumu' }].map((item, idx) => (
+          <div key={idx} className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
+            <ChartCard title={item.title} subtitle="Yükleniyor...">
+              <Skeleton variant="rectangular" className="min-h-[120px] w-full rounded lg:h-full" />
             </ChartCard>
-          ))}
-        </div>
-        <div className="lg:col-span-1">
-          <ChartCard title="Cihaz Durumu" subtitle="Yükleniyor...">
-            <Skeleton variant="rectangular" height={300} className="w-full rounded" />
-          </ChartCard>
-        </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -36,17 +31,8 @@ function ChartsSection() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 transition-opacity duration-500 ease-in opacity-100">
-      {/* Sol Sütun: Line ve Bar Grafikleri (Geniş ekranlarda 2/3 alan) */}
-      <div className="lg:col-span-2 flex flex-col gap-6">
-        <ChartCard 
-          title="Ağ Trafik Eğilimi" 
-          subtitle="Son 24 saatlik gelen ve giden ağ trafiği (Mbps)"
-          infoText="Sistemdeki anlık bant genişliği kullanımını gösterir."
-        >
-          <BarChartWidget data={data.networkTraffic} height={300} />
-        </ChartCard>
-
+    <div className="grid grid-cols-1 gap-4 transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
+      <div className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
         <ChartCard 
           title="CPU Kullanım Eğilimi" 
           subtitle="Son 24 saatlik ortalama işlemci yükü"
@@ -56,22 +42,31 @@ function ChartsSection() {
             data={data.cpuUsage} 
             seriesName="CPU Kullanımı" 
             color="#8b5cf6" 
-            height={300} 
+            height="100%" 
           />
         </ChartCard>
       </div>
 
-      {/* Sağ Sütun: Donut Grafiği (Geniş ekranlarda 1/3 alan) */}
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
+        <ChartCard 
+          title="Ağ Trafik Eğilimi" 
+          subtitle="Son 24 saatlik gelen ve giden ağ trafiği (Mbps)"
+          infoText="Sistemdeki anlık bant genişliği kullanımını gösterir."
+        >
+          <BarChartWidget data={data.networkTraffic} height="100%" />
+        </ChartCard>
+      </div>
+
+      <div className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
         <ChartCard 
           title="Cihaz Durum Dağılımı" 
           subtitle="Sistemdeki cihazların anlık erişilebilirlik durumu"
         >
-          <div className="flex flex-col h-full gap-6">
-            <div className="flex-1">
-              <PieChartWidget data={data.deviceStatusDistribution} height={250} />
+          <div className="flex flex-col gap-3 lg:h-full lg:min-h-0 lg:flex-row lg:items-center">
+            <div className="lg:min-h-0 lg:flex-1">
+              <PieChartWidget data={data.deviceStatusDistribution} height="100%" />
             </div>
-            <div className="mt-auto pt-4 border-t border-slate-100">
+            <div className="shrink-0 border-t border-slate-100 pt-3 dark:border-slate-800 lg:w-40 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
               <PieLegendList data={data.deviceStatusDistribution} />
             </div>
           </div>

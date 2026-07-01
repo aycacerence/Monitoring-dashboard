@@ -88,33 +88,35 @@ function DashboardPage() {
         isRefreshing={isRefreshing}
       />
 
-      <PageContainer>
-        <div className="space-y-6">
+      <PageContainer className="min-h-screen overflow-y-auto p-4 lg:h-[calc(100vh-64px)] lg:min-h-0 lg:overflow-hidden">
+        <div
+          className="flex min-h-0 flex-col gap-4 lg:grid lg:h-full lg:grid-cols-12 lg:overflow-hidden lg:[grid-template-rows:max-content_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.5fr)]"
+        >
           {/* KPI Section */}
-          <section>
+          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
             <KpiGrid />
           </section>
 
           {/* Charts Section */}
-          <section>
+          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
             <ChartsSection />
           </section>
 
           {/* Alerts and System Summary Section */}
-          <section>
+          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
             <AlertsSection />
           </section>
 
           {/* Devices and Resource Usage Grid */}
-          <section>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
+            <div className="flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
               {/* Cihaz Tablosu (3/4 alan) - overflow-hidden ile taşma engellendi */}
-              <div className="lg:col-span-3 min-w-0 overflow-hidden">
+              <div className="min-w-0 lg:col-span-8 lg:overflow-hidden">
                 <DevicesSection />
               </div>
               
               {/* Kaynak Kullanımı (1/4 alan) */}
-              <div className="lg:col-span-1">
+              <div className="min-w-0 lg:col-span-4 lg:overflow-hidden">
                 <ResourceUsageList />
               </div>
             </div>

@@ -22,9 +22,9 @@ function DevicesSection() {
   const paginatedDevices = useAppSelector(selectPaginatedDevices);
   const paginationState = useAppSelector(selectDevicesPagination);
 
-  // İstek: Sayfa başına 5 cihaz
+  // Kompakt masaüstü görünümünde alt satırı verimli kullanmak için.
   useEffect(() => {
-    dispatch(setItemsPerPage(5));
+    dispatch(setItemsPerPage(6));
   }, [dispatch]);
 
   const handleSearchChange = (value) => {
@@ -48,20 +48,22 @@ function DevicesSection() {
     : '0 cihaz';
 
   return (
-    <Card noPadding className="transition-opacity duration-500 ease-in opacity-100">
+    <Card noPadding className="flex h-auto flex-col overflow-hidden transition-opacity duration-500 ease-in opacity-100 lg:h-full">
       <DevicesCardHeader 
         title="Cihaz Yönetimi" 
         searchTerm={searchTerm} 
         onSearchChange={handleSearchChange} 
       />
       
-      <DeviceTable 
-        devices={paginatedDevices} 
-        isLoading={status === 'loading' || status === 'idle'} 
-        searchTerm={searchTerm}
-      />
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <DeviceTable 
+          devices={paginatedDevices} 
+          isLoading={status === 'loading' || status === 'idle'} 
+          searchTerm={searchTerm}
+        />
+      </div>
       
-      <div className="flex flex-col sm:flex-row items-center justify-between px-5 py-4 border-t border-slate-100 gap-4">
+      <div className="mt-auto flex shrink-0 flex-col sm:flex-row items-center justify-between px-4 pt-2 pb-2 border-t border-slate-100 gap-3 dark:border-slate-800">
         <span className="text-sm font-medium text-slate-500">
           {status === 'loading' ? 'Hesaplanıyor...' : recordInfoText}
         </span>

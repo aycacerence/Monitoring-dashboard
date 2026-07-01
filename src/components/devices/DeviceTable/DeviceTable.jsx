@@ -27,9 +27,9 @@ const thSx = {
   fontWeight: 600,
   borderBottomColor: '#e2e8f0',
   textTransform: 'uppercase',
-  fontSize: '0.75rem',
+  fontSize: '0.6875rem',
   letterSpacing: '0.05em',
-  padding: '10px 16px',
+  padding: '7px 12px',
   textAlign: 'left',
   whiteSpace: 'nowrap',
 };
@@ -38,7 +38,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
   /* ── Loading skeleton ── */
   if (isLoading) {
     return (
-      <TableContainer className="overflow-x-auto w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+      <TableContainer className="flex-1 overflow-y-auto overflow-x-auto min-h-0 w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
         <Table sx={{ minWidth: 600 }}>
           <TableHead>
             <TableRow>
@@ -59,15 +59,15 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
           </TableHead>
           <TableBody>
             {[...Array(5)].map((_, i) => (
-              <TableRow key={i}>
-                <TableCell sx={{ padding: '10px 16px', borderBottomColor: '#f1f5f9' }}>
+              <TableRow key={i} sx={{ '& td, & th': { py: 1 } }}>
+                <TableCell sx={{ px: 1.5, borderBottomColor: '#f1f5f9' }}>
                   <Skeleton variant="text" width="80%" />
                 </TableCell>
                 {headCells.map((h, j) => (
                   <TableCell
                     key={j}
                     className={h.hideOnMd ? 'hidden lg:table-cell' : ''}
-                    sx={{ padding: '10px 16px', borderBottomColor: '#f1f5f9' }}
+                    sx={{ px: 1.5, borderBottomColor: '#f1f5f9' }}
                   >
                     <Skeleton variant="text" width="60%" />
                   </TableCell>
@@ -94,7 +94,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
 
   /* ── Data table ── */
   return (
-    <TableContainer className="overflow-x-auto w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
+    <TableContainer className="flex-1 overflow-y-auto overflow-x-auto min-h-0 w-full min-w-0 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-50 [&::-webkit-scrollbar-track]:dark:bg-slate-900 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:dark:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full">
       {/*
         Tablet  (md):  minWidth 600 → Tür / Disk / Son Güncelleme gizli, 5 sütun sığar
         Desktop (lg):  minWidth 900 → tüm 8 sütun görünür

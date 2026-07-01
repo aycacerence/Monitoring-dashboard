@@ -1,0 +1,708 @@
+{
+  "kpiData": [
+    {
+      "id": "total-devices",
+      "title": "Toplam Cihaz",
+      "value": 128,
+      "unit": "adet",
+      "changePercentage": 12.5,
+      "changeDirection": "up",
+      "trendColor": "success",
+      "changeLabel": "gecen aya gore",
+      "icon": "devices",
+      "sparklineData": [
+        112,
+        114,
+        116,
+        118,
+        121,
+        124,
+        126,
+        128
+      ],
+      "color": "#4f46e5"
+    },
+    {
+      "id": "online-devices",
+      "title": "Çevrimiçi Cihaz",
+      "value": 102,
+      "unit": "adet",
+      "changePercentage": 8.3,
+      "changeDirection": "up",
+      "trendColor": "success",
+      "changeLabel": "gecen aya gore",
+      "icon": "checkCircle",
+      "sparklineData": [
+        90,
+        91,
+        94,
+        96,
+        97,
+        99,
+        101,
+        102
+      ],
+      "color": "#22c55e"
+    },
+    {
+      "id": "active-alarms",
+      "title": "Aktif Alarm",
+      "value": 7,
+      "unit": "adet",
+      "changePercentage": 16.7,
+      "changeDirection": "up",
+      "trendColor": "success",
+      "changeLabel": "gecen aya gore",
+      "icon": "notifications",
+      "sparklineData": [
+        3,
+        4,
+        4,
+        5,
+        6,
+        5,
+        7,
+        7
+      ],
+      "color": "#ef4444"
+    },
+    {
+      "id": "average-cpu",
+      "title": "CPU Kullanımı",
+      "value": 42,
+      "unit": "%",
+      "changePercentage": 5.4,
+      "changeDirection": "down",
+      "trendColor": "error",
+      "changeLabel": "gecen aya gore",
+      "icon": "cpu",
+      "sparklineData": [
+        48,
+        46,
+        45,
+        44,
+        43,
+        42,
+        41,
+        42
+      ],
+      "color": "#8b5cf6"
+    },
+    {
+      "id": "average-memory",
+      "title": "Bellek Kullanımı",
+      "value": 68,
+      "unit": "%",
+      "changePercentage": 3.1,
+      "changeDirection": "up",
+      "trendColor": "success",
+      "changeLabel": "gecen aya gore",
+      "icon": "memory",
+      "sparklineData": [
+        61,
+        62,
+        63,
+        65,
+        66,
+        67,
+        69,
+        68
+      ],
+      "color": "#f59e0b"
+    },
+    {
+      "id": "average-disk",
+      "title": "Disk Kullanımı",
+      "value": 57,
+      "unit": "%",
+      "changePercentage": 2.8,
+      "changeDirection": "down",
+      "trendColor": "error",
+      "changeLabel": "gecen aya gore",
+      "icon": "storage",
+      "sparklineData": [
+        62,
+        61,
+        60,
+        59,
+        58,
+        58,
+        57,
+        57
+      ],
+      "color": "#c026d3"
+    }
+  ],
+  "cpuUsageData": [
+    {
+      "time": "00:00",
+      "value": 38
+    },
+    {
+      "time": "02:00",
+      "value": 41
+    },
+    {
+      "time": "04:00",
+      "value": 36
+    },
+    {
+      "time": "06:00",
+      "value": 44
+    },
+    {
+      "time": "08:00",
+      "value": 52
+    },
+    {
+      "time": "10:00",
+      "value": 47
+    },
+    {
+      "time": "12:00",
+      "value": 58
+    },
+    {
+      "time": "14:00",
+      "value": 63
+    },
+    {
+      "time": "16:00",
+      "value": 55
+    },
+    {
+      "time": "18:00",
+      "value": 49
+    },
+    {
+      "time": "20:00",
+      "value": 46
+    },
+    {
+      "time": "22:00",
+      "value": 42
+    }
+  ],
+  "networkTrafficData": [
+    {
+      "time": "00:00",
+      "incoming": 820,
+      "outgoing": 540
+    },
+    {
+      "time": "02:00",
+      "incoming": 760,
+      "outgoing": 510
+    },
+    {
+      "time": "04:00",
+      "incoming": 690,
+      "outgoing": 480
+    },
+    {
+      "time": "06:00",
+      "incoming": 880,
+      "outgoing": 620
+    },
+    {
+      "time": "08:00",
+      "incoming": 1120,
+      "outgoing": 790
+    },
+    {
+      "time": "10:00",
+      "incoming": 1260,
+      "outgoing": 850
+    },
+    {
+      "time": "12:00",
+      "incoming": 1350,
+      "outgoing": 910
+    },
+    {
+      "time": "14:00",
+      "incoming": 1180,
+      "outgoing": 830
+    },
+    {
+      "time": "16:00",
+      "incoming": 1420,
+      "outgoing": 960
+    },
+    {
+      "time": "18:00",
+      "incoming": 1300,
+      "outgoing": 870
+    },
+    {
+      "time": "20:00",
+      "incoming": 980,
+      "outgoing": 690
+    },
+    {
+      "time": "22:00",
+      "incoming": 910,
+      "outgoing": 640
+    }
+  ],
+  "deviceStatusDistribution": [
+    {
+      "status": "Çevrimiçi",
+      "count": 102,
+      "color": "#22c55e"
+    },
+    {
+      "status": "Uyarı",
+      "count": 18,
+      "color": "#f59e0b"
+    },
+    {
+      "status": "Çevrimdışı",
+      "count": 8,
+      "color": "#ef4444"
+    }
+  ],
+  "alertsData": [
+    {
+      "id": "alert-001",
+      "deviceName": "FW-EDGE-01",
+      "message": "Dis agdan gelen anormal port tarama aktivitesi tespit edildi; 443 ve 3389 portlarina yogun deneme yapiliyor.",
+      "severity": "critical",
+      "timestamp": "2026-06-30T07:42:18+03:00",
+      "isResolved": false
+    },
+    {
+      "id": "alert-002",
+      "deviceName": "SRV-APP-03",
+      "message": "CPU kullanimi 15 dakikadir yuzde 92 uzerinde seyrediyor; uygulama kuyruk gecikmesi artiyor.",
+      "severity": "warning",
+      "timestamp": "2026-06-30T07:18:44+03:00",
+      "isResolved": false
+    },
+    {
+      "id": "alert-003",
+      "deviceName": "RTR-CORE-01",
+      "message": "Beklenmeyen ulke kaynakli yuksek hacimli outbound trafik tespit edildi; veri sizintisi ihtimali incelenmeli.",
+      "severity": "critical",
+      "timestamp": "2026-06-30T06:55:03+03:00",
+      "isResolved": false
+    },
+    {
+      "id": "alert-004",
+      "deviceName": "DB-PRD-01",
+      "message": "Veritabani disk kullanim orani yuzde 86 seviyesine ulasti; log arsivleme politikasi kontrol edilmeli.",
+      "severity": "warning",
+      "timestamp": "2026-06-30T06:21:36+03:00",
+      "isResolved": false
+    },
+    {
+      "id": "alert-005",
+      "deviceName": "VPN-GW-01",
+      "message": "Ayni kullanici hesabiyla 5 basarisiz MFA denemesi yapildi; yetkisiz erisim girisimi olabilir.",
+      "severity": "critical",
+      "timestamp": "2026-06-30T05:47:29+03:00",
+      "isResolved": false
+    },
+    {
+      "id": "alert-006",
+      "deviceName": "SW-ACCESS-07",
+      "message": "Switch portunda beklenmeyen MAC adresi degisikligi algilandi; fiziksel ag erisimi dogrulanmali.",
+      "severity": "info",
+      "timestamp": "2026-06-30T04:12:50+03:00",
+      "isResolved": true
+    },
+    {
+      "id": "alert-007",
+      "deviceName": "IDS-01",
+      "message": "Imza tabanli saldiri tespiti: olasi SQL injection payloadlari web uygulama trafiginde tekrarli olarak goruldu.",
+      "severity": "warning",
+      "timestamp": "2026-06-29T23:38:11+03:00",
+      "isResolved": false
+    }
+  ],
+  "systemSummaryData": {
+    "systemStatus": "warning",
+    "activeAlarms": 7,
+    "warnings": 18,
+    "maintenanceCount": 2,
+    "uptime": "15 gün 7 saat",
+    "totalTraffic": "2.45 TB",
+    "criticalEvents": 3,
+    "successfulOperations": 1245
+  },
+  "resourceUsageData": [
+    {
+      "id": "cpu-usage",
+      "label": "CPU Kullanımı",
+      "percentage": 42,
+      "changePercentage": 3.1,
+      "changeDirection": "up",
+      "icon": "cpu"
+    },
+    {
+      "id": "memory-usage",
+      "label": "Bellek Kullanımı",
+      "percentage": 68,
+      "changePercentage": 6.4,
+      "changeDirection": "up",
+      "icon": "memory"
+    },
+    {
+      "id": "disk-usage",
+      "label": "Disk Kullanımı",
+      "percentage": 57,
+      "changePercentage": 2.8,
+      "changeDirection": "down",
+      "icon": "storage"
+    }
+  ],
+  "devicesData": [
+    {
+      "id": "device-001",
+      "name": "SRV-001",
+      "ipAddress": "192.168.10.10",
+      "type": "Sunucu",
+      "status": "online",
+      "cpuUsage": 34,
+      "memoryUsage": 62,
+      "diskUsage": 45,
+      "lastUpdated": "2026-06-30T07:45:00+03:00"
+    },
+    {
+      "id": "device-002",
+      "name": "SRV-002",
+      "ipAddress": "192.168.10.11",
+      "type": "Sunucu",
+      "status": "online",
+      "cpuUsage": 42,
+      "memoryUsage": 55,
+      "diskUsage": 51,
+      "lastUpdated": "2026-06-30T07:44:30+03:00"
+    },
+    {
+      "id": "device-003",
+      "name": "SRV-APP-03",
+      "ipAddress": "192.168.10.12",
+      "type": "Sunucu",
+      "status": "warning",
+      "cpuUsage": 92,
+      "memoryUsage": 78,
+      "diskUsage": 64,
+      "lastUpdated": "2026-06-30T07:43:42+03:00"
+    },
+    {
+      "id": "device-004",
+      "name": "SRV-WEB-04",
+      "ipAddress": "192.168.10.13",
+      "type": "Sunucu",
+      "status": "online",
+      "cpuUsage": 48,
+      "memoryUsage": 67,
+      "diskUsage": 39,
+      "lastUpdated": "2026-06-30T07:42:10+03:00"
+    },
+    {
+      "id": "device-005",
+      "name": "SRV-BCK-05",
+      "ipAddress": "192.168.10.14",
+      "type": "Sunucu",
+      "status": "online",
+      "cpuUsage": 29,
+      "memoryUsage": 58,
+      "diskUsage": 73,
+      "lastUpdated": "2026-06-30T07:41:55+03:00"
+    },
+    {
+      "id": "device-006",
+      "name": "DB-PRD-01",
+      "ipAddress": "192.168.20.10",
+      "type": "Veritabani",
+      "status": "warning",
+      "cpuUsage": 64,
+      "memoryUsage": 81,
+      "diskUsage": 86,
+      "lastUpdated": "2026-06-30T07:40:19+03:00"
+    },
+    {
+      "id": "device-007",
+      "name": "DB-RPT-02",
+      "ipAddress": "192.168.20.11",
+      "type": "Veritabani",
+      "status": "online",
+      "cpuUsage": 37,
+      "memoryUsage": 72,
+      "diskUsage": 58,
+      "lastUpdated": "2026-06-30T07:39:58+03:00"
+    },
+    {
+      "id": "device-008",
+      "name": "DB-DEV-03",
+      "ipAddress": "192.168.20.12",
+      "type": "Veritabani",
+      "status": "offline",
+      "cpuUsage": 0,
+      "memoryUsage": 0,
+      "diskUsage": null,
+      "lastUpdated": "2026-06-30T06:58:04+03:00"
+    },
+    {
+      "id": "device-009",
+      "name": "SW-CORE-01",
+      "ipAddress": "192.168.30.1",
+      "type": "Switch",
+      "status": "online",
+      "cpuUsage": 18,
+      "memoryUsage": 41,
+      "diskUsage": 22,
+      "lastUpdated": "2026-06-30T07:45:12+03:00"
+    },
+    {
+      "id": "device-010",
+      "name": "SW-CORE-02",
+      "ipAddress": "192.168.30.2",
+      "type": "Switch",
+      "status": "online",
+      "cpuUsage": 21,
+      "memoryUsage": 44,
+      "diskUsage": 25,
+      "lastUpdated": "2026-06-30T07:44:59+03:00"
+    },
+    {
+      "id": "device-011",
+      "name": "SW-ACCESS-01",
+      "ipAddress": "192.168.31.1",
+      "type": "Switch",
+      "status": "online",
+      "cpuUsage": 15,
+      "memoryUsage": 32,
+      "diskUsage": 18,
+      "lastUpdated": "2026-06-30T07:43:16+03:00"
+    },
+    {
+      "id": "device-012",
+      "name": "SW-ACCESS-02",
+      "ipAddress": "192.168.31.2",
+      "type": "Switch",
+      "status": "online",
+      "cpuUsage": 17,
+      "memoryUsage": 35,
+      "diskUsage": 20,
+      "lastUpdated": "2026-06-30T07:42:49+03:00"
+    },
+    {
+      "id": "device-013",
+      "name": "SW-ACCESS-03",
+      "ipAddress": "192.168.31.3",
+      "type": "Switch",
+      "status": "warning",
+      "cpuUsage": 46,
+      "memoryUsage": 61,
+      "diskUsage": 27,
+      "lastUpdated": "2026-06-30T07:41:08+03:00"
+    },
+    {
+      "id": "device-014",
+      "name": "SW-ACCESS-04",
+      "ipAddress": "192.168.31.4",
+      "type": "Switch",
+      "status": "online",
+      "cpuUsage": 14,
+      "memoryUsage": 29,
+      "diskUsage": 19,
+      "lastUpdated": "2026-06-30T07:39:24+03:00"
+    },
+    {
+      "id": "device-015",
+      "name": "SW-ACCESS-05",
+      "ipAddress": "192.168.31.5",
+      "type": "Switch",
+      "status": "online",
+      "cpuUsage": 16,
+      "memoryUsage": 33,
+      "diskUsage": 21,
+      "lastUpdated": "2026-06-30T07:38:44+03:00"
+    },
+    {
+      "id": "device-016",
+      "name": "SW-ACCESS-06",
+      "ipAddress": "192.168.31.6",
+      "type": "Switch",
+      "status": "offline",
+      "cpuUsage": 0,
+      "memoryUsage": 0,
+      "diskUsage": null,
+      "lastUpdated": "2026-06-30T05:10:37+03:00"
+    },
+    {
+      "id": "device-017",
+      "name": "SW-ACCESS-07",
+      "ipAddress": "192.168.31.7",
+      "type": "Switch",
+      "status": "warning",
+      "cpuUsage": 38,
+      "memoryUsage": 53,
+      "diskUsage": 26,
+      "lastUpdated": "2026-06-30T07:37:28+03:00"
+    },
+    {
+      "id": "device-018",
+      "name": "FW-EDGE-01",
+      "ipAddress": "10.10.0.1",
+      "type": "Firewall",
+      "status": "warning",
+      "cpuUsage": 72,
+      "memoryUsage": 69,
+      "diskUsage": 48,
+      "lastUpdated": "2026-06-30T07:45:18+03:00"
+    },
+    {
+      "id": "device-019",
+      "name": "FW-EDGE-02",
+      "ipAddress": "10.10.0.2",
+      "type": "Firewall",
+      "status": "online",
+      "cpuUsage": 44,
+      "memoryUsage": 57,
+      "diskUsage": 42,
+      "lastUpdated": "2026-06-30T07:44:05+03:00"
+    },
+    {
+      "id": "device-020",
+      "name": "FW-DMZ-01",
+      "ipAddress": "10.10.1.1",
+      "type": "Firewall",
+      "status": "online",
+      "cpuUsage": 39,
+      "memoryUsage": 63,
+      "diskUsage": 40,
+      "lastUpdated": "2026-06-30T07:43:30+03:00"
+    },
+    {
+      "id": "device-021",
+      "name": "FW-BRANCH-01",
+      "ipAddress": "10.20.0.1",
+      "type": "Firewall",
+      "status": "offline",
+      "cpuUsage": 0,
+      "memoryUsage": 0,
+      "diskUsage": null,
+      "lastUpdated": "2026-06-30T04:52:13+03:00"
+    },
+    {
+      "id": "device-022",
+      "name": "RTR-CORE-01",
+      "ipAddress": "172.16.0.1",
+      "type": "Router",
+      "status": "warning",
+      "cpuUsage": 67,
+      "memoryUsage": 71,
+      "diskUsage": 34,
+      "lastUpdated": "2026-06-30T07:45:09+03:00"
+    },
+    {
+      "id": "device-023",
+      "name": "RTR-CORE-02",
+      "ipAddress": "172.16.0.2",
+      "type": "Router",
+      "status": "online",
+      "cpuUsage": 31,
+      "memoryUsage": 49,
+      "diskUsage": 29,
+      "lastUpdated": "2026-06-30T07:44:47+03:00"
+    },
+    {
+      "id": "device-024",
+      "name": "RTR-WAN-01",
+      "ipAddress": "172.16.1.1",
+      "type": "Router",
+      "status": "online",
+      "cpuUsage": 36,
+      "memoryUsage": 54,
+      "diskUsage": 31,
+      "lastUpdated": "2026-06-30T07:43:11+03:00"
+    },
+    {
+      "id": "device-025",
+      "name": "RTR-WAN-02",
+      "ipAddress": "172.16.1.2",
+      "type": "Router",
+      "status": "online",
+      "cpuUsage": 28,
+      "memoryUsage": 47,
+      "diskUsage": 28,
+      "lastUpdated": "2026-06-30T07:42:33+03:00"
+    },
+    {
+      "id": "device-026",
+      "name": "SRV-AUTH-01",
+      "ipAddress": "192.168.40.10",
+      "type": "Sunucu",
+      "status": "online",
+      "cpuUsage": 53,
+      "memoryUsage": 74,
+      "diskUsage": 52,
+      "lastUpdated": "2026-06-30T07:41:51+03:00"
+    },
+    {
+      "id": "device-027",
+      "name": "SRV-LOG-01",
+      "ipAddress": "192.168.40.11",
+      "type": "Sunucu",
+      "status": "warning",
+      "cpuUsage": 61,
+      "memoryUsage": 79,
+      "diskUsage": 88,
+      "lastUpdated": "2026-06-30T07:40:05+03:00"
+    },
+    {
+      "id": "device-028",
+      "name": "SRV-MON-01",
+      "ipAddress": "192.168.40.12",
+      "type": "Sunucu",
+      "status": "online",
+      "cpuUsage": 45,
+      "memoryUsage": 66,
+      "diskUsage": 50,
+      "lastUpdated": "2026-06-30T07:39:12+03:00"
+    },
+    {
+      "id": "device-029",
+      "name": "DB-BCK-01",
+      "ipAddress": "192.168.20.20",
+      "type": "Veritabani",
+      "status": "online",
+      "cpuUsage": 33,
+      "memoryUsage": 64,
+      "diskUsage": 69,
+      "lastUpdated": "2026-06-30T07:38:27+03:00"
+    },
+    {
+      "id": "device-030",
+      "name": "VPN-GW-01",
+      "ipAddress": "10.30.0.1",
+      "type": "Firewall",
+      "status": "warning",
+      "cpuUsage": 58,
+      "memoryUsage": 73,
+      "diskUsage": 46,
+      "lastUpdated": "2026-06-30T07:37:46+03:00"
+    }
+  ],
+  "themeData": {
+    "colors": {
+      "primary": "#2563eb",
+      "success": "#22c55e",
+      "warning": "#f59e0b",
+      "error": "#ef4444",
+      "info": "#3b82f6",
+      "background": "#f8fafc"
+    },
+    "iconMap": {
+      "devices": "DevicesIcon",
+      "cpu": "MemoryIcon",
+      "storage": "StorageIcon",
+      "alarm": "WarningAmberIcon",
+      "network": "SettingsEthernetIcon"
+    }
+  }
+}

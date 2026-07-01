@@ -10,9 +10,9 @@ function ResourceUsageList() {
 
   if (status === 'loading' || status === 'idle') {
     return (
-      <div className="flex flex-col gap-6 h-full">
+      <div className="grid gap-4 lg:h-full lg:min-h-0 lg:grid-rows-3">
         {[...Array(3)].map((_, index) => (
-          <Skeleton key={index} variant="rectangular" className="w-full h-[120px] rounded-lg" />
+          <Skeleton key={index} variant="rectangular" className="min-h-[96px] w-full rounded-lg lg:h-full lg:min-h-0" />
         ))}
       </div>
     );
@@ -23,7 +23,7 @@ function ResourceUsageList() {
   }
 
   return (
-    <div className="flex flex-col gap-6 h-full transition-opacity duration-500 ease-in opacity-100">
+    <div className="grid gap-4 overflow-hidden transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-rows-3">
       {data.map((item) => (
         <ResourceUsageCard
           key={item.id}

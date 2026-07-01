@@ -15,13 +15,13 @@ import { Paper } from '@mui/material';
 function Card({ children, className = '', title, action, noPadding = false, hoverable = false }) {
   const paddingClass = noPadding ? 'overflow-hidden' : 'p-5';
   const hoverClass = hoverable 
-    ? 'transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50' 
+    ? 'transition-shadow duration-200 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50' 
     : 'transition-shadow duration-200 hover:shadow-sm';
 
   return (
     <Paper
       elevation={0}
-      className={`rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm ${hoverClass} ${paddingClass} ${className}`}
+      className={`flex h-auto flex-col overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm lg:h-full ${hoverClass} ${paddingClass} ${className}`}
     >
       {(title || action) && (
         <div className={`flex items-center justify-between gap-3 ${noPadding ? 'px-5 pt-5' : 'mb-4'}`}>
@@ -29,7 +29,7 @@ function Card({ children, className = '', title, action, noPadding = false, hove
           {action && <div className="shrink-0">{action}</div>}
         </div>
       )}
-      <div className={noPadding && title ? 'pt-4' : ''}>{children}</div>
+      <div className={`flex flex-1 min-h-0 flex-col ${noPadding && title ? 'pt-4' : ''}`}>{children}</div>
     </Paper>
   );
 }

@@ -17,9 +17,9 @@ function AlertsSection() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Skeleton variant="rectangular" height={400} className="w-full rounded-lg" />
-        <Skeleton variant="rectangular" height={400} className="w-full rounded-lg" />
+      <div className="grid grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:grid-cols-12">
+        <Skeleton variant="rectangular" className="min-h-[120px] w-full rounded-lg lg:col-span-6 lg:h-full" />
+        <Skeleton variant="rectangular" className="min-h-[120px] w-full rounded-lg lg:col-span-6 lg:h-full" />
       </div>
     );
   }
@@ -41,12 +41,13 @@ function AlertsSection() {
   ] : [];
 
   const unresolvedAlerts = alertsData.filter(alert => !alert.isResolved);
+  const visibleAlerts = alertsData.slice(0, 4);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-opacity duration-500 ease-in opacity-100">
-      <div className="lg:col-span-1">
+    <div className="grid grid-cols-1 gap-4 transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
+      <div className="lg:col-span-6 lg:min-h-0 lg:overflow-hidden">
         <AlertsCard count={unresolvedAlerts.length}>
-          {alertsData.map((alert) => (
+          {visibleAlerts.map((alert) => (
             <AlertItem
               key={alert.id}
               deviceName={alert.deviceName}
@@ -58,7 +59,7 @@ function AlertsSection() {
         </AlertsCard>
       </div>
       
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-6 lg:min-h-0 lg:overflow-hidden">
         <SystemSummaryCard items={summaryItems} />
       </div>
     </div>

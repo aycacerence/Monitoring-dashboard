@@ -13,27 +13,33 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
   else if (percentage >= 60) progressColor = '#f59e0b'; // amber-500
 
   return (
-    <Card hoverable className="h-full">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
-          <IconComponent fontSize="small" />
-        </div>
-        <div className="flex-1">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{label}</h3>
-          <div className="mt-1">
-            <TrendIndicator 
-              percentage={changePercentage} 
-              direction={changeDirection} 
-              label="önceki aya göre" 
-            />
+    <Card hoverable className="h-auto lg:h-full" noPadding>
+      <div className="flex h-auto flex-col justify-center p-3 lg:h-full">
+        <div className="flex justify-between items-start mb-2">
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
+              <IconComponent fontSize="small" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-white">{label}</h3>
+              <div className="mt-1">
+                <TrendIndicator 
+                  percentage={changePercentage} 
+                  direction={changeDirection} 
+                  label="önceki aya göre" 
+                />
+              </div>
+            </div>
+          </div>
+          <div className="shrink-0 pl-3 text-xl font-bold leading-none text-slate-900 dark:text-white">
+            {percentage}%
           </div>
         </div>
-        <div className="text-2xl font-bold text-slate-900 dark:text-white">
-          {percentage}%
+        
+        <div className="w-full mt-auto">
+          <ProgressBar value={percentage} color={progressColor} showPercentage={false} />
         </div>
       </div>
-      
-      <ProgressBar value={percentage} color={progressColor} />
     </Card>
   );
 }

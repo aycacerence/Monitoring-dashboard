@@ -5,11 +5,11 @@ import ProgressBar from '../../common/ProgressBar/ProgressBar';
 import { formatRelativeTime } from '../../../utils/formatRelativeTime';
 
 // Ortak body hücre padding — DeviceTable thSx ile senkronize
-const tdBase = { borderBottomColor: '#f1f5f9', padding: '10px 16px' };
+const tdBase = { borderBottomColor: '#f1f5f9', px: 1.5, py: 1 };
 
 function DeviceTableRow({ device }) {
   return (
-    <TableRow hover className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200" sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+    <TableRow hover className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200" sx={{ '& td, & th': { py: 1 }, '&:last-child td, &:last-child th': { border: 0 } }}>
 
       {/* Cihaz Adı — sticky, her zaman görünür */}
       <TableCell

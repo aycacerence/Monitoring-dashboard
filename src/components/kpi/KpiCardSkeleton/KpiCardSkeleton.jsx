@@ -3,7 +3,7 @@ import Card from '../../common/Card';
 
 function KpiCardSkeleton() {
   return (
-    <Card className="flex flex-col justify-between h-full">
+    <Card className="flex h-auto flex-col justify-between lg:h-full">
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <Skeleton variant="text" width="60%" height={20} className="mb-1" />
