@@ -105,7 +105,6 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
           <Box className="flex items-center">
             <Button
               onClick={handleClick}
-              startIcon={<AccountCircleIcon />}
               sx={{
                 color: 'white',
                 textTransform: 'none',
@@ -114,10 +113,14 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
                 backgroundColor: 'rgba(255,255,255,0.1)',
                 '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' },
                 borderRadius: '8px',
-                px: 2,
+                px: { xs: 1, sm: 2 },
+                minWidth: 'auto'
               }}
             >
-              {role === 'admin' ? t('auth.admin', 'Admin') : t('auth.user', 'Kullanıcı')}
+              <AccountCircleIcon sx={{ mr: { xs: 0, sm: 1 } }} />
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                {role === 'admin' ? t('auth.admin', 'Admin') : t('auth.user', 'Kullanıcı')}
+              </Box>
             </Button>
             <Menu
               anchorEl={anchorEl}
@@ -142,7 +145,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
 
           {/* Dil Seçici (Toggle) */}
           <Box className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
-            <TranslateIcon fontSize="small" sx={{ color: 'white', ml: 1 }} />
+            <TranslateIcon fontSize="small" sx={{ color: 'white', ml: 1, display: { xs: 'none', sm: 'block' } }} />
             <ToggleButtonGroup
               value={i18nInstance.language.startsWith('en') ? 'en' : 'tr'}
               exclusive
@@ -206,12 +209,6 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
             size="small"
             onClick={onRefresh}
             aria-label="Verileri Yenile"
-            startIcon={
-              <RefreshIcon
-                fontSize="small"
-                className={isRefreshing ? 'animate-spin' : ''}
-              />
-            }
             sx={{
               backgroundColor: '#ffffff',
               color: '#000000',
@@ -222,9 +219,17 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               textTransform: 'none',
               borderRadius: '8px',
               minWidth: 'auto',
+              px: { xs: 1, sm: 2 },
             }}
           >
-            {t('header.refresh')}
+            <RefreshIcon
+              fontSize="small"
+              className={isRefreshing ? 'animate-spin' : ''}
+              sx={{ mr: { xs: 0, sm: 1 } }}
+            />
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+              {t('header.refresh')}
+            </Box>
           </Button>
         </div>
       </div>
