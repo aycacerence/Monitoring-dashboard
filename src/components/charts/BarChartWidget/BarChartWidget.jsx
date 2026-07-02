@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
+import { useTranslation } from 'react-i18next';
 
 function BarChartWidget({ data, height = '300px' }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const containerRef = useRef(null);
   const chartRef = useRef(null);
@@ -20,7 +22,7 @@ function BarChartWidget({ data, height = '300px' }) {
     return {
       ...base,
       legend: {
-        data: ['Gelen', 'Giden'],
+        data: [t('charts.incoming', 'Gelen'), t('charts.outgoing', 'Giden')],
         top: 0,
         right: 0,
         icon: 'circle',
@@ -41,14 +43,14 @@ function BarChartWidget({ data, height = '300px' }) {
       xAxis: { ...base.xAxis, data: times },
       series: [
         {
-          name: 'Gelen',
+          name: t('charts.incoming', 'Gelen'),
           type: 'bar',
           data: incoming,
           itemStyle: { color: '#6366f1', borderRadius: [4, 4, 0, 0] },
           barMaxWidth: 16,
         },
         {
-          name: 'Giden',
+          name: t('charts.outgoing', 'Giden'),
           type: 'bar',
           data: outgoing,
           itemStyle: { color: '#10b981', borderRadius: [4, 4, 0, 0] },
@@ -56,7 +58,7 @@ function BarChartWidget({ data, height = '300px' }) {
         },
       ],
     };
-  }, [data, theme.palette.mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [data, theme.palette.mode, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const container = containerRef.current;

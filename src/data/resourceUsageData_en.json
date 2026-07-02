@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cpu-usage",
+    "label": "CPU Usage",
+    "percentage": 42,
+    "changePercentage": 3.1,
+    "changeDirection": "up",
+    "icon": "cpu"
+  },
+  {
+    "id": "memory-usage",
+    "label": "Memory Usage",
+    "percentage": 68,
+    "changePercentage": 6.4,
+    "changeDirection": "up",
+    "icon": "memory"
+  },
+  {
+    "id": "disk-usage",
+    "label": "Disk Usage",
+    "percentage": 57,
+    "changePercentage": 2.8,
+    "changeDirection": "down",
+    "icon": "storage"
+  }
+]

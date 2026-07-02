@@ -6,8 +6,10 @@ import SystemSummaryCard from '../SystemSummaryCard/SystemSummaryCard';
 import ErrorState from '../../common/ErrorState/ErrorState';
 import { fetchAlerts } from '../../../features/dashboard/alertsSlice';
 import { fetchSystemSummary } from '../../../features/dashboard/systemSummarySlice';
+import { useTranslation } from 'react-i18next';
 
 function AlertsSection() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { data: alertsData, status: alertsStatus, error: alertsError } = useAppSelector((state) => state.alerts);
   const { data: summaryData, status: summaryStatus, error: summaryError } = useAppSelector((state) => state.systemSummary);
@@ -34,10 +36,10 @@ function AlertsSection() {
   }
 
   const summaryItems = summaryData ? [
-    { label: 'Kesintisiz Çalışma', value: summaryData.uptime },
-    { label: 'Toplam Trafik', value: summaryData.totalTraffic },
-    { label: 'Kritik Olaylar', value: summaryData.criticalEvents, sublabel: 'Son 24 saat' },
-    { label: 'Başarılı İşlemler', value: summaryData.successfulOperations, sublabel: 'Saatlik ortalama' },
+    { label: t('Kesintisiz Çalışma'), value: summaryData.uptime },
+    { label: t('Toplam Trafik'), value: summaryData.totalTraffic },
+    { label: t('Kritik Olaylar'), value: summaryData.criticalEvents, sublabel: t('Son 24 saat') },
+    { label: t('Başarılı İşlemler'), value: summaryData.successfulOperations, sublabel: t('Saatlik ortalama') },
   ] : [];
 
   const unresolvedAlerts = alertsData.filter(alert => !alert.isResolved);

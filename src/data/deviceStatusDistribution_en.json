@@ -1,0 +1,5 @@
+[
+  { "status": "Online", "count": 102, "color": "#22c55e" },
+  { "status": "Warning", "count": 18, "color": "#f59e0b" },
+  { "status": "Offline", "count": 8, "color": "#ef4444" }
+]

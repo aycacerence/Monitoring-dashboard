@@ -1,0 +1,58 @@
+[
+  {
+    "id": "alert-001",
+    "deviceName": "FW-EDGE-01",
+    "message": "Abnormal port scan activity detected from external network; high volume attempts on ports 443 and 3389.",
+    "severity": "critical",
+    "timestamp": "2026-06-30T07:42:18+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-002",
+    "deviceName": "SRV-APP-03",
+    "message": "CPU usage has been over 92 percent for 15 minutes; application queue latency is increasing.",
+    "severity": "warning",
+    "timestamp": "2026-06-30T07:18:44+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-003",
+    "deviceName": "RTR-CORE-01",
+    "message": "Unexpected high volume outbound traffic to foreign country detected; potential data leak should be investigated.",
+    "severity": "critical",
+    "timestamp": "2026-06-30T06:55:03+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-004",
+    "deviceName": "DB-PRD-01",
+    "message": "Database disk usage reached 86 percent; log archiving policy should be checked.",
+    "severity": "warning",
+    "timestamp": "2026-06-30T06:21:36+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-005",
+    "deviceName": "VPN-GW-01",
+    "message": "5 failed MFA attempts from the same user account; possible unauthorized access attempt.",
+    "severity": "critical",
+    "timestamp": "2026-06-30T05:47:29+03:00",
+    "isResolved": false
+  },
+  {
+    "id": "alert-006",
+    "deviceName": "SW-ACCESS-07",
+    "message": "Unexpected MAC address change detected on switch port; physical network access should be verified.",
+    "severity": "info",
+    "timestamp": "2026-06-30T04:12:50+03:00",
+    "isResolved": true
+  },
+  {
+    "id": "alert-007",
+    "deviceName": "IDS-01",
+    "message": "Signature-based attack detection: possible SQL injection payloads repeatedly seen in web application traffic.",
+    "severity": "warning",
+    "timestamp": "2026-06-29T23:38:11+03:00",
+    "isResolved": false
+  }
+]

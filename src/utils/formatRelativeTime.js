@@ -5,7 +5,7 @@
  * @param {string|Date} dateString - Hedef tarih
  * @returns {string} Örn: "5 dakika önce", "2 saat önce"
  */
-export function formatRelativeTime(dateString) {
+export function formatRelativeTime(dateString, lang = 'tr') {
   if (!dateString) return '';
 
   const date = new Date(dateString);
@@ -14,9 +14,11 @@ export function formatRelativeTime(dateString) {
   // Zaman farkı milisaniye cinsinden
   const diffInMs = now - date;
   
+  const isEn = lang && lang.startsWith('en');
+
   // Gelecekteki bir tarih veya çok yakın zaman için koruma
   if (diffInMs < 1000) {
-    return 'Şimdi';
+    return isEn ? 'Just now' : 'Şimdi';
   }
 
   const diffInSeconds = Math.floor(diffInMs / 1000);
@@ -25,16 +27,16 @@ export function formatRelativeTime(dateString) {
   const diffInDays = Math.floor(diffInHours / 24);
 
   if (diffInSeconds < 60) {
-    return `${diffInSeconds} saniye önce`;
+    return isEn ? `${diffInSeconds} seconds ago` : `${diffInSeconds} saniye önce`;
   }
   
   if (diffInMinutes < 60) {
-    return `${diffInMinutes} dakika önce`;
+    return isEn ? `${diffInMinutes} minutes ago` : `${diffInMinutes} dakika önce`;
   }
   
   if (diffInHours < 24) {
-    return `${diffInHours} saat önce`;
+    return isEn ? `${diffInHours} hours ago` : `${diffInHours} saat önce`;
   }
   
-  return `${diffInDays} gün önce`;
+  return isEn ? `${diffInDays} days ago` : `${diffInDays} gün önce`;
 }

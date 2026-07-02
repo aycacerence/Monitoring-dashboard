@@ -4,8 +4,10 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { Button, Select, MenuItem, Box, IconButton, Tooltip } from '@mui/material';
+import { Button, Select, MenuItem, Box, IconButton, Tooltip, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import TranslateIcon from '@mui/icons-material/Translate';
 import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice';
+import { useTranslation } from 'react-i18next';
 
 const TIME_RANGE_OPTIONS = [
   { value: '1h',  label: 'Son 1 Saat' },
@@ -20,6 +22,7 @@ const TIME_RANGE_OPTIONS = [
 function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing }) {
   const dispatch = useDispatch();
   const mode = useSelector(selectColorMode);
+  const { t, i18n: i18nInstance } = useTranslation();
 
   return (
     <Box
@@ -32,7 +35,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
         {/* Sol: Sayfa başlığı */}
         <div className="min-w-0 basis-full sm:basis-auto">
           <h1 className="text-center whitespace-nowrap text-lg font-bold tracking-normal text-white sm:text-left sm:truncate sm:text-xl lg:text-2xl">
-            {title}
+            {t('header.title')}
           </h1>
         </div>
 
@@ -42,7 +45,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
           {/* Son güncelleme tarihi */}
           {lastUpdated && (
             <span className="hidden lg:block text-xs font-medium text-white/75 whitespace-nowrap">
-              Son güncelleme: {lastUpdated}
+              {t('header.lastUpdated')}: {lastUpdated}
             </span>
           )}
 
@@ -74,6 +77,44 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               </MenuItem>
             ))}
           </Select>
+
+          {/* Dil Seçici (Toggle) */}
+          <Box className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
+            <TranslateIcon fontSize="small" sx={{ color: 'white', ml: 1 }} />
+            <ToggleButtonGroup
+              value={i18nInstance.language.startsWith('en') ? 'en' : 'tr'}
+              exclusive
+              onChange={(_, newLang) => {
+                if (newLang && newLang !== i18nInstance.language) {
+                  i18nInstance.changeLanguage(newLang).then(() => {
+                    window.location.reload();
+                  });
+                }
+              }}
+              size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  color: 'rgba(255,255,255,0.7)',
+                  border: 'none',
+                  px: 1,
+                  py: 0.5,
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  '&.Mui-selected': {
+                    color: 'primary.main',
+                    backgroundColor: 'white',
+                    borderRadius: '6px',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255,255,255,0.9)',
+                    }
+                  }
+                }
+              }}
+            >
+              <ToggleButton value="tr">TR</ToggleButton>
+              <ToggleButton value="en">EN</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
 
           {/* Dark / Light mode toggle */}
           <Tooltip title={mode === 'dark' ? 'Açık Mod' : 'Koyu Mod'} arrow>
@@ -121,7 +162,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               minWidth: 'auto',
             }}
           >
-            Yenile
+            {t('header.refresh')}
           </Button>
         </div>
       </div>

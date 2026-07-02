@@ -1,0 +1,10 @@
+{
+  "systemStatus": "warning",
+  "activeAlarms": 7,
+  "warnings": 18,
+  "maintenanceCount": 2,
+  "uptime": "15 days 7 hours",
+  "totalTraffic": "2.45 TB",
+  "criticalEvents": 3,
+  "successfulOperations": 1245
+}

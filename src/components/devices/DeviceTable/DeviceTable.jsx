@@ -6,6 +6,7 @@ import {
 import DeviceTableRow from '../DeviceTableRow/DeviceTableRow';
 import EmptyState from '../../common/EmptyState';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
+import { useTranslation } from 'react-i18next';
 
 /**
  * headCells — responsive görünürlük bayrakları:
@@ -35,6 +36,8 @@ const thSx = {
 };
 
 function DeviceTable({ devices, isLoading, searchTerm }) {
+  const { t } = useTranslation();
+
   /* ── Loading skeleton ── */
   if (isLoading) {
     return (
@@ -83,8 +86,8 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
   /* ── Empty state ── */
   if (devices.length === 0) {
     const message = searchTerm
-      ? `"${searchTerm}" aramasına uygun cihaz bulunamadı.`
-      : 'Sistemde kayıtlı cihaz bulunmuyor.';
+      ? t('Arama bulunamadı', `"${searchTerm}" aramasına uygun cihaz bulunamadı.`, { search: searchTerm })
+      : t('Sistemde cihaz bulunmuyor', 'Sistemde kayıtlı cihaz bulunmuyor.');
     return (
       <div className="p-8">
         <EmptyState message={message} icon={<SearchOffIcon fontSize="small" />} />
@@ -108,7 +111,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
               className="sticky left-0 z-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
               sx={{ ...thSx, minWidth: 130 }}
             >
-              Cihaz Adı
+              {t('Cihaz Adı', 'Cihaz Adı')}
             </TableCell>
 
             {headCells.map((h) => (
@@ -125,7 +128,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
                   }),
                 }}
               >
-                {h.label}
+                {t(h.label, h.label)}
               </TableCell>
             ))}
           </TableRow>

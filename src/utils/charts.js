@@ -20,6 +20,7 @@ export const getCommonChartOptions = (mode, palette) => {
       borderWidth: 1,
       textStyle: { color: textColor, fontSize: 12 },
       padding: [8, 12],
+      appendToBody: true,
       extraCssText:
         'box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2); border-radius: 6px;',
     },

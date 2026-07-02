@@ -1,14 +1,29 @@
 import {
   alertsData,
+  alertsDataEn,
   cpuUsageData,
   devicesData,
+  devicesDataEn,
   deviceStatusDistribution,
+  deviceStatusDistributionEn,
   kpiData,
+  kpiDataEn,
   networkTrafficData,
   resourceUsageData,
+  resourceUsageDataEn,
   systemSummaryData,
+  systemSummaryDataEn,
   themeData,
 } from './index.js';
+
+const getLang = () => {
+  try {
+    const lang = localStorage.getItem('i18nLang') || 'tr';
+    return lang.startsWith('en') ? 'en' : 'tr';
+  } catch {
+    return 'tr';
+  }
+};
 
 const getRandomDelay = () => Math.floor(Math.random() * 301) + 300;
 
@@ -24,21 +39,21 @@ const resolveWithDelay = (payload) =>
     }, getRandomDelay());
   });
 
-export const fetchKpiData = () => resolveWithDelay(kpiData);
+export const fetchKpiData = () => resolveWithDelay(getLang() === 'en' ? kpiDataEn : kpiData);
 
 export const fetchChartsData = () =>
   resolveWithDelay({
     cpuUsage: cpuUsageData,
     networkTraffic: networkTrafficData,
-    deviceStatusDistribution,
+    deviceStatusDistribution: getLang() === 'en' ? deviceStatusDistributionEn : deviceStatusDistribution,
   });
 
-export const fetchAlertsData = () => resolveWithDelay(alertsData);
+export const fetchAlertsData = () => resolveWithDelay(getLang() === 'en' ? alertsDataEn : alertsData);
 
-export const fetchSystemSummaryData = () => resolveWithDelay(systemSummaryData);
+export const fetchSystemSummaryData = () => resolveWithDelay(getLang() === 'en' ? systemSummaryDataEn : systemSummaryData);
 
-export const fetchResourceUsageData = () => resolveWithDelay(resourceUsageData);
+export const fetchResourceUsageData = () => resolveWithDelay(getLang() === 'en' ? resourceUsageDataEn : resourceUsageData);
 
-export const fetchDevicesData = () => resolveWithDelay(devicesData);
+export const fetchDevicesData = () => resolveWithDelay(getLang() === 'en' ? devicesDataEn : devicesData);
 
 export const fetchThemeData = () => resolveWithDelay(themeData);

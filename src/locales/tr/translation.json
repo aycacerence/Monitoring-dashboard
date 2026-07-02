@@ -1,1 +1,69 @@
-{}
+{
+  "header": {
+    "title": "İzleme Paneli",
+    "lastUpdated": "Son güncelleme",
+    "refresh": "Yenile"
+  },
+  "kpi": {
+    "totalDevices": "Toplam Cihaz",
+    "onlineDevices": "Çevrimiçi Cihaz",
+    "activeAlarms": "Aktif Alarm",
+    "cpuUsage": "CPU Kullanımı (Ort.)",
+    "memoryUsage": "Bellek Kullanımı (Ort.)",
+    "diskUsage": "Disk Kullanımı (Ort.)",
+    "comparedToLastMonth": "geçen aya göre"
+  },
+  "charts": {
+    "cpuUsageTitle": "CPU Kullanım Eğilimi",
+    "networkTrafficTitle": "Ağ Trafik Eğilimi",
+    "deviceStatusTitle": "Cihaz Durum Dağılımı",
+    "cpuUsageSubtitle": "Son 24 saatlik ortalama işlemci yükü",
+    "cpuUsageInfo": "Tüm cihazların ortalama CPU kullanım yüzdesidir.",
+    "networkTrafficSubtitle": "Son 24 saatlik gelen ve giden ağ trafiği (Mbps)",
+    "networkTrafficInfo": "Sistemdeki anlık bant genişliği kullanımını gösterir.",
+    "deviceStatusSubtitle": "Sistemdeki cihazların anlık erişilebilirlik durumu",
+    "cpuUsageSeries": "CPU Kullanımı",
+    "incoming": "Gelen",
+    "outgoing": "Giden"
+  },
+  "alerts": {
+    "title": "Son Alarmlar",
+    "new": "Yeni",
+    "viewAll": "Tüm alarmları görüntüle"
+  },
+  "systemSummary": {
+    "title": "Sistem Özeti"
+  },
+  "devices": {
+    "title": "Cihaz Yönetimi"
+  },
+  "resources": {
+    "title": "Kaynak Kullanımı Listesi"
+  },
+  "Kesintisiz Çalışma": "Kesintisiz Çalışma",
+  "Toplam Trafik": "Toplam Trafik",
+  "Kritik Olaylar": "Kritik Olaylar",
+  "Son 24 saat": "Son 24 saat",
+  "Başarılı İşlemler": "Başarılı İşlemler",
+  "Saatlik ortalama": "Saatlik ortalama",
+  "Cihaz Adı": "Cihaz Adı",
+  "IP Adresi": "IP Adresi",
+  "Tür": "Tür",
+  "Durum": "Durum",
+  "CPU": "CPU",
+  "Bellek": "Bellek",
+  "Disk": "Disk",
+  "Son Güncelleme": "Son Güncelleme",
+  "Arama bulunamadı": "\"{{search}}\" aramasına uygun cihaz bulunamadı.",
+  "Sistemde cihaz bulunmuyor": "Sistemde kayıtlı cihaz bulunmuyor.",
+  "İsim veya IP ile ara...": "İsim veya IP ile ara...",
+  "cihaz": "cihaz",
+  "Cihaz Yönetimi": "Cihaz Yönetimi",
+  "Hesaplanıyor...": "Hesaplanıyor...",
+  "Çevrimiçi": "Çevrimiçi",
+  "Uyarı": "Uyarı",
+  "Çevrimdışı": "Çevrimdışı",
+  "Bilinmiyor": "Bilinmiyor",
+  "Cihaz verileri yüklenirken bir hata oluştu.": "Cihaz verileri yüklenirken bir hata oluştu.",
+  "önceki aya göre": "önceki aya göre"
+}

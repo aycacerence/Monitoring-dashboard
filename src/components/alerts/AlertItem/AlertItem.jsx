@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { formatRelativeTime } from '../../../utils/formatRelativeTime';
+import { useTranslation } from 'react-i18next';
 
 const severityConfig = {
   critical: { color: 'bg-red-500', text: 'text-red-700' },
@@ -8,6 +9,7 @@ const severityConfig = {
 };
 
 function AlertItem({ deviceName, message, severity, timestamp }) {
+  const { i18n } = useTranslation();
   const config = severityConfig[severity] || severityConfig.info;
 
   return (
@@ -20,7 +22,7 @@ function AlertItem({ deviceName, message, severity, timestamp }) {
             {deviceName}
           </span>
           <span className="text-xs font-medium text-slate-500 shrink-0">
-            {formatRelativeTime(timestamp)}
+            {formatRelativeTime(timestamp, i18n.language)}
           </span>
         </div>
         

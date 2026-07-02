@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { Chip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { defaultStatusColor, statusColors } from '../../../utils/statusColors.js';
 
 /**
@@ -11,7 +12,10 @@ import { defaultStatusColor, statusColors } from '../../../utils/statusColors.js
  * @returns {JSX.Element}
  */
 function StatusBadge({ status, label }) {
+  const { t } = useTranslation();
   const color = statusColors[status] ?? defaultStatusColor;
+
+  const translatedLabel = label ? label : t(color.label, color.label);
 
   return (
     <Chip
@@ -19,7 +23,7 @@ function StatusBadge({ status, label }) {
       label={
         <span className="inline-flex items-center gap-1.5">
           <span className={`h-1.5 w-1.5 rounded-full ${color.dotClass}`} />
-          {label ?? color.label}
+          {translatedLabel}
         </span>
       }
       className={`${color.bgClass} ${color.textClass} ${color.borderClass} border font-medium`}

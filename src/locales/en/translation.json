@@ -1,1 +1,69 @@
-{}
+{
+  "header": {
+    "title": "Monitoring Dashboard",
+    "lastUpdated": "Last update",
+    "refresh": "Refresh"
+  },
+  "kpi": {
+    "totalDevices": "Total Devices",
+    "onlineDevices": "Online Devices",
+    "activeAlarms": "Active Alarms",
+    "cpuUsage": "CPU Usage (Avg)",
+    "memoryUsage": "Memory Usage (Avg)",
+    "diskUsage": "Disk Usage (Avg)",
+    "comparedToLastMonth": "compared to last month"
+  },
+  "charts": {
+    "cpuUsageTitle": "CPU Usage Trend",
+    "networkTrafficTitle": "Network Traffic Trend",
+    "deviceStatusTitle": "Device Status Distribution",
+    "cpuUsageSubtitle": "Average CPU load over the last 24 hours",
+    "cpuUsageInfo": "Average CPU usage percentage of all devices.",
+    "networkTrafficSubtitle": "Incoming and outgoing network traffic over the last 24 hours (Mbps)",
+    "networkTrafficInfo": "Shows the instant bandwidth usage in the system.",
+    "deviceStatusSubtitle": "Instant availability status of devices in the system",
+    "cpuUsageSeries": "CPU Usage",
+    "incoming": "Incoming",
+    "outgoing": "Outgoing"
+  },
+  "alerts": {
+    "title": "Recent Alerts",
+    "new": "New",
+    "viewAll": "View all alerts"
+  },
+  "systemSummary": {
+    "title": "System Summary"
+  },
+  "devices": {
+    "title": "Device Management"
+  },
+  "resources": {
+    "title": "Resource Usage List"
+  },
+  "Kesintisiz Çalışma": "Uptime",
+  "Toplam Trafik": "Total Traffic",
+  "Kritik Olaylar": "Critical Events",
+  "Son 24 saat": "Last 24 hours",
+  "Başarılı İşlemler": "Successful Operations",
+  "Saatlik ortalama": "Hourly average",
+  "Cihaz Adı": "Device Name",
+  "IP Adresi": "IP Address",
+  "Tür": "Type",
+  "Durum": "Status",
+  "CPU": "CPU",
+  "Bellek": "Memory",
+  "Disk": "Disk",
+  "Son Güncelleme": "Last Updated",
+  "Arama bulunamadı": "No devices found matching \"{{search}}\".",
+  "Sistemde cihaz bulunmuyor": "There are no devices registered in the system.",
+  "İsim veya IP ile ara...": "Search by name or IP...",
+  "cihaz": "devices",
+  "Cihaz Yönetimi": "Device Management",
+  "Hesaplanıyor...": "Calculating...",
+  "Çevrimiçi": "Online",
+  "Uyarı": "Warning",
+  "Çevrimdışı": "Offline",
+  "Bilinmiyor": "Unknown",
+  "Cihaz verileri yüklenirken bir hata oluştu.": "An error occurred while loading device data.",
+  "önceki aya göre": "compared to previous month"
+}

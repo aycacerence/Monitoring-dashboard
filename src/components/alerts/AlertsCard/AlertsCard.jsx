@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
 import Card from '../../common/Card';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { useTranslation } from 'react-i18next';
 
 function AlertsCard({ count, children }) {
+  const { t } = useTranslation();
   return (
     <Card hoverable className="flex h-auto flex-col overflow-hidden lg:h-full" noPadding>
       <div className="flex shrink-0 items-center justify-between px-4 pt-4 mb-2">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Son Alarmlar</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('alerts.title')}</h2>
         <div className="flex items-center justify-center bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50 font-bold text-sm h-7 px-3 rounded-full border border-transparent">
-          {count} Yeni
+          {count} {t('alerts.new')}
         </div>
       </div>
       
@@ -20,9 +22,9 @@ function AlertsCard({ count, children }) {
         <a 
           href="#alerts" 
           className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700 focus:ring-2 focus:ring-brand-500 focus:outline-none rounded transition-colors w-max"
-          aria-label="Tüm alarmları görüntüle"
+          aria-label={t('alerts.viewAll')}
         >
-          Tüm alarmları görüntüle
+          {t('alerts.viewAll')}
           <ArrowForwardIcon sx={{ fontSize: 16 }} />
         </a>
       </div>

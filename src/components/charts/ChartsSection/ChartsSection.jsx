@@ -7,15 +7,17 @@ import PieChartWidget from '../PieChartWidget/PieChartWidget';
 import PieLegendList from '../PieChartWidget/PieLegendList';
 import ErrorState from '../../common/ErrorState/ErrorState';
 import { fetchCharts } from '../../../features/dashboard/chartsSlice';
+import { useTranslation } from 'react-i18next';
 
 function ChartsSection() {
   const dispatch = useAppDispatch();
   const { data, status, error } = useAppSelector((state) => state.charts);
+  const { t } = useTranslation();
 
   if (status === 'loading' || status === 'idle') {
     return (
       <div className="grid grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
-        {[{ title: 'CPU Kullanımı' }, { title: 'Ağ Trafiği' }, { title: 'Cihaz Durumu' }].map((item, idx) => (
+        {[{ title: t('charts.cpuUsageTitle') }, { title: t('charts.networkTrafficTitle') }, { title: t('charts.deviceStatusTitle') }].map((item, idx) => (
           <div key={idx} className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
             <ChartCard title={item.title} subtitle="Yükleniyor...">
               <Skeleton variant="rectangular" className="min-h-[120px] w-full rounded lg:h-full" />
@@ -34,13 +36,13 @@ function ChartsSection() {
     <div className="grid grid-cols-1 gap-4 transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
       <div className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
         <ChartCard 
-          title="CPU Kullanım Eğilimi" 
-          subtitle="Son 24 saatlik ortalama işlemci yükü"
-          infoText="Tüm cihazların ortalama CPU kullanım yüzdesidir."
+          title={t('charts.cpuUsageTitle')} 
+          subtitle={t('charts.cpuUsageSubtitle')}
+          infoText={t('charts.cpuUsageInfo')}
         >
           <LineChartWidget 
             data={data.cpuUsage} 
-            seriesName="CPU Kullanımı" 
+            seriesName={t('charts.cpuUsageSeries', 'CPU Kullanımı')} 
             color="#8b5cf6" 
             height="100%" 
           />
@@ -49,9 +51,9 @@ function ChartsSection() {
 
       <div className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
         <ChartCard 
-          title="Ağ Trafik Eğilimi" 
-          subtitle="Son 24 saatlik gelen ve giden ağ trafiği (Mbps)"
-          infoText="Sistemdeki anlık bant genişliği kullanımını gösterir."
+          title={t('charts.networkTrafficTitle')} 
+          subtitle={t('charts.networkTrafficSubtitle')}
+          infoText={t('charts.networkTrafficInfo')}
         >
           <BarChartWidget data={data.networkTraffic} height="100%" />
         </ChartCard>
@@ -59,8 +61,8 @@ function ChartsSection() {
 
       <div className="lg:col-span-4 lg:min-h-0 lg:overflow-hidden">
         <ChartCard 
-          title="Cihaz Durum Dağılımı" 
-          subtitle="Sistemdeki cihazların anlık erişilebilirlik durumu"
+          title={t('charts.deviceStatusTitle')} 
+          subtitle={t('charts.deviceStatusSubtitle')}
         >
           <div className="flex h-full min-h-[180px] items-center gap-5 lg:min-h-0">
             <div className="flex w-36 shrink-0 justify-center">

@@ -3,11 +3,13 @@ import { TableRow, TableCell } from '@mui/material';
 import StatusBadge from '../../common/Badge/StatusBadge';
 import ProgressBar from '../../common/ProgressBar/ProgressBar';
 import { formatRelativeTime } from '../../../utils/formatRelativeTime';
+import { useTranslation } from 'react-i18next';
 
 // Ortak body hücre padding — DeviceTable thSx ile senkronize
 const tdBase = { borderBottomColor: '#f1f5f9', px: 1.5, py: 1 };
 
 function DeviceTableRow({ device }) {
+  const { i18n } = useTranslation();
   return (
     <TableRow hover className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200" sx={{ '& td, & th': { py: 1 }, '&:last-child td, &:last-child th': { border: 0 } }}>
 
@@ -79,7 +81,7 @@ function DeviceTableRow({ device }) {
         className="hidden lg:table-cell text-inherit"
         sx={{ ...tdBase, whiteSpace: 'nowrap' }}
       >
-        {formatRelativeTime(device.lastUpdated)}
+        {formatRelativeTime(device.lastUpdated, i18n.language)}
       </TableCell>
 
     </TableRow>

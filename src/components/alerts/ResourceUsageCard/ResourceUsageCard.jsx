@@ -3,8 +3,10 @@ import Card from '../../common/Card';
 import ProgressBar from '../../common/ProgressBar';
 import TrendIndicator from '../../common/TrendIndicator';
 import { getIconComponent } from '../../../utils/iconMap';
+import { useTranslation } from 'react-i18next';
 
 function ResourceUsageCard({ label, percentage, changePercentage, changeDirection, icon }) {
+  const { t } = useTranslation();
   const IconComponent = getIconComponent(icon);
   
   // Renk mantığı: %80 üzeri kırmızı, %60 üzeri turuncu, gerisi mavi
@@ -26,7 +28,7 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
                 <TrendIndicator 
                   percentage={changePercentage} 
                   direction={changeDirection} 
-                  label="önceki aya göre" 
+                  label={t('önceki aya göre', 'önceki aya göre')} 
                 />
               </div>
             </div>
