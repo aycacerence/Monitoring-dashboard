@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import { Box, Typography, CircularProgress, Fade } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 function SplashScreen({ isVisible }) {
+  const { t } = useTranslation();
   return (
     <Fade in={isVisible} timeout={300} unmountOnExit>
       <Box
@@ -24,7 +26,7 @@ function SplashScreen({ isVisible }) {
         </Typography>
         <CircularProgress color="primary" sx={{ mb: 2 }} />
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Sistem verileri yükleniyor...
+          {t('splash.loading', 'Sistem verileri yükleniyor...')}
         </Typography>
       </Box>
     </Fade>

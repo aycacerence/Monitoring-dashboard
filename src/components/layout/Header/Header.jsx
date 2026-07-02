@@ -9,12 +9,7 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice';
 import { useTranslation } from 'react-i18next';
 
-const TIME_RANGE_OPTIONS = [
-  { value: '1h',  label: 'Son 1 Saat' },
-  { value: '24h', label: 'Son 24 Saat' },
-  { value: '7d',  label: 'Son 7 Gün' },
-  { value: '30d', label: 'Son 30 Gün' },
-];
+// Removed static TIME_RANGE_OPTIONS
 
 /**
  * Dashboard üst çubuğu — başlık (sol), son güncelleme + filtre + mod toggle + yenile (sağ).
@@ -23,6 +18,13 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
   const dispatch = useDispatch();
   const mode = useSelector(selectColorMode);
   const { t, i18n: i18nInstance } = useTranslation();
+
+  const timeRangeOptions = [
+    { value: '1h',  label: t('header.timeRanges.1h', 'Son 1 Saat') },
+    { value: '24h', label: t('header.timeRanges.24h', 'Son 24 Saat') },
+    { value: '7d',  label: t('header.timeRanges.7d', 'Son 7 Gün') },
+    { value: '30d', label: t('header.timeRanges.30d', 'Son 30 Gün') },
+  ];
 
   return (
     <Box
@@ -71,7 +73,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               '& .MuiSelect-select': { paddingLeft: '6px', paddingRight: '28px !important' },
             }}
           >
-            {TIME_RANGE_OPTIONS.map((opt) => (
+            {timeRangeOptions.map((opt) => (
               <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.8125rem' }}>
                 {opt.label}
               </MenuItem>
@@ -117,7 +119,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
           </Box>
 
           {/* Dark / Light mode toggle */}
-          <Tooltip title={mode === 'dark' ? 'Açık Mod' : 'Koyu Mod'} arrow>
+          <Tooltip title={mode === 'dark' ? t('header.lightMode', 'Açık Mod') : t('header.darkMode', 'Koyu Mod')} arrow>
             <IconButton
               onClick={() => dispatch(toggleMode())}
               aria-label={mode === 'dark' ? 'Açık moda geç' : 'Koyu moda geç'}

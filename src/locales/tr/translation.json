@@ -2,7 +2,18 @@
   "header": {
     "title": "İzleme Paneli",
     "lastUpdated": "Son güncelleme",
-    "refresh": "Yenile"
+    "refresh": "Yenile",
+    "timeRanges": {
+      "1h": "Son 1 Saat",
+      "24h": "Son 24 Saat",
+      "7d": "Son 7 Gün",
+      "30d": "Son 30 Gün"
+    },
+    "lightMode": "Açık Mod",
+    "darkMode": "Koyu Mod"
+  },
+  "splash": {
+    "loading": "Sistem verileri yükleniyor..."
   },
   "kpi": {
     "totalDevices": "Toplam Cihaz",

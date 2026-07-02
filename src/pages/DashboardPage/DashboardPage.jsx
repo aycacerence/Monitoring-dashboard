@@ -8,6 +8,7 @@ import { fetchResourceUsage } from '../../features/dashboard/resourceUsageSlice'
 import { fetchDevices } from '../../features/dashboard/devicesSlice';
 import KpiGrid from '../../components/kpi/KpiGrid/KpiGrid';
 import ChartsSection from '../../components/charts/ChartsSection/ChartsSection';
+
 import AlertsSection from '../../components/alerts/AlertsSection/AlertsSection';
 import ResourceUsageList from '../../components/alerts/ResourceUsageList/ResourceUsageList';
 import DevicesSection from '../../components/devices/DevicesSection/DevicesSection';
@@ -15,8 +16,10 @@ import Header from '../../components/layout/Header/index.js';
 import PageContainer from '../../components/layout/PageContainer/index.js';
 import SplashScreen from '../../components/common/SplashScreen/SplashScreen';
 import { formatDateTime } from '../../utils/formatDateTime';
+import { useTranslation } from 'react-i18next';
 
 function DashboardPage() {
+  const { i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
@@ -81,7 +84,7 @@ function DashboardPage() {
       
       <Header
         title="Monitoring Dashboard"
-        lastUpdated={formatDateTime(lastUpdated)}
+        lastUpdated={formatDateTime(lastUpdated, i18n.language)}
         timeRange={timeRange}
         onTimeRangeChange={setTimeRange}
         onRefresh={loadAllData}

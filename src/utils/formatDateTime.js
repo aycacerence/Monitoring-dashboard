@@ -5,10 +5,11 @@
  * @param {string|Date} dateString
  * @returns {string}
  */
-export function formatDateTime(dateString) {
+export function formatDateTime(dateString, lang = 'tr') {
   if (!dateString) return '';
   const date = new Date(dateString);
-  return date.toLocaleString('tr-TR', {
+  const locale = lang.startsWith('en') ? 'en-US' : 'tr-TR';
+  return date.toLocaleString(locale, {
     day: '2-digit',
     month: 'short',
     year: 'numeric',

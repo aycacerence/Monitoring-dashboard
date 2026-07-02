@@ -2,7 +2,18 @@
   "header": {
     "title": "Monitoring Dashboard",
     "lastUpdated": "Last update",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "timeRanges": {
+      "1h": "Last 1 Hour",
+      "24h": "Last 24 Hours",
+      "7d": "Last 7 Days",
+      "30d": "Last 30 Days"
+    },
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
+  "splash": {
+    "loading": "Loading system data..."
   },
   "kpi": {
     "totalDevices": "Total Devices",
