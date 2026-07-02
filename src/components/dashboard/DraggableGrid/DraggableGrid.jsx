@@ -11,6 +11,7 @@ import {
   ORIGINAL_POSITIONS,
   selectVisibility,
   setWidgetVisibility,
+  WIDGET_IDS,
 } from '../../../features/widgetVisibility/widgetVisibilitySlice';
 import { loadLayout, saveLayout } from '../../../utils/layoutStorage';
 
@@ -37,11 +38,30 @@ const sanitizeLayoutItems = (items = []) =>
   items
     .filter((item) => item.i !== DROPPING_ITEM_ID && ORIGINAL_POSITIONS[item.i]);
 
+const protectDesktopWidgetSpace = (item) => {
+  const original = ORIGINAL_POSITIONS[item.i];
+  if (item.i === WIDGET_IDS.DEVICE_STATUS_CHART && item.x === 9 && item.w === 3) {
+    return {
+      ...item,
+      x: original.x,
+      w: original.w,
+      minW: original.minW,
+      minH: original.minH,
+    };
+  }
+
+  return {
+    ...item,
+    minW: original.minW || item.minW,
+    minH: original.minH || item.minH,
+  };
+};
+
 const sanitizeLayouts = (nextLayouts) => {
   if (!nextLayouts) return null;
 
   return Object.entries(nextLayouts).reduce((acc, [key, value]) => {
-    acc[key] = sanitizeLayoutItems(value);
+    acc[key] = sanitizeLayoutItems(value).map(protectDesktopWidgetSpace);
     return acc;
   }, {});
 };
@@ -60,7 +80,7 @@ const scheduleChartResize = () => {
 };
 
 const GridItemWrapper = React.forwardRef(function GridItemWrapper(
-  { title, widgetId, onRemove, children, style, className, onMouseDown, onMouseUp, onTouchEnd, ...rest }, ref
+  { widgetId, onRemove, children, style, className, onMouseDown, onMouseUp, onTouchEnd, ...rest }, ref
 ) {
   return (
     <div
@@ -75,7 +95,6 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
       <Box className="drag-handle" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 1.5, py: 0.5, cursor: 'grab', userSelect: 'none', flexShrink: 0, bgcolor: 'background.paper', borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottom: '1px solid', borderColor: 'divider', '&:active': { cursor: 'grabbing' }}}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <DragIndicatorIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-          <Typography variant="caption" color="text.secondary" fontWeight={600}>{title}</Typography>
         </Box>
         <IconButton size="small" onMouseDown={(e) => e.stopPropagation()} onClick={() => onRemove(widgetId)} sx={{ p: 0.3 }}>
           <CloseIcon sx={{ fontSize: 15 }} />
@@ -250,10 +269,9 @@ export default function DraggableGrid({ widgets = [] }) {
         onLayoutChange={handleLayoutChange}
         style={{ minHeight: '100%' }}
       >
-        {visibleWidgets.map(({ id, title, children }) => (
+        {visibleWidgets.map(({ id, children }) => (
           <GridItemWrapper
             key={id}
-            title={title}
             widgetId={id}
             onRemove={handleRemove}
             data-grid={ORIGINAL_POSITIONS[id]}
