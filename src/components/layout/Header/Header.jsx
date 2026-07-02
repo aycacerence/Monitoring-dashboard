@@ -4,10 +4,14 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { Button, Select, MenuItem, Box, IconButton, Tooltip, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Button, Select, MenuItem, Box, IconButton, Tooltip, ToggleButtonGroup, ToggleButton, Menu } from '@mui/material';
 import TranslateIcon from '@mui/icons-material/Translate';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import CheckIcon from '@mui/icons-material/Check';
 import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice';
 import { useTranslation } from 'react-i18next';
+import { selectRole, setRole } from '../../../features/auth/authSlice';
+import { useState } from 'react';
 
 // Removed static TIME_RANGE_OPTIONS
 
@@ -17,7 +21,18 @@ import { useTranslation } from 'react-i18next';
 function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing }) {
   const dispatch = useDispatch();
   const mode = useSelector(selectColorMode);
+  const role = useSelector(selectRole);
   const { t, i18n: i18nInstance } = useTranslation();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const handleRoleChange = (newRole) => {
+    dispatch(setRole(newRole));
+    handleClose();
+  };
 
   const timeRangeOptions = [
     { value: '1h',  label: t('header.timeRanges.1h', 'Son 1 Saat') },
@@ -79,6 +94,45 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               </MenuItem>
             ))}
           </Select>
+
+          {/* Rol Seçici */}
+          <Box className="flex items-center">
+            <Button
+              onClick={handleClick}
+              startIcon={<AccountCircleIcon />}
+              sx={{
+                color: 'white',
+                textTransform: 'none',
+                fontWeight: 600,
+                fontSize: '0.8125rem',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' },
+                borderRadius: '8px',
+                px: 2,
+              }}
+            >
+              {role === 'admin' ? t('auth.admin', 'Admin') : t('auth.user', 'Kullanıcı')}
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              PaperProps={{
+                sx: { mt: 1, minWidth: 150, borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+              }}
+            >
+              <MenuItem onClick={() => handleRoleChange('admin')} sx={{ fontSize: '0.875rem', py: 1 }}>
+                Rol: {t('auth.admin', 'Admin')}
+                {role === 'admin' && <CheckIcon fontSize="small" sx={{ ml: 'auto', color: 'primary.main' }} />}
+              </MenuItem>
+              <MenuItem onClick={() => handleRoleChange('user')} sx={{ fontSize: '0.875rem', py: 1 }}>
+                Rol: {t('auth.user', 'Kullanıcı')}
+                {role === 'user' && <CheckIcon fontSize="small" sx={{ ml: 'auto', color: 'primary.main' }} />}
+              </MenuItem>
+            </Menu>
+          </Box>
 
           {/* Dil Seçici (Toggle) */}
           <Box className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">

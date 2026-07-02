@@ -14,11 +14,14 @@ import DevicesCardHeader from '../DevicesCardHeader/DevicesCardHeader';
 import Pagination from '../../common/Pagination/Pagination';
 import ErrorState from '../../common/ErrorState/ErrorState';
 import { useTranslation } from 'react-i18next';
+import { selectRole } from '../../../features/auth/authSlice';
+import LockIcon from '@mui/icons-material/Lock';
 
 function DevicesSection() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { status, searchTerm, error } = useAppSelector((state) => state.devices);
+  const role = useAppSelector(selectRole);
   
   // Memoized selectors üzerinden verileri çekiyoruz
   const paginatedDevices = useAppSelector(selectPaginatedDevices);
@@ -58,11 +61,20 @@ function DevicesSection() {
       />
       
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        <DeviceTable 
-          devices={paginatedDevices} 
-          isLoading={status === 'loading' || status === 'idle'} 
-          searchTerm={searchTerm}
-        />
+        {role === 'admin' ? (
+          <DeviceTable 
+            devices={paginatedDevices} 
+            isLoading={status === 'loading' || status === 'idle'} 
+            searchTerm={searchTerm}
+          />
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center h-full w-full bg-slate-50/50 dark:bg-slate-900/20">
+            <LockIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.5, mb: 2 }} />
+            <span className="text-slate-500 font-medium text-sm">
+              {t('auth.noPermission', 'Bu içeriği görüntüleme yetkiniz bulunmamaktadır.')}
+            </span>
+          </div>
+        )}
       </div>
       
       <div className="mt-auto flex shrink-0 flex-col sm:flex-row items-center justify-between px-4 pt-2 pb-2 border-t border-slate-100 gap-3 dark:border-slate-800">

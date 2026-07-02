@@ -76,5 +76,10 @@
   "Çevrimdışı": "Çevrimdışı",
   "Bilinmiyor": "Bilinmiyor",
   "Cihaz verileri yüklenirken bir hata oluştu.": "Cihaz verileri yüklenirken bir hata oluştu.",
-  "önceki aya göre": "önceki aya göre"
+  "önceki aya göre": "önceki aya göre",
+  "auth": {
+    "admin": "Admin",
+    "user": "Kullanıcı",
+    "noPermission": "Bu içeriği görüntüleme yetkiniz bulunmamaktadır."
+  }
 }

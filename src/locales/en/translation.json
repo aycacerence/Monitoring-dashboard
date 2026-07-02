@@ -76,5 +76,10 @@
   "Çevrimdışı": "Offline",
   "Bilinmiyor": "Unknown",
   "Cihaz verileri yüklenirken bir hata oluştu.": "An error occurred while loading device data.",
-  "önceki aya göre": "compared to previous month"
+  "önceki aya göre": "compared to previous month",
+  "auth": {
+    "admin": "Admin",
+    "user": "User",
+    "noPermission": "You do not have permission to view this content."
+  }
 }
