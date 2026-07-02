@@ -1,4 +1,6 @@
 import React from 'react';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import App from './App.jsx';

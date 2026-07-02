@@ -6,6 +6,8 @@ import kpiReducer from '../features/dashboard/kpiSlice.js';
 import resourceUsageReducer from '../features/dashboard/resourceUsageSlice.js';
 import systemSummaryReducer from '../features/dashboard/systemSummarySlice.js';
 import themeReducer from '../features/theme/themeSlice.js';
+import authReducer from '../features/auth/authSlice.js';
+import widgetVisibilityReducer from '../features/widgetVisibility/widgetVisibilitySlice.js';
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +18,7 @@ export const store = configureStore({
     resourceUsage: resourceUsageReducer,
     systemSummary: systemSummaryReducer,
     theme: themeReducer,
+    auth: authReducer,
+    widgetVisibility: widgetVisibilityReducer,
   },
 });
