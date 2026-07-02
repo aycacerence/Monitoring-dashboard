@@ -64,34 +64,34 @@ function KpiCard({
   };
 
   return (
-    <Card hoverable className="group flex h-auto flex-col justify-between lg:h-full">
-      <div className="flex items-start justify-between mb-2">
+    <Card hoverable className="group flex h-auto flex-col justify-between lg:h-full lg:p-3">
+      <div className="mb-2 flex items-start justify-between lg:mb-1">
         <div className="flex-1">
-          <p className="text-sm font-medium text-slate-900 dark:text-white mb-1">{title}</p>
+          <p className="mb-1 text-sm font-medium text-slate-900 dark:text-white lg:text-xs">{title}</p>
           <div className="flex items-baseline gap-1">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{value}</h3>
-            {unit && <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{unit}</span>}
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white lg:text-xl xl:text-2xl">{value}</h3>
+            {unit && <span className="text-sm font-medium text-slate-500 dark:text-slate-400 lg:text-xs xl:text-sm">{unit}</span>}
           </div>
         </div>
         <Box
-          className="flex items-center justify-center w-10 h-10 rounded-lg shrink-0 transition-transform duration-300 ease-in-out group-hover:scale-110"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-300 ease-in-out group-hover:scale-110 lg:h-8 lg:w-8 xl:h-10 xl:w-10"
           sx={{ backgroundColor: `${color}15`, color: color }}
         >
           <IconComponent fontSize="small" />
         </Box>
       </div>
       
-      <div className="flex-1 min-h-[40px] my-2">
+      <div className="my-2 min-h-[40px] flex-1 lg:my-1 lg:min-h-[28px] xl:min-h-[36px]">
         {sparklineData && sparklineData.length > 0 && (
           <ReactECharts
             option={chartOptions}
-            style={{ height: '40px', width: '100%' }}
+            style={{ height: '100%', width: '100%' }}
             opts={{ renderer: 'svg' }}
           />
         )}
       </div>
 
-      <div className="mt-2">
+      <div className="mt-2 lg:mt-1">
         <TrendIndicator
           percentage={changePercentage}
           direction={changeDirection}

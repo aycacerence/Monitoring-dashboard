@@ -18,6 +18,9 @@ import { loadLayout, saveLayout } from '../../../utils/layoutStorage';
 const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480 };
 const COLS = { lg: 12, md: 12, sm: 6, xs: 4 };
 const DROPPING_ITEM_ID = '__dropping_widget__';
+const GRID_MARGIN = [16, 12];
+const MIN_ROW_HEIGHT = 44;
+const MAX_ROW_HEIGHT = 64;
 
 const createDefaultLayoutItems = () =>
   Object.entries(ORIGINAL_POSITIONS).map(([id, position]) => ({
@@ -50,6 +53,27 @@ const protectDesktopWidgetSpace = (item) => {
     };
   }
 
+  const compressedDefaultSignature = {
+    [WIDGET_IDS.CPU_CHART]: { y: 3, h: 3 },
+    [WIDGET_IDS.NETWORK_CHART]: { y: 3, h: 3 },
+    [WIDGET_IDS.DEVICE_STATUS_CHART]: { y: 3, h: 3 },
+    [WIDGET_IDS.ALERTS_CARD]: { y: 6, h: 2 },
+    [WIDGET_IDS.SYSTEM_SUMMARY]: { y: 6, h: 2 },
+    [WIDGET_IDS.DEVICES_TABLE]: { y: 8, h: 5 },
+    [WIDGET_IDS.RESOURCE_USAGE]: { y: 8, h: 5 },
+  };
+  const compressedDefault = compressedDefaultSignature[item.i];
+
+  if (compressedDefault && item.y === compressedDefault.y && item.h === compressedDefault.h) {
+    return {
+      ...item,
+      y: original.y,
+      h: original.h,
+      minW: original.minW,
+      minH: original.minH,
+    };
+  }
+
   return {
     ...item,
     minW: original.minW || item.minW,
@@ -70,6 +94,9 @@ const hasDroppingItem = (nextLayouts) =>
   Object.values(nextLayouts || {}).some((items = []) =>
     items.some((item) => item.i === DROPPING_ITEM_ID),
   );
+
+const getLayoutRows = (items = []) =>
+  items.reduce((max, item) => Math.max(max, (item.y || 0) + (item.h || 1)), 1);
 
 const scheduleChartResize = () => {
   window.requestAnimationFrame(() => {
@@ -115,6 +142,7 @@ export default function DraggableGrid({ widgets = [] }) {
   const { width, containerRef } = useContainerWidth({ initialWidth: 1200 });
   const droppingWidgetIdRef = useRef(null);
   const [layouts, setLayouts] = useState(() => sanitizeLayouts(loadLayout()) || createDefaultLayouts());
+  const [rowHeight, setRowHeight] = useState(MAX_ROW_HEIGHT);
 
   const widgetMap = useMemo(() => {
     return widgets.reduce((acc, widget) => {
@@ -131,6 +159,25 @@ export default function DraggableGrid({ widgets = [] }) {
     window.addEventListener('rgl:dragstart', handleDragStart);
     return () => window.removeEventListener('rgl:dragstart', handleDragStart);
   }, []);
+
+  useEffect(() => {
+    if (!isDesktop || !containerRef.current) return undefined;
+
+    const calculateRowHeight = () => {
+      const availableHeight = containerRef.current?.clientHeight || 0;
+      const rows = getLayoutRows(layouts.lg);
+      const verticalMargins = Math.max(rows - 1, 0) * GRID_MARGIN[1];
+      const nextRowHeight = Math.floor((availableHeight - verticalMargins) / rows);
+      setRowHeight(Math.max(MIN_ROW_HEIGHT, Math.min(MAX_ROW_HEIGHT, nextRowHeight || MAX_ROW_HEIGHT)));
+      scheduleChartResize();
+    };
+
+    calculateRowHeight();
+    const resizeObserver = new ResizeObserver(calculateRowHeight);
+    resizeObserver.observe(containerRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, [containerRef, isDesktop, layouts.lg]);
 
   const handleLayoutChange = useCallback((_currentLayout, allLayouts) => {
     if (hasDroppingItem(allLayouts)) {
@@ -254,8 +301,8 @@ export default function DraggableGrid({ widgets = [] }) {
         layouts={layouts}
         breakpoints={BREAKPOINTS}
         cols={COLS}
-        rowHeight={64}
-        margin={[16, 16]}
+        rowHeight={rowHeight}
+        margin={GRID_MARGIN}
         containerPadding={[0, 0]}
         draggableHandle=".drag-handle"
         dragConfig={{ enabled: true, handle: '.drag-handle' }}
