@@ -10,6 +10,9 @@ import {
   Typography,
   IconButton,
   Divider,
+  Backdrop,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -36,6 +39,9 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 
 function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,7 +50,8 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
     gozlemMerkezi: false,
   });
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // On mobile, default to collapsed
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   const toggleAccordion = (panel) => {
     setOpenAccordion((prev) => ({
@@ -87,21 +94,37 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
   };
 
   return (
-    <Box
-      sx={{
-        width: isCollapsed ? 80 : 280,
-        height: '100%',
-        backgroundColor: '#1e1e24', // Dark background similar to screenshot
-        color: '#ffffff',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'width 0.3s ease',
-        flexShrink: 0,
-        borderRight: '1px solid rgba(255, 255, 255, 0.05)',
-      }}
-    >
-      {/* Header Logo Area */}
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'flex-end', height: 64 }}>
+    <>
+      {isMobile && !isCollapsed && (
+        <Backdrop 
+          open={true} 
+          onClick={() => setIsCollapsed(true)} 
+          sx={{ zIndex: 1299 }} 
+        />
+      )}
+      {isMobile && !isCollapsed && <Box sx={{ width: 80, flexShrink: 0 }} />}
+      <Box
+        sx={{
+          width: isCollapsed ? 80 : 280,
+          height: '100%',
+          backgroundColor: '#1e1e24', // Dark background similar to screenshot
+          color: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'width 0.3s ease',
+          flexShrink: 0,
+          borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+          ...(isMobile && !isCollapsed && {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            zIndex: 1300,
+          }),
+        }}
+      >
+        {/* Header Logo Area */}
+        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'flex-end', height: 64 }}>
         <IconButton onClick={() => setIsCollapsed(!isCollapsed)} sx={{ color: '#9ca3af' }}>
           <MenuIcon />
         </IconButton>
@@ -145,7 +168,12 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
                 
                 {/* PANEL AYARLARI -> Toggles WidgetSidebar */}
                 <ListItemButton 
-                  onClick={onOpenWidgetSidebar} 
+                  onClick={() => {
+                    onOpenWidgetSidebar();
+                    if (isMobile) {
+                      setIsCollapsed(true);
+                    }
+                  }} 
                   sx={subItemStyle}
                 >
                   <ListItemIcon sx={navIconStyle}>
@@ -225,6 +253,7 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
         </Box>
       )}
     </Box>
+    </>
   );
 }
 
