@@ -8,6 +8,7 @@ import { Button, Select, MenuItem, Box, IconButton, Tooltip, ToggleButtonGroup, 
 import TranslateIcon from '@mui/icons-material/Translate';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';
+import MenuIcon from '@mui/icons-material/Menu';
 import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice';
 import { useTranslation } from 'react-i18next';
 import { selectRole, setRole } from '../../../features/auth/authSlice';
@@ -18,7 +19,7 @@ import { useState } from 'react';
 /**
  * Dashboard üst çubuğu — başlık (sol), son güncelleme + filtre + mod toggle + yenile (sağ).
  */
-function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing }) {
+function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing, onMenuClick }) {
   const dispatch = useDispatch();
   const mode = useSelector(selectColorMode);
   const role = useSelector(selectRole);
@@ -50,7 +51,12 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
       <div className="flex min-h-16 flex-wrap items-center justify-between gap-2 px-4 py-3 sm:flex-nowrap sm:px-6 lg:px-8">
 
         {/* Sol: Sayfa başlığı */}
-        <div className="min-w-0 basis-full sm:basis-auto">
+        <div className="min-w-0 basis-full sm:basis-auto flex items-center gap-2">
+          {onMenuClick && (
+            <IconButton onClick={onMenuClick} sx={{ color: 'white' }}>
+              <MenuIcon />
+            </IconButton>
+          )}
           <h1 className="text-center whitespace-nowrap text-lg font-bold tracking-normal text-white sm:text-left sm:truncate sm:text-xl lg:text-2xl">
             {t('header.title')}
           </h1>
@@ -233,6 +239,7 @@ Header.propTypes = {
   onTimeRangeChange: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   isRefreshing: PropTypes.bool.isRequired,
+  onMenuClick: PropTypes.func,
 };
 
 export default Header;

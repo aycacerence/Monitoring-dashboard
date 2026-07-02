@@ -17,6 +17,9 @@ import PageContainer from '../../components/layout/PageContainer/index.js';
 import SplashScreen from '../../components/common/SplashScreen/SplashScreen';
 import { formatDateTime } from '../../utils/formatDateTime';
 import { useTranslation } from 'react-i18next';
+import { useOutletContext } from 'react-router-dom';
+import { selectVisibility, WIDGET_IDS } from '../../features/widgetVisibility/widgetVisibilitySlice';
+import { selectRole } from '../../features/auth/authSlice';
 
 function DashboardPage() {
   const { i18n } = useTranslation();
@@ -24,6 +27,10 @@ function DashboardPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
   const [timeRange, setTimeRange] = useState('24h');
+
+  const { setHeaderProps } = useOutletContext();
+  const visibility = useAppSelector(selectVisibility);
+  const role = useAppSelector(selectRole);
 
   // Redux status selectors
   const kpiStatus = useAppSelector((state) => state.kpi.status);
@@ -78,52 +85,81 @@ function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (setHeaderProps) {
+      setHeaderProps({
+        title: "Monitoring Dashboard",
+        lastUpdated: formatDateTime(lastUpdated, i18n.language),
+        timeRange,
+        onTimeRangeChange: setTimeRange,
+        onRefresh: loadAllData,
+        isRefreshing
+      });
+    }
+  }, [lastUpdated, timeRange, isRefreshing, i18n.language, setHeaderProps]);
+
+  const isKpiVisible = visibility[WIDGET_IDS.KPI_GRID];
+  const isChartsVisible = visibility[WIDGET_IDS.CPU_CHART] || visibility[WIDGET_IDS.NETWORK_CHART] || visibility[WIDGET_IDS.DEVICE_STATUS_CHART];
+  const isAlertsVisible = visibility[WIDGET_IDS.ALERTS_CARD] || visibility[WIDGET_IDS.SYSTEM_SUMMARY];
+  const isDevicesVisible = visibility[WIDGET_IDS.DEVICES_TABLE] || visibility[WIDGET_IDS.RESOURCE_USAGE];
+
+  const gridRows = [
+    isKpiVisible ? 'max-content' : '',
+    isChartsVisible ? `minmax(0,${isKpiVisible ? '1.2fr' : '1.8fr'})` : '',
+    isAlertsVisible ? 'minmax(0,1fr)' : '',
+    isDevicesVisible ? 'minmax(0,1.5fr)' : ''
+  ].filter(Boolean).join(' ');
+
   return (
     <>
       <SplashScreen isVisible={isVisible} />
-      
-      <Header
-        title="Monitoring Dashboard"
-        lastUpdated={formatDateTime(lastUpdated, i18n.language)}
-        timeRange={timeRange}
-        onTimeRangeChange={setTimeRange}
-        onRefresh={loadAllData}
-        isRefreshing={isRefreshing}
-      />
 
-      <PageContainer className="min-h-screen overflow-y-auto p-4 lg:h-[calc(100vh-64px)] lg:min-h-0 lg:overflow-hidden">
+      <PageContainer className="min-h-screen overflow-y-auto p-4 lg:h-full lg:min-h-0 lg:overflow-hidden">
         <div
-          className="flex min-h-0 flex-col gap-4 lg:grid lg:h-full lg:grid-cols-12 lg:overflow-hidden lg:[grid-template-rows:max-content_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.5fr)]"
+          className="flex min-h-0 flex-col gap-4 lg:grid lg:h-full lg:grid-cols-12 lg:overflow-hidden"
+          style={{ gridTemplateRows: gridRows || '1fr' }}
         >
           {/* KPI Section */}
-          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
-            <KpiGrid />
-          </section>
+          {isKpiVisible && (
+            <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
+              <KpiGrid />
+            </section>
+          )}
 
           {/* Charts Section */}
-          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
-            <ChartsSection />
-          </section>
+          {isChartsVisible && (
+            <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
+              <ChartsSection />
+            </section>
+          )}
 
           {/* Alerts and System Summary Section */}
-          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
-            <AlertsSection />
-          </section>
+          {isAlertsVisible && (
+            <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
+              <AlertsSection />
+            </section>
+          )}
 
           {/* Devices and Resource Usage Grid */}
-          <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
-            <div className="flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
-              {/* Cihaz Tablosu (3/4 alan) - overflow-hidden ile taşma engellendi */}
-              <div className="min-w-0 lg:col-span-8 lg:overflow-hidden">
-                <DevicesSection />
+          {isDevicesVisible && (
+            <section className="lg:col-span-12 lg:min-h-0 lg:overflow-hidden">
+              <div className="flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
+                {/* Cihaz Tablosu (3/4 alan) */}
+                {visibility[WIDGET_IDS.DEVICES_TABLE] && (
+                  <div className={`min-w-0 ${visibility[WIDGET_IDS.RESOURCE_USAGE] ? 'lg:col-span-8' : 'lg:col-span-12'} lg:overflow-hidden`}>
+                    <DevicesSection />
+                  </div>
+                )}
+                
+                {/* Kaynak Kullanımı (1/4 alan) */}
+                {visibility[WIDGET_IDS.RESOURCE_USAGE] && (
+                  <div className={`min-w-0 ${visibility[WIDGET_IDS.DEVICES_TABLE] ? 'lg:col-span-4' : 'lg:col-span-12'} lg:overflow-hidden`}>
+                    <ResourceUsageList />
+                  </div>
+                )}
               </div>
-              
-              {/* Kaynak Kullanımı (1/4 alan) */}
-              <div className="min-w-0 lg:col-span-4 lg:overflow-hidden">
-                <ResourceUsageList />
-              </div>
-            </div>
-          </section>
+            </section>
+          )}
         </div>
       </PageContainer>
     </>

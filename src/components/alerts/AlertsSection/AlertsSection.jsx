@@ -7,10 +7,12 @@ import ErrorState from '../../common/ErrorState/ErrorState';
 import { fetchAlerts } from '../../../features/dashboard/alertsSlice';
 import { fetchSystemSummary } from '../../../features/dashboard/systemSummarySlice';
 import { useTranslation } from 'react-i18next';
+import { selectVisibility, WIDGET_IDS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
 
 function AlertsSection() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const visibility = useAppSelector(selectVisibility);
   const { data: alertsData, status: alertsStatus, error: alertsError } = useAppSelector((state) => state.alerts);
   const { data: summaryData, status: summaryStatus, error: summaryError } = useAppSelector((state) => state.systemSummary);
 
@@ -47,7 +49,8 @@ function AlertsSection() {
 
   return (
     <div className="grid grid-cols-1 gap-4 transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-cols-12 lg:overflow-hidden">
-      <div className="lg:col-span-6 lg:min-h-0 lg:overflow-hidden">
+      {visibility[WIDGET_IDS.ALERTS_CARD] && (
+      <div className={`lg:min-h-0 lg:overflow-hidden ${visibility[WIDGET_IDS.SYSTEM_SUMMARY] ? 'lg:col-span-6' : 'lg:col-span-12'}`}>
         <AlertsCard count={unresolvedAlerts.length}>
           {visibleAlerts.map((alert) => (
             <AlertItem
@@ -60,10 +63,13 @@ function AlertsSection() {
           ))}
         </AlertsCard>
       </div>
+      )}
       
-      <div className="lg:col-span-6 lg:min-h-0 lg:overflow-hidden">
+      {visibility[WIDGET_IDS.SYSTEM_SUMMARY] && (
+      <div className={`lg:min-h-0 lg:overflow-hidden ${visibility[WIDGET_IDS.ALERTS_CARD] ? 'lg:col-span-6' : 'lg:col-span-12'}`}>
         <SystemSummaryCard items={summaryItems} />
       </div>
+      )}
     </div>
   );
 }

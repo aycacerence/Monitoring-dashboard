@@ -81,5 +81,20 @@
     "admin": "Admin",
     "user": "User",
     "noPermission": "You do not have permission to view this content."
+  },
+  "sidebar": {
+    "title": "Widget Management",
+    "subtitle": "Personalize your dashboard",
+    "reset": "Reset",
+    "widgets": {
+      "kpiGrid": "KPI Cards",
+      "cpuChart": "CPU Usage",
+      "networkChart": "Network Traffic",
+      "deviceStatusChart": "Device Status",
+      "alertsCard": "Recent Alerts",
+      "systemSummary": "System Summary",
+      "devicesTable": "Device Management",
+      "resourceUsage": "Resource Usage"
+    }
   }
 }

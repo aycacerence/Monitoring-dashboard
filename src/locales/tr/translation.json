@@ -81,5 +81,20 @@
     "admin": "Admin",
     "user": "Kullanıcı",
     "noPermission": "Bu içeriği görüntüleme yetkiniz bulunmamaktadır."
+  },
+  "sidebar": {
+    "title": "Widget Yönetimi",
+    "subtitle": "Paneli kişiselleştirin",
+    "reset": "Sıfırla",
+    "widgets": {
+      "kpiGrid": "KPI Kartları",
+      "cpuChart": "CPU Kullanımı",
+      "networkChart": "Ağ Trafiği",
+      "deviceStatusChart": "Cihaz Durumları",
+      "alertsCard": "Son Alarmlar",
+      "systemSummary": "Sistem Özeti",
+      "devicesTable": "Cihaz Yönetimi",
+      "resourceUsage": "Kaynak Kullanımı"
+    }
   }
 }

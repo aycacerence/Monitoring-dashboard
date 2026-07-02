@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { selectColorMode } from './features/theme/themeSlice';
 import { getTheme } from './theme/theme';
-import DashboardPage from './pages/DashboardPage/DashboardPage.jsx';
+import AppRouter from './router/AppRouter';
 
 function App() {
   const mode = useSelector(selectColorMode);
@@ -24,7 +24,7 @@ function App() {
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
-        <DashboardPage />
+        <AppRouter />
       </div>
     </ThemeProvider>
   );
