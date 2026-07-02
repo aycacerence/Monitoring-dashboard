@@ -2,7 +2,7 @@ import { Drawer, Box, Typography, Divider, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { selectVisibility, hideAllWidgets, WIDGET_IDS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
+import { selectVisibility, hideAllWidgets, setWidgetVisibility, WIDGET_IDS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
 import { selectRole } from '../../../features/auth/authSlice';
 import Button from '@mui/material/Button';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -18,6 +18,7 @@ function WidgetSidebar({ open, onClose }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const useToggleControls = useMediaQuery(theme.breakpoints.down('lg'));
   
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
@@ -73,7 +74,56 @@ function WidgetSidebar({ open, onClose }) {
         <Divider sx={{ mb: 2 }} />
 
         <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', pr: 0.5 }}>
-          {widgets.map(({ id, label, Icon }) => (
+          {widgets.map(({ id, label, Icon }) => {
+            const isVisible = !!visibility[id];
+
+            if (useToggleControls) {
+              return (
+                <Box
+                  key={id}
+                  sx={{
+                    display: 'flex',
+                    minHeight: 58,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 1.5,
+                    mb: 1.5,
+                    px: 1.5,
+                    py: 1,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: isVisible ? 'primary.light' : 'divider',
+                    bgcolor: isVisible ? 'primary.main' : 'action.hover',
+                    color: isVisible ? 'primary.contrastText' : 'text.primary',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', minWidth: 0, alignItems: 'center', gap: 1.25 }}>
+                    <Icon sx={{ fontSize: 20, color: isVisible ? 'inherit' : 'primary.main' }} />
+                    <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                      {label}
+                    </Typography>
+                  </Box>
+                  <Button
+                    size="small"
+                    variant={isVisible ? 'contained' : 'outlined'}
+                    color={isVisible ? 'inherit' : 'primary'}
+                    onClick={() => dispatch(setWidgetVisibility({ id, visible: !isVisible }))}
+                    sx={{
+                      minWidth: 70,
+                      bgcolor: isVisible ? 'background.paper' : undefined,
+                      color: isVisible ? 'primary.main' : undefined,
+                      '&:hover': {
+                        bgcolor: isVisible ? 'background.paper' : undefined,
+                      },
+                    }}
+                  >
+                    {isVisible ? t('sidebar.hide', 'Kapat') : t('sidebar.show', 'Aç')}
+                  </Button>
+                </Box>
+              );
+            }
+
+            return (
               <Box
                 key={id}
                 draggable
@@ -97,7 +147,7 @@ function WidgetSidebar({ open, onClose }) {
                   color: 'primary.main',
                   cursor: 'grab',
                   userSelect: 'none',
-                  opacity: visibility[id] ? 0.62 : 1,
+                  opacity: isVisible ? 0.62 : 1,
                   transition: 'background-color 160ms ease, border-color 160ms ease, transform 160ms ease, opacity 160ms ease',
                   '&:hover': {
                     bgcolor: 'background.paper',
@@ -114,7 +164,8 @@ function WidgetSidebar({ open, onClose }) {
                   {label}
                 </Typography>
               </Box>
-          ))}
+            );
+          })}
         </Box>
       </Box>
     </Drawer>

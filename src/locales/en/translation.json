@@ -86,6 +86,9 @@
     "title": "Widget Management",
     "subtitle": "Personalize your dashboard",
     "reset": "Reset",
+    "clearBoard": "Clear Board",
+    "show": "Show",
+    "hide": "Hide",
     "widgets": {
       "kpiGrid": "KPI Cards",
       "cpuChart": "CPU Usage",

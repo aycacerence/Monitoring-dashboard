@@ -2,7 +2,8 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Responsive as ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
@@ -88,6 +89,8 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
 });
 
 export default function DraggableGrid({ widgets = [] }) {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
   const { width, containerRef } = useContainerWidth({ initialWidth: 1200 });
@@ -158,6 +161,52 @@ export default function DraggableGrid({ widgets = [] }) {
   }, [dispatch]);
 
   const visibleWidgets = widgets.filter((widget) => visibility[widget.id]);
+
+  if (!isDesktop) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+        {visibleWidgets.map(({ id, title, children }) => (
+          <Box key={id} sx={{ minWidth: 0 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                px: 1.5,
+                py: 0.75,
+                bgcolor: 'background.paper',
+                borderTopLeftRadius: 2,
+                borderTopRightRadius: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderBottom: 0,
+              }}
+            >
+              <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                {title}
+              </Typography>
+              <IconButton size="small" onClick={() => dispatch(setWidgetVisibility({ id, visible: false }))} sx={{ p: 0.3 }}>
+                <CloseIcon sx={{ fontSize: 15 }} />
+              </IconButton>
+            </Box>
+            <Box
+              sx={{
+                minWidth: 0,
+                overflow: 'hidden',
+                bgcolor: 'background.paper',
+                borderBottomLeftRadius: 2,
+                borderBottomRightRadius: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              {children || widgetMap[id]?.children}
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    );
+  }
 
   return (
     <Box
