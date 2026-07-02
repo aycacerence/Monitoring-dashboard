@@ -157,13 +157,13 @@ function DashboardPage() {
         title: t('sidebar.widgets.deviceStatusChart', 'Cihaz Durumları'),
         children: chartsStatus === 'failed' ? chartError() : chartsStatus === 'loading' || chartsStatus === 'idle' ? chartSkeleton(t('charts.deviceStatusTitle')) : (
           <ChartCard title={t('charts.deviceStatusTitle')} subtitle={t('charts.deviceStatusSubtitle')}>
-            <div className="flex h-full min-h-[180px] items-center gap-5 lg:min-h-0">
-              <div className="flex w-36 shrink-0 justify-center">
-                <div className="h-32 w-32">
+            <div className="flex h-full min-h-[240px] flex-col items-center justify-center gap-5 sm:min-h-[220px] sm:flex-row lg:min-h-0">
+              <div className="flex shrink-0 justify-center sm:w-36">
+                <div className="h-36 w-36 sm:h-32 sm:w-32">
                   <PieChartWidget data={chartsData.deviceStatusDistribution} height="100%" />
                 </div>
               </div>
-              <div className="min-w-0 flex-1 border-l border-slate-100 pl-5 dark:border-slate-800">
+              <div className="w-full min-w-0 flex-1 border-t border-slate-100 pt-4 dark:border-slate-800 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0">
                 <PieLegendList data={chartsData.deviceStatusDistribution} />
               </div>
             </div>
@@ -219,7 +219,7 @@ function DashboardPage() {
     <>
       <SplashScreen isVisible={isVisible} />
 
-      <PageContainer className="flex min-h-screen flex-col overflow-y-auto p-4 lg:h-full lg:min-h-0 lg:overflow-hidden">
+      <PageContainer className="flex h-full min-h-0 flex-col overflow-y-auto p-4 lg:overflow-hidden">
         <DraggableGrid widgets={dashboardWidgets} />
       </PageContainer>
     </>

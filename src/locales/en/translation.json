@@ -87,6 +87,7 @@
     "subtitle": "Personalize your dashboard",
     "reset": "Reset",
     "clearBoard": "Clear Board",
+    "defaultView": "Default",
     "show": "Show",
     "hide": "Hide",
     "widgets": {

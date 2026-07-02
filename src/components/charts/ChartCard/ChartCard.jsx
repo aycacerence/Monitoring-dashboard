@@ -20,7 +20,7 @@ function ChartCard({ title, subtitle, action, children, infoText }) {
         </div>
         {action && <div className="shrink-0">{action}</div>}
       </div>
-      <div className="flex-1 min-h-[180px] overflow-hidden px-4 pb-4 lg:min-h-0">
+      <div className="flex-1 min-h-[240px] overflow-hidden px-4 pb-4 sm:min-h-[260px] lg:min-h-0">
         {children}
       </div>
     </Card>

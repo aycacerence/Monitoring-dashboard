@@ -23,7 +23,7 @@ function ResourceUsageList() {
   }
 
   return (
-    <div className="grid gap-4 overflow-hidden transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-rows-3">
+    <div className="grid min-h-max gap-4 transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-rows-3 lg:overflow-hidden">
       {data.map((item) => (
         <ResourceUsageCard
           key={item.id}

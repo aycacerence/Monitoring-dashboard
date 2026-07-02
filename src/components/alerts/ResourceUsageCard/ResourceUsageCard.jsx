@@ -16,15 +16,15 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
 
   return (
     <Card hoverable className="h-auto lg:h-full" noPadding>
-      <div className="flex flex-col justify-between w-full h-full px-3 py-2">
-        <div className="flex flex-row justify-between items-center w-full">
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
+      <div className="flex min-h-[96px] w-full flex-col justify-between px-3 py-3 sm:px-4 lg:h-full lg:min-h-0 lg:px-3 lg:py-2">
+        <div className="flex w-full items-start justify-between gap-3">
+          <div className="flex min-w-0 items-start gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 lg:h-8 lg:w-8">
               <IconComponent fontSize="small" />
             </div>
             <div className="min-w-0">
-              <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-white">{label}</h3>
-              <div className="mt-1">
+              <h3 className="break-words text-sm font-semibold leading-snug text-slate-900 dark:text-white lg:truncate">{label}</h3>
+              <div className="mt-1 max-w-full overflow-hidden">
                 <TrendIndicator 
                   percentage={changePercentage} 
                   direction={changeDirection} 
@@ -33,12 +33,12 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
               </div>
             </div>
           </div>
-          <div className="shrink-0 pl-2 text-lg font-bold leading-none text-slate-900 dark:text-white">
+          <div className="shrink-0 text-right text-lg font-bold leading-none text-slate-900 dark:text-white sm:text-xl lg:text-lg">
             {percentage}%
           </div>
         </div>
         
-        <div className="w-full mt-1 shrink-0">
+        <div className="mt-3 w-full shrink-0 lg:mt-1">
           <ProgressBar value={percentage} color={progressColor} showPercentage={false} />
         </div>
       </div>

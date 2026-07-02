@@ -192,12 +192,15 @@ export default function DraggableGrid({ widgets = [] }) {
             <Box
               sx={{
                 minWidth: 0,
-                overflow: 'hidden',
+                overflow: { xs: 'visible', lg: 'hidden' },
                 bgcolor: 'background.paper',
                 borderBottomLeftRadius: 2,
                 borderBottomRightRadius: 2,
                 border: '1px solid',
                 borderColor: 'divider',
+                '& > *': {
+                  minWidth: 0,
+                },
               }}
             >
               {children || widgetMap[id]?.children}

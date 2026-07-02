@@ -2,7 +2,7 @@ import { Drawer, Box, Typography, Divider, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { selectVisibility, hideAllWidgets, setWidgetVisibility, WIDGET_IDS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
+import { selectVisibility, hideAllWidgets, resetVisibility, setWidgetVisibility, WIDGET_IDS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
 import { selectRole } from '../../../features/auth/authSlice';
 import Button from '@mui/material/Button';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -23,6 +23,12 @@ function WidgetSidebar({ open, onClose }) {
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
   const role = useAppSelector(selectRole);
+
+  const handleDefaultView = () => {
+    dispatch(resetVisibility());
+    localStorage.removeItem('dashboardLayout');
+    window.dispatchEvent(new Event('resize'));
+  };
 
   const widgets = [
     { id: WIDGET_IDS.KPI_GRID, label: t('sidebar.widgets.kpiGrid', 'KPI Kartları'), Icon: DashboardIcon },
@@ -61,15 +67,40 @@ function WidgetSidebar({ open, onClose }) {
           {t('sidebar.subtitle', 'Paneli kişiselleştirin')}
         </Typography>
 
-        <Button 
-          variant="outlined" 
-          size="small" 
-          color="error"
-          onClick={() => dispatch(hideAllWidgets())}
-          sx={{ mb: 2 }}
-        >
-          {t('sidebar.clearBoard', 'Panoyu Temizle')}
-        </Button>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 2 }}>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={() => dispatch(hideAllWidgets())}
+            sx={{
+              color: 'primary.main',
+              borderColor: 'primary.light',
+              '&:hover': {
+                borderColor: 'primary.main',
+                bgcolor: 'primary.main',
+                color: 'primary.contrastText',
+              },
+            }}
+          >
+            {t('sidebar.clearBoard', 'Panoyu Temizle')}
+          </Button>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={handleDefaultView}
+            sx={{
+              color: 'primary.main',
+              borderColor: 'primary.light',
+              '&:hover': {
+                borderColor: 'primary.main',
+                bgcolor: 'primary.main',
+                color: 'primary.contrastText',
+              },
+            }}
+          >
+            {t('sidebar.defaultView', 'Varsayılan')}
+          </Button>
+        </Box>
 
         <Divider sx={{ mb: 2 }} />
 
