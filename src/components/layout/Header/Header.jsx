@@ -30,6 +30,16 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
+  const [timeAnchorEl, setTimeAnchorEl] = useState(null);
+  const timeOpen = Boolean(timeAnchorEl);
+  const handleTimeClick = (event) => setTimeAnchorEl(event.currentTarget);
+  const handleTimeClose = () => setTimeAnchorEl(null);
+
+  const handleTimeChange = (value) => {
+    onTimeRangeChange(value);
+    handleTimeClose();
+  };
+
   const handleRoleChange = (newRole) => {
     dispatch(setRole(newRole));
     handleClose();
@@ -63,7 +73,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
         </div>
 
         {/* Sağ: Son güncelleme + Filtre + Mod Toggle + Yenile */}
-        <div className="flex min-w-0 flex-1 items-center justify-between gap-2 sm:flex-initial sm:justify-end sm:shrink-0">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-2 sm:flex-initial sm:justify-end sm:shrink-0">
 
           {/* Son güncelleme tarihi */}
           {lastUpdated && (
@@ -72,7 +82,45 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
             </span>
           )}
 
-          {/* Zaman aralığı filtresi */}
+          {/* Mobil İçin Zaman Aralığı Menüsü */}
+          <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+            <IconButton 
+              onClick={handleTimeClick}
+              sx={{ 
+                backgroundColor: '#ffffff', 
+                borderRadius: '8px', 
+                width: 32, 
+                height: 32,
+                '&:hover': { backgroundColor: '#f1f1f1' }
+              }}
+            >
+              <CalendarTodayIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+            </IconButton>
+            <Menu
+              anchorEl={timeAnchorEl}
+              open={timeOpen}
+              onClose={handleTimeClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              PaperProps={{
+                sx: { mt: 1, minWidth: 150, borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+              }}
+            >
+              {timeRangeOptions.map((opt) => (
+                <MenuItem 
+                  key={opt.value} 
+                  onClick={() => handleTimeChange(opt.value)} 
+                  selected={timeRange === opt.value}
+                  sx={{ fontSize: '0.875rem', py: 1 }}
+                >
+                  {opt.label}
+                  {timeRange === opt.value && <CheckIcon fontSize="small" sx={{ ml: 'auto', color: 'primary.main' }} />}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+
+          {/* Masaüstü İçin Zaman Aralığı Seçici */}
           <Select
             size="small"
             value={timeRange}
@@ -82,13 +130,14 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               <CalendarTodayIcon sx={{ fontSize: 14, mr: 0.5, color: 'primary.main' }} />
             }
             sx={{
+              display: { xs: 'none', sm: 'inline-flex' },
               backgroundColor: '#ffffff',
               color: '#1e293b',
               fontWeight: 500,
-              fontSize: { xs: '0.75rem', sm: '0.8125rem' },
+              fontSize: '0.8125rem',
               borderRadius: '8px',
               height: '32px',
-              minWidth: { xs: 132, sm: 150 },
+              minWidth: 150,
               '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
               '& .MuiSelect-icon': { color: '#64748b' },
               '& .MuiSelect-select': { paddingLeft: '6px', paddingRight: '28px !important' },
