@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import Card from '../../common/Card';
 
 function SystemSummaryCard({ items }) {
+  const { t } = useTranslation();
+
   return (
     <Card hoverable className="h-auto overflow-hidden lg:h-full" noPadding>
       <div className="shrink-0 px-4 pt-4 mb-3">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Sistem Özeti</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sidebar.widgets.systemSummary', 'System Summary')}</h2>
       </div>
       <div className="flex flex-col gap-3 px-4 pb-4 sm:grid sm:grid-cols-2 lg:flex lg:h-full lg:flex-1 lg:min-h-0 lg:flex-row lg:items-stretch lg:gap-4">
         {items.map((item, index) => (
