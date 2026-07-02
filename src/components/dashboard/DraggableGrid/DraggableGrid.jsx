@@ -237,9 +237,9 @@ export default function DraggableGrid({ widgets = [] }) {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'flex-end',
                 px: 1.5,
-                py: 0.75,
+                py: 0.5,
                 bgcolor: 'background.paper',
                 borderTopLeftRadius: 2,
                 borderTopRightRadius: 2,
@@ -248,9 +248,6 @@ export default function DraggableGrid({ widgets = [] }) {
                 borderBottom: 0,
               }}
             >
-              <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                {title}
-              </Typography>
               <IconButton size="small" onClick={() => dispatch(setWidgetVisibility({ id, visible: false }))} sx={{ p: 0.3 }}>
                 <CloseIcon sx={{ fontSize: 15 }} />
               </IconButton>
