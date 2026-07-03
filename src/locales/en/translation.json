@@ -82,6 +82,16 @@
     "user": "User",
     "noPermission": "You do not have permission to view this content."
   },
+  "mainSidebar": {
+    "menu": "MENU",
+    "controlPanel": "Control Panel",
+    "panel": "Dashboard",
+    "panelSettings": "Panel Settings",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "profile": "Profile",
+    "sunny": "Sunny"
+  },
   "sidebar": {
     "title": "Widget Management",
     "subtitle": "Personalize your dashboard",

@@ -82,6 +82,16 @@
     "user": "Kullanıcı",
     "noPermission": "Bu içeriği görüntüleme yetkiniz bulunmamaktadır."
   },
+  "mainSidebar": {
+    "menu": "MENU",
+    "controlPanel": "Kontrol Paneli",
+    "panel": "Panel",
+    "panelSettings": "Panel Ayarları",
+    "analytics": "Analiz",
+    "settings": "Ayarlar",
+    "profile": "Profil",
+    "sunny": "Güneşli"
+  },
   "sidebar": {
     "title": "Widget Yönetimi",
     "subtitle": "Paneli kişiselleştirin",

@@ -26,8 +26,10 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
+import { useTranslation } from 'react-i18next';
 
 function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onCloseWidgetSidebar }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
@@ -121,7 +123,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
       {/* Menu Label */}
       {!isCollapsed && (
         <Typography variant="caption" sx={{ px: 3, py: 1, color: '#6b7280', fontWeight: 'bold', letterSpacing: 1 }}>
-          MENU
+          {t('mainSidebar.menu', 'MENU')}
         </Typography>
       )}
 
@@ -134,7 +136,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
             <ListItemIcon sx={navIconStyle}>
               <HomeOutlinedIcon />
             </ListItemIcon>
-            {!isCollapsed && <ListItemText primary="Kontrol Paneli" slotProps={{ primary: { fontSize: '0.875rem' } }} />}
+            {!isCollapsed && <ListItemText primary={t('mainSidebar.controlPanel', 'Kontrol Paneli')} slotProps={{ primary: { fontSize: '0.875rem' } }} />}
             {!isCollapsed && (openAccordion.kontrolPaneli ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />)}
           </ListItemButton>
           {!isCollapsed && (
@@ -151,7 +153,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
                   <ListItemIcon sx={navIconStyle}>
                     <DashboardOutlinedIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary="Panel" slotProps={{ primary: { fontSize: '0.875rem' } }} />
+                  <ListItemText primary={t('mainSidebar.panel', 'Panel')} slotProps={{ primary: { fontSize: '0.875rem' } }} />
                 </ListItemButton>
                 
                 {/* PANEL AYARLARI -> Toggles WidgetSidebar */}
@@ -169,7 +171,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
                   <ListItemIcon sx={navIconStyle}>
                     <SettingsOutlinedIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary="Panel Ayarları" slotProps={{ primary: { fontSize: '0.875rem' } }} />
+                  <ListItemText primary={t('mainSidebar.panelSettings', 'Panel Ayarları')} slotProps={{ primary: { fontSize: '0.875rem' } }} />
                 </ListItemButton>
               </List>
             </Collapse>
@@ -177,14 +179,14 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
 
           {/* Standalone Items */}
           {[
-            { text: 'Analiz', icon: <InsertChartOutlinedIcon /> },
-            { text: 'Ayarlar', icon: <SettingsOutlinedIcon /> },
-            { text: 'Profile', icon: <PersonOutlineOutlinedIcon /> },
+            { text: t('mainSidebar.analytics', 'Analiz'), icon: <InsertChartOutlinedIcon />, expandable: true },
+            { text: t('mainSidebar.settings', 'Ayarlar'), icon: <SettingsOutlinedIcon />, expandable: true },
+            { text: t('mainSidebar.profile', 'Profil'), icon: <PersonOutlineOutlinedIcon />, expandable: false },
           ].map((item, idx) => (
             <ListItemButton key={idx} sx={navItemStyle}>
               <ListItemIcon sx={navIconStyle}>{item.icon}</ListItemIcon>
               {!isCollapsed && <ListItemText primary={item.text} slotProps={{ primary: { fontSize: '0.875rem' } }} />}
-              {!isCollapsed && ['Analiz', 'Ayarlar'].includes(item.text) && (
+              {!isCollapsed && item.expandable && (
                 <ExpandMore fontSize="small" />
               )}
             </ListItemButton>
@@ -198,7 +200,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
           <WbSunnyIcon sx={{ color: '#f59e0b', fontSize: 32 }} />
           <Box>
             <Typography variant="body2" fontWeight="bold">30°C</Typography>
-            <Typography variant="caption" sx={{ color: '#9ca3af' }}>Güneşli</Typography>
+            <Typography variant="caption" sx={{ color: '#9ca3af' }}>{t('mainSidebar.sunny', 'Güneşli')}</Typography>
           </Box>
         </Box>
       )}
