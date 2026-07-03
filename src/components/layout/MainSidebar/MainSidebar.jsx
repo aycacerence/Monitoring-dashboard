@@ -134,7 +134,7 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
             <ListItemIcon sx={navIconStyle}>
               <HomeOutlinedIcon />
             </ListItemIcon>
-            {!isCollapsed && <ListItemText primary="Kontrol Paneli" primaryTypographyProps={{ fontSize: '0.875rem' }} />}
+            {!isCollapsed && <ListItemText primary="Kontrol Paneli" slotProps={{ primary: { fontSize: '0.875rem' } }} />}
             {!isCollapsed && (openAccordion.kontrolPaneli ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />)}
           </ListItemButton>
           {!isCollapsed && (
@@ -151,7 +151,7 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
                   <ListItemIcon sx={navIconStyle}>
                     <DashboardOutlinedIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary="Panel" primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                  <ListItemText primary="Panel" slotProps={{ primary: { fontSize: '0.875rem' } }} />
                 </ListItemButton>
                 
                 {/* PANEL AYARLARI -> Toggles WidgetSidebar */}
@@ -167,7 +167,7 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
                   <ListItemIcon sx={navIconStyle}>
                     <SettingsOutlinedIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary="Panel Ayarları" primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                  <ListItemText primary="Panel Ayarları" slotProps={{ primary: { fontSize: '0.875rem' } }} />
                 </ListItemButton>
               </List>
             </Collapse>
@@ -181,7 +181,7 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
           ].map((item, idx) => (
             <ListItemButton key={idx} sx={navItemStyle}>
               <ListItemIcon sx={navIconStyle}>{item.icon}</ListItemIcon>
-              {!isCollapsed && <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.875rem' }} />}
+              {!isCollapsed && <ListItemText primary={item.text} slotProps={{ primary: { fontSize: '0.875rem' } }} />}
               {!isCollapsed && ['Analiz', 'Ayarlar'].includes(item.text) && (
                 <ExpandMore fontSize="small" />
               )}

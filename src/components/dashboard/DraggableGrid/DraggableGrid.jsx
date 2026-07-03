@@ -37,9 +37,10 @@ const createDefaultLayouts = () => {
   };
 };
 
-const sanitizeLayoutItems = (items = []) =>
-  items
-    .filter((item) => item.i !== DROPPING_ITEM_ID && ORIGINAL_POSITIONS[item.i]);
+const sanitizeLayoutItems = (items = []) => {
+  const safeItems = Array.isArray(items) ? items : [];
+  return safeItems.filter((item) => item.i !== DROPPING_ITEM_ID && ORIGINAL_POSITIONS[item.i]);
+};
 
 const protectDesktopWidgetSpace = (item) => {
   const original = ORIGINAL_POSITIONS[item.i];
