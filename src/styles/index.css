@@ -6,3 +6,124 @@ body {
   margin: 0;
   min-width: 320px;
 }
+
+.smart-snap-grid.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+
+.smart-snap-grid .react-grid-item {
+  transition: transform 200ms ease, left 200ms ease, top 200ms ease;
+}
+
+.smart-snap-grid.is-editing .react-grid-item {
+  transition: none;
+}
+
+.smart-snap-grid.is-editing .react-grid-item:not(.react-grid-placeholder)::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 25;
+  pointer-events: none;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.smart-snap-grid.is-editing .react-grid-item:not(.react-grid-placeholder):hover::before,
+.smart-snap-grid.is-editing .react-grid-item.react-draggable-dragging::before,
+.smart-snap-grid.is-editing .react-grid-item.resizing::before {
+  border-color: rgba(164, 35, 80, 0.78);
+  box-shadow: 0 0 0 4px rgba(164, 35, 80, 0.12);
+}
+
+.smart-snap-grid .react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+
+.smart-snap-grid .react-grid-item.resizing {
+  z-index: 10;
+  will-change: width, height;
+}
+
+.smart-snap-grid .react-grid-item.react-draggable-dragging {
+  z-index: 20;
+  transition: none;
+  will-change: transform;
+}
+
+.smart-snap-grid .react-grid-item.react-grid-placeholder {
+  z-index: 15;
+  border-radius: 8px;
+  border: 1px dashed #a42350;
+  background: #a42350;
+  opacity: 0.12;
+  transition-duration: 100ms;
+  user-select: none;
+}
+
+.smart-snap-grid.is-editing .react-grid-item.react-grid-placeholder {
+  transition: none;
+}
+
+.smart-snap-grid .react-resizable-handle,
+.smart-snap-grid .react-grid-item > .react-resizable-handle {
+  position: absolute;
+  right: -1px !important;
+  bottom: -1px !important;
+  width: 34px !important;
+  height: 34px !important;
+  cursor: se-resize !important;
+  z-index: 80 !important;
+  pointer-events: auto !important;
+  touch-action: none;
+  background-image: none !important;
+  opacity: 0 !important;
+}
+
+.smart-snap-grid .react-resizable-handle::before,
+.smart-snap-grid .react-grid-item > .react-resizable-handle::before {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(164, 35, 80, 0);
+  box-shadow: 0 0 0 0 rgba(164, 35, 80, 0);
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.smart-snap-grid .react-resizable-handle::after,
+.smart-snap-grid .react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid rgba(164, 35, 80, 0.58) !important;
+  border-bottom: 2px solid rgba(164, 35, 80, 0.58) !important;
+}
+
+.smart-snap-grid.is-editing .react-grid-item:hover .react-resizable-handle,
+.smart-snap-grid .react-grid-item.resizing .react-resizable-handle {
+  opacity: 1 !important;
+}
+
+.smart-snap-grid.is-editing .react-resizable-handle:hover::after,
+.smart-snap-grid.is-editing .react-grid-item > .react-resizable-handle:hover::after,
+.smart-snap-grid .react-grid-item.resizing .react-resizable-handle::after,
+.smart-snap-grid .react-grid-item.resizing > .react-resizable-handle::after {
+  border-color: rgba(164, 35, 80, 0.95) !important;
+}
+
+.smart-snap-grid.is-editing .react-resizable-handle:hover::before,
+.smart-snap-grid.is-editing .react-grid-item > .react-resizable-handle:hover::before,
+.smart-snap-grid .react-grid-item.resizing .react-resizable-handle::before,
+.smart-snap-grid .react-grid-item.resizing > .react-resizable-handle::before {
+  background: rgba(164, 35, 80, 0.16);
+  box-shadow: 0 0 0 4px rgba(164, 35, 80, 0.14);
+}

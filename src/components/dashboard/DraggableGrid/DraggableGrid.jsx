@@ -1,7 +1,7 @@
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Responsive as ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
+import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
 import { Box, IconButton, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
@@ -11,7 +11,6 @@ import {
   ORIGINAL_POSITIONS,
   selectVisibility,
   setWidgetVisibility,
-  WIDGET_IDS,
 } from '../../../features/widgetVisibility/widgetVisibilitySlice';
 import { loadLayout, saveLayout } from '../../../utils/layoutStorage';
 
@@ -21,6 +20,7 @@ const DROPPING_ITEM_ID = '__dropping_widget__';
 const GRID_MARGIN = [16, 12];
 const MIN_ROW_HEIGHT = 44;
 const MAX_ROW_HEIGHT = 64;
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const createDefaultLayoutItems = () =>
   Object.entries(ORIGINAL_POSITIONS).map(([id, position]) => ({
@@ -39,54 +39,37 @@ const createDefaultLayouts = () => {
 
 const sanitizeLayoutItems = (items = []) => {
   const safeItems = Array.isArray(items) ? items : [];
-  return safeItems.filter((item) => item.i !== DROPPING_ITEM_ID && ORIGINAL_POSITIONS[item.i]);
-};
+  return safeItems
+    .filter((item) => item.i !== DROPPING_ITEM_ID && ORIGINAL_POSITIONS[item.i])
+    .map((item) => {
+      const original = ORIGINAL_POSITIONS[item.i];
+      const minW = original.minW || 1;
+      const minH = original.minH || 1;
+      const {
+        static: _static,
+        isDraggable: _isDraggable,
+        isResizable: _isResizable,
+        resizeHandles: _resizeHandles,
+        ...safeItem
+      } = item;
 
-const protectDesktopWidgetSpace = (item) => {
-  const original = ORIGINAL_POSITIONS[item.i];
-  if (item.i === WIDGET_IDS.DEVICE_STATUS_CHART && item.x === 9 && item.w === 3) {
-    return {
-      ...item,
-      x: original.x,
-      w: original.w,
-      minW: original.minW,
-      minH: original.minH,
-    };
-  }
-
-  const compressedDefaultSignature = {
-    [WIDGET_IDS.CPU_CHART]: { y: 3, h: 3 },
-    [WIDGET_IDS.NETWORK_CHART]: { y: 3, h: 3 },
-    [WIDGET_IDS.DEVICE_STATUS_CHART]: { y: 3, h: 3 },
-    [WIDGET_IDS.ALERTS_CARD]: { y: 6, h: 2 },
-    [WIDGET_IDS.SYSTEM_SUMMARY]: { y: 6, h: 2 },
-    [WIDGET_IDS.DEVICES_TABLE]: { y: 8, h: 5 },
-    [WIDGET_IDS.RESOURCE_USAGE]: { y: 8, h: 5 },
-  };
-  const compressedDefault = compressedDefaultSignature[item.i];
-
-  if (compressedDefault && item.y === compressedDefault.y && item.h === compressedDefault.h) {
-    return {
-      ...item,
-      y: original.y,
-      h: original.h,
-      minW: original.minW,
-      minH: original.minH,
-    };
-  }
-
-  return {
-    ...item,
-    minW: original.minW || item.minW,
-    minH: original.minH || item.minH,
-  };
+      return {
+        ...safeItem,
+        x: Number.isFinite(item.x) ? item.x : original.x,
+        y: Number.isFinite(item.y) ? item.y : original.y,
+        w: Number.isFinite(item.w) && item.w >= minW ? item.w : original.w,
+        h: Number.isFinite(item.h) && item.h >= minH ? item.h : original.h,
+        minW,
+        minH,
+      };
+    });
 };
 
 const sanitizeLayouts = (nextLayouts) => {
   if (!nextLayouts) return null;
 
   return Object.entries(nextLayouts).reduce((acc, [key, value]) => {
-    acc[key] = sanitizeLayoutItems(value).map(protectDesktopWidgetSpace);
+    acc[key] = sanitizeLayoutItems(value);
     return acc;
   }, {});
 };
@@ -95,6 +78,37 @@ const hasDroppingItem = (nextLayouts) =>
   Object.values(nextLayouts || {}).some((items = []) =>
     items.some((item) => item.i === DROPPING_ITEM_ID),
   );
+
+const getBreakpointLayoutsWithItem = (currentLayouts, nextItem) => {
+  const source = sanitizeLayouts(currentLayouts) || createDefaultLayouts();
+  return Object.entries(source).reduce((acc, [key, items]) => {
+    acc[key] = (items || []).map((item) =>
+      item.i === nextItem.i
+        ? {
+            ...item,
+            x: nextItem.x,
+            y: nextItem.y,
+            w: nextItem.w,
+            h: nextItem.h,
+            minW: nextItem.minW || item.minW,
+            minH: nextItem.minH || item.minH,
+          }
+        : item,
+    );
+    return acc;
+  }, {});
+};
+
+const fitItemToBreakpoint = (item, breakpoint) => {
+  const cols = COLS[breakpoint] || COLS.lg;
+  const width = Math.min(item.w, cols);
+  return {
+    ...item,
+    x: Math.max(0, Math.min(item.x, Math.max(cols - width, 0))),
+    w: width,
+    minW: Math.min(item.minW || 1, width),
+  };
+};
 
 const getLayoutRows = (items = []) =>
   items.reduce((max, item) => Math.max(max, (item.y || 0) + (item.h || 1)), 1);
@@ -108,16 +122,13 @@ const scheduleChartResize = () => {
 };
 
 const GridItemWrapper = React.forwardRef(function GridItemWrapper(
-  { widgetId, isEditMode, onRemove, children, style, className, onMouseDown, onMouseUp, onTouchEnd, ...rest }, ref
+  { widgetId, isEditMode, onRemove, children, style, className, ...rest }, ref
 ) {
   return (
     <div
       ref={ref}
       style={{ ...style, display: 'flex', flexDirection: 'column' }}
       className={className}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
-      onTouchEnd={onTouchEnd}
       {...rest}
     >
       {isEditMode && (
@@ -142,9 +153,16 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
-  const { width, containerRef } = useContainerWidth({ initialWidth: 1200 });
+  const containerRef = useRef(null);
   const droppingWidgetIdRef = useRef(null);
-  const [layouts, setLayouts] = useState(() => sanitizeLayouts(loadLayout()) || createDefaultLayouts());
+  const pendingLayoutsRef = useRef(null);
+  const isInteractingRef = useRef(false);
+  const layoutFrameRef = useRef(null);
+  const [layouts, setLayouts] = useState(() => {
+    const saved = loadLayout();
+    if (saved) return sanitizeLayouts(saved) || createDefaultLayouts();
+    return createDefaultLayouts();
+  });
   const [rowHeight, setRowHeight] = useState(MAX_ROW_HEIGHT);
 
   const widgetMap = useMemo(() => {
@@ -164,7 +182,19 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   }, []);
 
   useEffect(() => {
+    const handleResetLayout = () => {
+      const defaultLayouts = createDefaultLayouts();
+      setLayouts(defaultLayouts);
+      scheduleChartResize();
+    };
+
+    window.addEventListener('dashboard:reset-layout', handleResetLayout);
+    return () => window.removeEventListener('dashboard:reset-layout', handleResetLayout);
+  }, []);
+
+  useEffect(() => {
     if (!isDesktop || !containerRef.current) return undefined;
+    if (isEditMode) return undefined;
 
     const calculateRowHeight = () => {
       const availableHeight = containerRef.current?.clientHeight || 0;
@@ -180,24 +210,73 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     resizeObserver.observe(containerRef.current);
 
     return () => resizeObserver.disconnect();
-  }, [containerRef, isDesktop, layouts.lg]);
+  }, [containerRef, isDesktop, isEditMode, layouts.lg]);
+
+  const applyLayouts = useCallback((nextLayouts) => {
+    if (!nextLayouts) return;
+    setLayouts(nextLayouts);
+    saveLayout(nextLayouts);
+  }, []);
+
+  const queueLiveLayouts = useCallback((nextLayouts) => {
+    pendingLayoutsRef.current = nextLayouts;
+    if (layoutFrameRef.current) return;
+
+    layoutFrameRef.current = window.requestAnimationFrame(() => {
+      layoutFrameRef.current = null;
+      if (pendingLayoutsRef.current) {
+        setLayouts(pendingLayoutsRef.current);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (layoutFrameRef.current) {
+        window.cancelAnimationFrame(layoutFrameRef.current);
+      }
+    };
+  }, []);
 
   const handleLayoutChange = useCallback((_currentLayout, allLayouts) => {
-    if (!isEditMode) {
-      scheduleChartResize();
-      return;
-    }
+    if (!isEditMode) return;
 
     if (hasDroppingItem(allLayouts)) {
-      scheduleChartResize();
       return;
     }
 
     const sanitized = sanitizeLayouts(allLayouts) || createDefaultLayouts();
-    setLayouts(sanitized);
-    saveLayout(sanitized);
+    queueLiveLayouts(sanitized);
+
+    if (!isInteractingRef.current) {
+      saveLayout(sanitized);
+    }
+  }, [isEditMode, queueLiveLayouts]);
+
+  const handleInteractionStart = useCallback(() => {
+    isInteractingRef.current = true;
+    pendingLayoutsRef.current = layouts;
+  }, [layouts]);
+
+  const handleInteractionStop = useCallback(() => {
+    isInteractingRef.current = false;
+    if (layoutFrameRef.current) {
+      window.cancelAnimationFrame(layoutFrameRef.current);
+      layoutFrameRef.current = null;
+    }
+    applyLayouts(pendingLayoutsRef.current);
     scheduleChartResize();
-  }, [isEditMode]);
+  }, [applyLayouts]);
+
+  const handleResize = useCallback((_layout, _oldItem, newItem) => {
+    if (!isEditMode || !newItem?.i || newItem.i === DROPPING_ITEM_ID) return;
+
+    const sanitizedItem = sanitizeLayoutItems([newItem])[0];
+    if (!sanitizedItem) return;
+
+    const resizedLayouts = getBreakpointLayoutsWithItem(layouts, sanitizedItem);
+    queueLiveLayouts(resizedLayouts);
+  }, [isEditMode, layouts, queueLiveLayouts]);
 
   const handleRemove = useCallback((widgetId) => {
     const updated = { ...layouts };
@@ -218,13 +297,24 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     droppingWidgetIdRef.current = null;
 
     const original = ORIGINAL_POSITIONS[widgetId] || { x: 0, y: 99, w: 4, h: 4 };
-    const newItem = { i: widgetId, x: original.x, y: original.y, w: original.w, h: original.h, minW: original.minW || 2, minH: original.minH || 2 };
+    const newItem = {
+      i: widgetId,
+      x: Number.isFinite(layoutItem?.x) ? layoutItem.x : original.x,
+      y: Number.isFinite(layoutItem?.y) ? layoutItem.y : original.y,
+      w: original.w,
+      h: original.h,
+      minW: original.minW || 2,
+      minH: original.minH || 2,
+    };
 
     setLayouts((currentLayouts) => {
       const updated = sanitizeLayouts(currentLayouts) || createDefaultLayouts();
-      (['lg', 'md', 'sm', 'xs']).forEach((key) => {
-        const existing = (updated[key] || []).filter(item => item.i !== widgetId);
-        updated[key] = [...existing, newItem];
+      const resolvedLayout = sanitizeLayoutItems(layout).filter(item => item.i !== widgetId);
+      Object.keys(COLS).forEach((key) => {
+        const baseLayout = key === 'lg'
+          ? resolvedLayout
+          : (updated[key] || []).filter(item => item.i !== widgetId);
+        updated[key] = [...baseLayout, fitItemToBreakpoint(newItem, key)];
       });
       saveLayout(updated); // veya localStorage.setItem('dashboardLayout', JSON.stringify(updated));
       return updated;
@@ -305,24 +395,31 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
       }}
     >
       <ResponsiveGridLayout
-        className="layout"
-        width={width}
+        className={`layout smart-snap-grid ${isEditMode ? 'is-editing' : ''}`}
         layouts={layouts}
         breakpoints={BREAKPOINTS}
         cols={COLS}
+        measureBeforeMount={false}
         rowHeight={rowHeight}
         margin={GRID_MARGIN}
         containerPadding={[0, 0]}
+        compactType="vertical"
+        preventCollision={false}
+        allowOverlap={false}
         draggableHandle=".drag-handle"
-        dragConfig={{ enabled: true, handle: '.drag-handle' }}
-        resizeConfig={{ enabled: true }}
-        dropConfig={{ enabled: true, defaultItem: { w: 4, h: 4 } }}
+        draggableCancel=".react-resizable-handle,button,.MuiIconButton-root"
         isResizable={isEditMode}
         isDraggable={isEditMode}
         isDroppable={isEditMode}
+        resizeHandles={['se']}
         droppingItem={{ i: DROPPING_ITEM_ID, w: 4, h: 4 }}
         onDrop={onDrop}
         onLayoutChange={handleLayoutChange}
+        onDragStart={handleInteractionStart}
+        onResizeStart={handleInteractionStart}
+        onResize={handleResize}
+        onDragStop={handleInteractionStop}
+        onResizeStop={handleInteractionStop}
         style={{ minHeight: '100%' }}
       >
         {visibleWidgets.map(({ id, children }) => (
@@ -331,7 +428,6 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
             widgetId={id}
             isEditMode={isEditMode}
             onRemove={handleRemove}
-            data-grid={ORIGINAL_POSITIONS[id]}
           >
             {children || widgetMap[id]?.children}
           </GridItemWrapper>

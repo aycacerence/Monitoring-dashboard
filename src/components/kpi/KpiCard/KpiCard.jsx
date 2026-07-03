@@ -64,7 +64,7 @@ function KpiCard({
   };
 
   return (
-    <Card hoverable className="group flex h-auto flex-col justify-between lg:h-full lg:p-3">
+    <Card className="flex h-auto flex-col justify-between lg:h-full lg:p-3">
       <div className="mb-2 flex items-start justify-between lg:mb-1">
         <div className="flex-1">
           <p className="mb-1 text-sm font-medium text-slate-900 dark:text-white lg:text-xs">{title}</p>
@@ -74,7 +74,7 @@ function KpiCard({
           </div>
         </div>
         <Box
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-300 ease-in-out group-hover:scale-110 lg:h-8 lg:w-8 xl:h-10 xl:w-10"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg lg:h-8 lg:w-8 xl:h-10 xl:w-10"
           sx={{ backgroundColor: `${color}15`, color: color }}
         >
           <IconComponent fontSize="small" />

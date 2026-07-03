@@ -27,6 +27,7 @@ function WidgetSidebar({ open, onClose }) {
   const handleDefaultView = () => {
     dispatch(resetVisibility());
     localStorage.removeItem('dashboardLayout');
+    window.dispatchEvent(new CustomEvent('dashboard:reset-layout'));
     window.dispatchEvent(new Event('resize'));
   };
 
