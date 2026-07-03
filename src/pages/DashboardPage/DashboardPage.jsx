@@ -34,7 +34,7 @@ function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
   const [timeRange, setTimeRange] = useState('24h');
 
-  const { setHeaderProps } = useOutletContext();
+  const { setHeaderProps, isEditMode } = useOutletContext();
 
   // Redux status selectors
   const chartsData = useAppSelector((state) => state.charts.data);
@@ -220,7 +220,7 @@ function DashboardPage() {
       <SplashScreen isVisible={isVisible} />
 
       <PageContainer className="flex h-full min-h-0 flex-col overflow-y-auto p-4 lg:overflow-hidden">
-        <DraggableGrid widgets={dashboardWidgets} />
+        <DraggableGrid widgets={dashboardWidgets} isEditMode={isEditMode} />
       </PageContainer>
     </>
   );

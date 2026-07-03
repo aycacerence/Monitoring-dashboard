@@ -27,7 +27,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 
-function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
+function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onCloseWidgetSidebar }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
@@ -141,7 +141,7 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
             <Collapse in={openAccordion.kontrolPaneli} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 <ListItemButton 
-                  selected={location.pathname === '/'} 
+                  selected={location.pathname === '/' && activePanelSection === 'panel'} 
                   onClick={() => {
                     navigate('/');
                     if (onCloseWidgetSidebar) onCloseWidgetSidebar();
@@ -156,7 +156,9 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
                 
                 {/* PANEL AYARLARI -> Toggles WidgetSidebar */}
                 <ListItemButton 
+                  selected={activePanelSection === 'settings'}
                   onClick={() => {
+                    navigate('/');
                     onOpenWidgetSidebar();
                     if (isMobile) {
                       setIsCollapsed(true);

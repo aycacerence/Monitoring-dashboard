@@ -108,7 +108,7 @@ const scheduleChartResize = () => {
 };
 
 const GridItemWrapper = React.forwardRef(function GridItemWrapper(
-  { widgetId, onRemove, children, style, className, onMouseDown, onMouseUp, onTouchEnd, ...rest }, ref
+  { widgetId, isEditMode, onRemove, children, style, className, onMouseDown, onMouseUp, onTouchEnd, ...rest }, ref
 ) {
   return (
     <div
@@ -120,14 +120,16 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
       onTouchEnd={onTouchEnd}
       {...rest}
     >
-      <Box className="drag-handle" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 1.5, py: 0.5, cursor: 'grab', userSelect: 'none', flexShrink: 0, bgcolor: 'background.paper', borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottom: '1px solid', borderColor: 'divider', '&:active': { cursor: 'grabbing' }}}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <DragIndicatorIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+      {isEditMode && (
+        <Box className="drag-handle" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 1.5, py: 0.5, cursor: 'grab', userSelect: 'none', flexShrink: 0, bgcolor: 'background.paper', borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottom: '1px solid', borderColor: 'divider', '&:active': { cursor: 'grabbing' }}}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <DragIndicatorIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+          </Box>
+          <IconButton size="small" onMouseDown={(e) => e.stopPropagation()} onClick={() => onRemove(widgetId)} sx={{ p: 0.3 }}>
+            <CloseIcon sx={{ fontSize: 15 }} />
+          </IconButton>
         </Box>
-        <IconButton size="small" onMouseDown={(e) => e.stopPropagation()} onClick={() => onRemove(widgetId)} sx={{ p: 0.3 }}>
-          <CloseIcon sx={{ fontSize: 15 }} />
-        </IconButton>
-      </Box>
+      )}
       <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden', bgcolor: 'background.paper', borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
         {children}
       </Box>
@@ -135,7 +137,7 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
   );
 });
 
-export default function DraggableGrid({ widgets = [] }) {
+export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const dispatch = useAppDispatch();
@@ -181,6 +183,11 @@ export default function DraggableGrid({ widgets = [] }) {
   }, [containerRef, isDesktop, layouts.lg]);
 
   const handleLayoutChange = useCallback((_currentLayout, allLayouts) => {
+    if (!isEditMode) {
+      scheduleChartResize();
+      return;
+    }
+
     if (hasDroppingItem(allLayouts)) {
       scheduleChartResize();
       return;
@@ -190,7 +197,7 @@ export default function DraggableGrid({ widgets = [] }) {
     setLayouts(sanitized);
     saveLayout(sanitized);
     scheduleChartResize();
-  }, []);
+  }, [isEditMode]);
 
   const handleRemove = useCallback((widgetId) => {
     const updated = { ...layouts };
@@ -234,30 +241,34 @@ export default function DraggableGrid({ widgets = [] }) {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
         {visibleWidgets.map(({ id, title, children }) => (
           <Box key={id} sx={{ minWidth: 0 }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                px: 1.5,
-                py: 0.5,
-                bgcolor: 'background.paper',
-                borderTopLeftRadius: 2,
-                borderTopRightRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderBottom: 0,
-              }}
-            >
-              <IconButton size="small" onClick={() => dispatch(setWidgetVisibility({ id, visible: false }))} sx={{ p: 0.3 }}>
-                <CloseIcon sx={{ fontSize: 15 }} />
-              </IconButton>
-            </Box>
+            {isEditMode && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  px: 1.5,
+                  py: 0.5,
+                  bgcolor: 'background.paper',
+                  borderTopLeftRadius: 2,
+                  borderTopRightRadius: 2,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderBottom: 0,
+                }}
+              >
+                <IconButton size="small" onClick={() => dispatch(setWidgetVisibility({ id, visible: false }))} sx={{ p: 0.3 }}>
+                  <CloseIcon sx={{ fontSize: 15 }} />
+                </IconButton>
+              </Box>
+            )}
             <Box
               sx={{
                 minWidth: 0,
                 overflow: { xs: 'visible', lg: 'hidden' },
                 bgcolor: 'background.paper',
+                borderTopLeftRadius: isEditMode ? 0 : 2,
+                borderTopRightRadius: isEditMode ? 0 : 2,
                 borderBottomLeftRadius: 2,
                 borderBottomRightRadius: 2,
                 border: '1px solid',
@@ -306,9 +317,9 @@ export default function DraggableGrid({ widgets = [] }) {
         dragConfig={{ enabled: true, handle: '.drag-handle' }}
         resizeConfig={{ enabled: true }}
         dropConfig={{ enabled: true, defaultItem: { w: 4, h: 4 } }}
-        isResizable={true}
-        isDraggable={true}
-        isDroppable={true}
+        isResizable={isEditMode}
+        isDraggable={isEditMode}
+        isDroppable={isEditMode}
         droppingItem={{ i: DROPPING_ITEM_ID, w: 4, h: 4 }}
         onDrop={onDrop}
         onLayoutChange={handleLayoutChange}
@@ -318,6 +329,7 @@ export default function DraggableGrid({ widgets = [] }) {
           <GridItemWrapper
             key={id}
             widgetId={id}
+            isEditMode={isEditMode}
             onRemove={handleRemove}
             data-grid={ORIGINAL_POSITIONS[id]}
           >
