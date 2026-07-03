@@ -18,21 +18,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import DataUsageOutlinedIcon from '@mui/icons-material/DataUsageOutlined';
-import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
-import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
-import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
-import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
-import CastOutlinedIcon from '@mui/icons-material/CastOutlined';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
-import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
-import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import NatureOutlinedIcon from '@mui/icons-material/NatureOutlined';
 import InvertColorsOutlinedIcon from '@mui/icons-material/InvertColorsOutlined';
-import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
@@ -47,7 +36,6 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
 
   const [openAccordion, setOpenAccordion] = useState({
     kontrolPaneli: true,
-    gozlemMerkezi: false,
   });
 
   // On mobile, default to collapsed
@@ -185,56 +173,16 @@ function MainSidebar({ onOpenWidgetSidebar, onCloseWidgetSidebar }) {
             </Collapse>
           )}
 
-          {/* Gözlem Merkezi */}
-          <ListItemButton onClick={() => toggleAccordion('gozlemMerkezi')} sx={navItemStyle}>
-            <ListItemIcon sx={navIconStyle}>
-              <VisibilityOutlinedIcon />
-            </ListItemIcon>
-            {!isCollapsed && <ListItemText primary="Gözlem Merkezi" primaryTypographyProps={{ fontSize: '0.875rem' }} />}
-            {!isCollapsed && (openAccordion.gozlemMerkezi ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />)}
-          </ListItemButton>
-          {!isCollapsed && (
-            <Collapse in={openAccordion.gozlemMerkezi} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItemButton sx={subItemStyle}>
-                  <ListItemIcon sx={navIconStyle}><DataUsageOutlinedIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Veri Paneli" primaryTypographyProps={{ fontSize: '0.875rem' }} />
-                </ListItemButton>
-                <ListItemButton sx={subItemStyle}>
-                  <ListItemIcon sx={navIconStyle}><AssessmentOutlinedIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Enerji Raporu" primaryTypographyProps={{ fontSize: '0.875rem' }} />
-                </ListItemButton>
-                <ListItemButton sx={subItemStyle}>
-                  <ListItemIcon sx={navIconStyle}><NotificationsActiveOutlinedIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Alarm Monitoring" primaryTypographyProps={{ fontSize: '0.875rem' }} />
-                </ListItemButton>
-                <ListItemButton sx={subItemStyle}>
-                  <ListItemIcon sx={navIconStyle}><TimelineOutlinedIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Cihaz Sağlığı Gantt" primaryTypographyProps={{ fontSize: '0.875rem' }} />
-                </ListItemButton>
-                <ListItemButton sx={subItemStyle}>
-                  <ListItemIcon sx={navIconStyle}><TrendingUpOutlinedIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="KPI İzleme" primaryTypographyProps={{ fontSize: '0.875rem' }} />
-                </ListItemButton>
-              </List>
-            </Collapse>
-          )}
-
           {/* Standalone Items */}
           {[
-            { text: 'Canlı İzleme', icon: <CastOutlinedIcon /> },
             { text: 'Analiz', icon: <InsertChartOutlinedIcon /> },
-            { text: 'Tanımlama', icon: <ListAltOutlinedIcon /> },
-            { text: 'Proje Yönetim Planı', icon: <AccountTreeOutlinedIcon /> },
             { text: 'Ayarlar', icon: <SettingsOutlinedIcon /> },
-            { text: 'Organizasyon', icon: <BusinessOutlinedIcon /> },
             { text: 'Profile', icon: <PersonOutlineOutlinedIcon /> },
-            { text: 'Wiki', icon: <MenuBookOutlinedIcon /> },
           ].map((item, idx) => (
             <ListItemButton key={idx} sx={navItemStyle}>
               <ListItemIcon sx={navIconStyle}>{item.icon}</ListItemIcon>
               {!isCollapsed && <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.875rem' }} />}
-              {!isCollapsed && ['Canlı İzleme', 'Analiz', 'Tanımlama', 'Proje Yönetim Planı', 'Ayarlar'].includes(item.text) && (
+              {!isCollapsed && ['Analiz', 'Ayarlar'].includes(item.text) && (
                 <ExpandMore fontSize="small" />
               )}
             </ListItemButton>
