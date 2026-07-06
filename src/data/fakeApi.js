@@ -28,14 +28,9 @@ const getLang = () => {
 const getRandomDelay = () => Math.floor(Math.random() * 301) + 300;
 
 const resolveWithDelay = (payload) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     setTimeout(() => {
-      // %10 ihtimalle hata fırlatma simülasyonu
-      if (Math.random() < 0.1) {
-        reject(new Error("Sunucu bağlantısı zaman aşımına uğradı."));
-      } else {
-        resolve(payload);
-      }
+      resolve(payload);
     }, getRandomDelay());
   });
 
