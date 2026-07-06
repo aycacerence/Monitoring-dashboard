@@ -153,15 +153,15 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
+  const role = useAppSelector((state) => state.auth.role);
   const containerRef = useRef(null);
   const droppingWidgetIdRef = useRef(null);
   const pendingLayoutsRef = useRef(null);
   const isInteractingRef = useRef(false);
   const layoutFrameRef = useRef(null);
   const [layouts, setLayouts] = useState(() => {
-    const saved = loadLayout();
-    if (saved) return sanitizeLayouts(saved) || createDefaultLayouts();
-    return createDefaultLayouts();
+    const saved = loadLayout(role);
+    return sanitizeLayouts(saved) || createDefaultLayouts();
   });
   const [rowHeight, setRowHeight] = useState(MAX_ROW_HEIGHT);
 
@@ -193,6 +193,18 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   }, []);
 
   useEffect(() => {
+    const saved = loadLayout(role);
+    pendingLayoutsRef.current = null;
+    isInteractingRef.current = false;
+    if (layoutFrameRef.current) {
+      window.cancelAnimationFrame(layoutFrameRef.current);
+      layoutFrameRef.current = null;
+    }
+    setLayouts(sanitizeLayouts(saved) || createDefaultLayouts());
+    scheduleChartResize();
+  }, [role]);
+
+  useEffect(() => {
     if (!isDesktop || !containerRef.current) return undefined;
     if (isEditMode) return undefined;
 
@@ -215,8 +227,8 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   const applyLayouts = useCallback((nextLayouts) => {
     if (!nextLayouts) return;
     setLayouts(nextLayouts);
-    saveLayout(nextLayouts);
-  }, []);
+    saveLayout(nextLayouts, role);
+  }, [role]);
 
   const queueLiveLayouts = useCallback((nextLayouts) => {
     pendingLayoutsRef.current = nextLayouts;
@@ -249,9 +261,9 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     queueLiveLayouts(sanitized);
 
     if (!isInteractingRef.current) {
-      saveLayout(sanitized);
+      saveLayout(sanitized, role);
     }
-  }, [isEditMode, queueLiveLayouts]);
+  }, [isEditMode, queueLiveLayouts, role]);
 
   const handleInteractionStart = useCallback(() => {
     isInteractingRef.current = true;
@@ -285,10 +297,10 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     });
 
     setLayouts(updated);
-    saveLayout(updated);
+    saveLayout(updated, role);
     dispatch(setWidgetVisibility({ id: widgetId, visible: false }));
     scheduleChartResize();
-  }, [dispatch, layouts]);
+  }, [dispatch, layouts, role]);
 
   const onDrop = useCallback((layout, layoutItem, event) => {
     const eventWidgetId = event?.dataTransfer?.getData('text/plain');
@@ -316,13 +328,13 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
           : (updated[key] || []).filter(item => item.i !== widgetId);
         updated[key] = [...baseLayout, fitItemToBreakpoint(newItem, key)];
       });
-      saveLayout(updated); // veya localStorage.setItem('dashboardLayout', JSON.stringify(updated));
+      saveLayout(updated, role);
       return updated;
     });
 
     dispatch(setWidgetVisibility({ id: widgetId, visible: true }));
     scheduleChartResize();
-  }, [dispatch]);
+  }, [dispatch, role]);
 
   const visibleWidgets = widgets.filter((widget) => visibility[widget.id]);
 
@@ -395,6 +407,7 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
       }}
     >
       <ResponsiveGridLayout
+        key={role}
         className={`layout smart-snap-grid ${isEditMode ? 'is-editing' : ''}`}
         layouts={layouts}
         breakpoints={BREAKPOINTS}

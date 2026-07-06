@@ -1,23 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from '@mui/material';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Box } from '@mui/material';
 import Header from '../Header/index.js';
 import WidgetSidebar from '../WidgetSidebar/WidgetSidebar';
 import MainSidebar from '../MainSidebar/index.js';
 
 function AppLayout() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [savePromptOpen, setSavePromptOpen] = useState(false);
-  const [activePanelSection, setActivePanelSection] = useState('panel');
+  const isEditMode = location.pathname === '/settings';
+  const activePanelSection = isEditMode ? 'settings' : 'panel';
   const [headerProps, setHeaderProps] = useState({
     title: 'Monitoring Dashboard',
     timeRange: '24h',
@@ -27,36 +20,22 @@ function AppLayout() {
   });
 
   useEffect(() => {
+    setSidebarOpen(isEditMode);
     // When sidebar toggles, wait for transition and trigger resize for charts
     const timer = setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
     return () => clearTimeout(timer);
-  }, [sidebarOpen]);
+  }, [isEditMode]);
 
   const openEditMode = () => {
-    setSavePromptOpen(false);
-    setActivePanelSection('settings');
     setSidebarOpen(true);
-    setIsEditMode(true);
+    navigate('/settings');
   };
 
   const requestViewMode = () => {
-    if (isEditMode) {
-      setSavePromptOpen(true);
-      return;
-    }
-
-    setActivePanelSection('panel');
     setSidebarOpen(false);
-    setIsEditMode(false);
-  };
-
-  const saveAndExitEditMode = () => {
-    setSavePromptOpen(false);
-    setActivePanelSection('panel');
-    setSidebarOpen(false);
-    setIsEditMode(false);
+    navigate('/');
     window.dispatchEvent(new Event('resize'));
   };
 
@@ -76,6 +55,7 @@ function AppLayout() {
           <WidgetSidebar
             open={sidebarOpen}
             onClose={requestViewMode}
+            isEditMode={isEditMode}
           />
           <Box
             component="main"
@@ -91,27 +71,6 @@ function AppLayout() {
           </Box>
         </Box>
       </Box>
-      <Dialog
-        open={savePromptOpen}
-        onClose={() => setSavePromptOpen(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Panel ayarları kaydedilsin mi?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Yaptığınız widget düzenlemelerini kaydedip panele dönmek istiyor musunuz?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setSavePromptOpen(false)}>
-            Vazgeç
-          </Button>
-          <Button variant="contained" onClick={saveAndExitEditMode}>
-            Kaydet
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

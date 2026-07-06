@@ -1,6 +1,9 @@
-export const saveLayout = (layout) => {
-  try { localStorage.setItem('dashboardLayout', JSON.stringify(layout)); } catch {}
+const getLayoutKey = (role) => `dashboardLayout_${role || 'user'}`;
+
+export const saveLayout = (layout, role) => {
+  try { localStorage.setItem(getLayoutKey(role), JSON.stringify(layout)); } catch {}
 };
-export const loadLayout = () => {
-  try { const raw = localStorage.getItem('dashboardLayout'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+
+export const loadLayout = (role) => {
+  try { const raw = localStorage.getItem(getLayoutKey(role)); return raw ? JSON.parse(raw) : null; } catch { return null; }
 };

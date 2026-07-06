@@ -27,14 +27,15 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import { WIDGET_IDS } from '../../features/widgetVisibility/widgetVisibilitySlice';
 
-function DashboardPage() {
+function DashboardPage({ isEditMode: isEditModeProp }) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
   const [timeRange, setTimeRange] = useState('24h');
 
-  const { setHeaderProps, isEditMode } = useOutletContext();
+  const { setHeaderProps, isEditMode: outletEditMode } = useOutletContext();
+  const isEditMode = isEditModeProp ?? outletEditMode;
 
   // Redux status selectors
   const chartsData = useAppSelector((state) => state.charts.data);
