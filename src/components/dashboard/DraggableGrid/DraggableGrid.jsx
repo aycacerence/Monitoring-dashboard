@@ -3,8 +3,7 @@ import 'react-resizable/css/styles.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
 import { useLocation } from 'react-router-dom';
-import { Box, IconButton, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Box, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
@@ -169,6 +168,32 @@ const ensureLayoutsForInstances = (layouts, instances) =>
     return acc;
   }, {});
 
+const harmonizeDesktopLayouts = (layouts, instances) => {
+  const desktopBreakpoints = Object.keys(COLS).filter((key) => COLS[key] === COLS.lg);
+  const preferredItems = instances.reduce((acc, instance) => {
+    const candidates = desktopBreakpoints
+      .map((key) => layouts[key]?.find((item) => item.i === instance.id))
+      .filter(Boolean);
+
+    if (!candidates.length) return acc;
+
+    acc[instance.id] = candidates.reduce((bestItem, item) => {
+      const bestArea = (bestItem.w || 1) * (bestItem.h || 1);
+      const itemArea = (item.w || 1) * (item.h || 1);
+      return itemArea >= bestArea ? item : bestItem;
+    }, candidates[0]);
+    return acc;
+  }, {});
+
+  return Object.keys(COLS).reduce((acc, key) => {
+    acc[key] = (layouts[key] || []).map((item) => {
+      const preferredItem = preferredItems[item.i];
+      return preferredItem ? fitItemToBreakpoint(preferredItem, key) : item;
+    });
+    return acc;
+  }, {});
+};
+
 const normalizeStoredDashboardState = (storedState, availableTypes) => {
   const defaultState = createDefaultDashboardState(availableTypes);
   if (!storedState) return defaultState;
@@ -184,7 +209,7 @@ const normalizeStoredDashboardState = (storedState, availableTypes) => {
       sanitizeLayouts(storedState.layouts, widgets) || createDefaultLayouts(widgets),
       widgets,
     );
-    return { widgets, layouts };
+    return { widgets, layouts: harmonizeDesktopLayouts(layouts, widgets) };
   }
 
   const oldLayoutIds = Array.from(
@@ -213,8 +238,11 @@ const normalizeStoredDashboardState = (storedState, availableTypes) => {
 
   return {
     widgets,
-    layouts: ensureLayoutsForInstances(
-      sanitizeLayouts(migratedLayouts, widgets) || createDefaultLayouts(widgets),
+    layouts: harmonizeDesktopLayouts(
+      ensureLayoutsForInstances(
+        sanitizeLayouts(migratedLayouts, widgets) || createDefaultLayouts(widgets),
+        widgets,
+      ),
       widgets,
     ),
   };
@@ -225,6 +253,20 @@ const removeInstanceFromLayouts = (layouts, instanceId) =>
     acc[key] = (layouts[key] || []).filter((item) => item.i !== instanceId);
     return acc;
   }, {});
+
+const syncLayoutItemsAcrossBreakpoints = (layouts, changedItems, instances) => {
+  const sanitizedChangedItems = sanitizeLayoutItems(changedItems, instances);
+  const changedItemMap = new Map(sanitizedChangedItems.map((item) => [item.i, item]));
+
+  return Object.keys(COLS).reduce((acc, key) => {
+    const existingItems = layouts[key] || [];
+    acc[key] = existingItems.map((item) => {
+      const changedItem = changedItemMap.get(item.i);
+      return changedItem ? fitItemToBreakpoint(changedItem, key) : item;
+    });
+    return acc;
+  }, {});
+};
 
 const areDashboardStatesEqual = (firstState, secondState) =>
   JSON.stringify(firstState) === JSON.stringify(secondState);
@@ -258,7 +300,7 @@ const calculateRowHeight = (container, layouts, isEditMode) => {
   }
 
   const availableHeight = getAvailableGridHeight(container, isEditMode);
-  const rows = getLayoutRows(layouts?.lg);
+  const rows = Math.max(getLayoutRows(layouts?.lg), EDIT_BOARD_ROWS);
   const verticalMargins = Math.max(rows - 1, 0) * GRID_MARGIN[1];
   const nextRowHeight = Math.floor((availableHeight - verticalMargins) / rows);
 
@@ -359,8 +401,6 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
 });
 
 export default function DraggableGrid({ widgets = [] }) {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const location = useLocation();
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
@@ -381,7 +421,6 @@ export default function DraggableGrid({ widgets = [] }) {
     h: 4,
   });
   const [activeDropType, setActiveDropType] = useState(null);
-  const [currentBreakpoint, setCurrentBreakpoint] = useState('lg');
 
   const widgetMap = useMemo(() => {
     return widgets.reduce((acc, widget) => {
@@ -490,6 +529,7 @@ export default function DraggableGrid({ widgets = [] }) {
       setSavedState(draftState);
       saveLayout(draftState, role);
       dispatch(setIsDirty(false));
+      scheduleChartResize();
     };
 
     const handleCancelLayout = () => {
@@ -508,7 +548,7 @@ export default function DraggableGrid({ widgets = [] }) {
   }, [dispatch, draftState, role, savedState]);
 
   useEffect(() => {
-    if (!isDesktop || !containerRef.current) return undefined;
+    if (!containerRef.current) return undefined;
 
     const updateRowHeight = () => {
       const nextRowHeight = calculateRowHeight(containerRef.current, draftState.layouts, isEditMode);
@@ -523,15 +563,16 @@ export default function DraggableGrid({ widgets = [] }) {
     return () => {
       window.removeEventListener('resize', updateRowHeight);
     };
-  }, [containerRef, isDesktop, isEditMode, layoutRows]);
+  }, [containerRef, isEditMode, layoutRows]);
 
   const handleInteractionStop = useCallback((layout) => {
     if (isEditMode && Array.isArray(layout)) {
       setDraftState((currentState) => {
-        const nextLayouts = {
-          ...currentState.layouts,
-          [currentBreakpoint]: sanitizeLayoutItems(layout, currentState.widgets),
-        };
+        const nextLayouts = syncLayoutItemsAcrossBreakpoints(
+          currentState.layouts,
+          layout,
+          currentState.widgets,
+        );
 
         if (areLayoutsEqual(nextLayouts, currentState.layouts)) {
           return currentState;
@@ -543,7 +584,7 @@ export default function DraggableGrid({ widgets = [] }) {
         };
       });
     }
-  }, [currentBreakpoint, isEditMode]);
+  }, [isEditMode]);
 
   const handleRemove = useCallback((instanceId) => {
     setDraftState((currentState) => {
@@ -590,11 +631,13 @@ export default function DraggableGrid({ widgets = [] }) {
       const nextWidgets = [...currentState.widgets, newInstance];
       const updatedLayouts = sanitizeLayouts(currentState.layouts, currentState.widgets) || createDefaultLayouts(currentState.widgets);
       const resolvedLayout = sanitizeLayoutItems(layout, currentState.widgets);
+      const resolvedItemMap = new Map(resolvedLayout.map((item) => [item.i, item]));
 
       Object.keys(COLS).forEach((key) => {
-        const baseLayout = key === 'lg'
-          ? resolvedLayout
-          : (updatedLayouts[key] || []);
+        const baseLayout = (updatedLayouts[key] || []).map((item) => {
+          const resolvedItem = resolvedItemMap.get(item.i);
+          return resolvedItem ? fitItemToBreakpoint(resolvedItem, key) : item;
+        });
         updatedLayouts[key] = [
           ...baseLayout.filter((item) => item.i !== DROPPING_ITEM_ID),
           fitItemToBreakpoint(newItem, key),
@@ -607,56 +650,6 @@ export default function DraggableGrid({ widgets = [] }) {
     dispatch(setWidgetVisibility({ id: widgetType, visible: true, role }));
     scheduleChartResize();
   }, [dispatch, role, widgetMap]);
-
-  if (!isDesktop && !isEditMode) {
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-        {renderedWidgets.map(({ id, type }) => (
-          <Box key={id} sx={{ minWidth: 0 }}>
-            {isEditMode && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  px: 1.5,
-                  py: 0.5,
-                  bgcolor: 'background.paper',
-                  borderTopLeftRadius: 2,
-                  borderTopRightRadius: 2,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderBottom: 0,
-                }}
-              >
-                <IconButton size="small" onClick={() => handleRemove(id)} sx={{ p: 0.3 }}>
-                  <CloseIcon sx={{ fontSize: 15 }} />
-                </IconButton>
-              </Box>
-            )}
-            <Box
-              sx={{
-                minWidth: 0,
-                overflow: { xs: 'visible', lg: 'hidden' },
-                bgcolor: 'background.paper',
-                borderTopLeftRadius: isEditMode ? 0 : 2,
-                borderTopRightRadius: isEditMode ? 0 : 2,
-                borderBottomLeftRadius: 2,
-                borderBottomRightRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                '& > *': {
-                  minWidth: 0,
-                },
-              }}
-            >
-              {widgetMap[type]?.children}
-            </Box>
-          </Box>
-        ))}
-      </Box>
-    );
-  }
 
   return (
     <Box
@@ -707,7 +700,6 @@ export default function DraggableGrid({ widgets = [] }) {
         resizeHandles={['se', 's', 'e']}
         droppingItem={droppingItem}
         onDrop={onDrop}
-        onBreakpointChange={setCurrentBreakpoint}
         onDragStop={handleInteractionStop}
         onResizeStop={handleInteractionStop}
         style={{ height: isEditMode ? '100%' : undefined, minHeight: isEditMode ? undefined : '100%' }}

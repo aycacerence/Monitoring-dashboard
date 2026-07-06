@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
 import { Box } from '@mui/material';
@@ -20,6 +21,22 @@ function KpiCard({
 }) {
   const isEditMode = useAppSelector(selectIsEditMode);
   const IconComponent = getIconComponent(icon);
+  const sparklineRef = useRef(null);
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    const container = sparklineRef.current;
+    if (!container || isEditMode) return undefined;
+
+    const resizeChart = () => {
+      chartRef.current?.getEchartsInstance?.()?.resize();
+    };
+    const observer = new ResizeObserver(resizeChart);
+    observer.observe(container);
+    requestAnimationFrame(resizeChart);
+
+    return () => observer.disconnect();
+  }, [isEditMode]);
 
   const chartOptions = {
     grid: {
@@ -84,11 +101,12 @@ function KpiCard({
         </Box>
       </div>
       
-      <div className="my-2 min-h-[40px] flex-1 lg:my-1 lg:min-h-[28px] xl:min-h-[36px]">
+      <div ref={sparklineRef} className="my-2 min-h-[40px] flex-1 lg:my-1 lg:min-h-[28px] xl:min-h-[36px]">
         {isEditMode ? (
           <Box sx={{ height: 40, bgcolor: 'action.hover', borderRadius: 1 }} />
         ) : sparklineData && sparklineData.length > 0 && (
           <ReactECharts
+            ref={chartRef}
             option={chartOptions}
             style={{ height: '100%', width: '100%' }}
             opts={{ renderer: 'svg' }}
