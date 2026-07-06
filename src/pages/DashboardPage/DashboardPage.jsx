@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import { WIDGET_IDS } from '../../features/widgetVisibility/widgetVisibilitySlice';
 import { selectIsEditMode } from '../../features/ui/uiSlice';
+import WidgetPlaceholder from '../../components/common/WidgetPlaceholder/WidgetPlaceholder';
 
 function DashboardPage() {
   const { t, i18n } = useTranslation();
@@ -151,7 +152,7 @@ function DashboardPage() {
       {
         id: WIDGET_IDS.CPU_CHART,
         title: t('sidebar.widgets.cpuChart', 'CPU Kullanımı'),
-        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.cpuUsageTitle')) : (
+        children: isEditMode ? <WidgetPlaceholder widgetId={WIDGET_IDS.CPU_CHART} /> : showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.cpuUsageTitle')) : (
           <ChartCard title={t('charts.cpuUsageTitle')} subtitle={t('charts.cpuUsageSubtitle')} infoText={t('charts.cpuUsageInfo')}>
             <LineChartWidget data={chartsData.cpuUsage || []} seriesName={t('charts.cpuUsageSeries', 'CPU Kullanımı')} color="#8b5cf6" height="100%" />
           </ChartCard>
@@ -160,7 +161,7 @@ function DashboardPage() {
       {
         id: WIDGET_IDS.NETWORK_CHART,
         title: t('sidebar.widgets.networkChart', 'Ağ Trafiği'),
-        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.networkTrafficTitle')) : (
+        children: isEditMode ? <WidgetPlaceholder widgetId={WIDGET_IDS.NETWORK_CHART} /> : showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.networkTrafficTitle')) : (
           <ChartCard title={t('charts.networkTrafficTitle')} subtitle={t('charts.networkTrafficSubtitle')} infoText={t('charts.networkTrafficInfo')}>
             <BarChartWidget data={chartsData.networkTraffic || []} height="100%" />
           </ChartCard>
@@ -169,7 +170,7 @@ function DashboardPage() {
       {
         id: WIDGET_IDS.DEVICE_STATUS_CHART,
         title: t('sidebar.widgets.deviceStatusChart', 'Cihaz Durumları'),
-        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.deviceStatusTitle')) : (
+        children: isEditMode ? <WidgetPlaceholder widgetId={WIDGET_IDS.DEVICE_STATUS_CHART} /> : showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.deviceStatusTitle')) : (
           <ChartCard title={t('charts.deviceStatusTitle')} subtitle={t('charts.deviceStatusSubtitle')}>
             <div className="flex h-full min-h-[240px] flex-col items-center justify-center gap-5 sm:min-h-[220px] sm:flex-row lg:min-h-0">
               <div className="flex shrink-0 justify-center sm:w-36">
