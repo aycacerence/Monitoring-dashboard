@@ -226,6 +226,35 @@ const removeInstanceFromLayouts = (layouts, instanceId) =>
     return acc;
   }, {});
 
+const swapInstancePositionsInLayouts = (layouts, sourceId, targetId, instances) => {
+  const source = sanitizeLayouts(layouts, instances) || createDefaultLayouts(instances);
+
+  return Object.keys(COLS).reduce((acc, key) => {
+    const items = source[key] || [];
+    const sourceItem = items.find((item) => item.i === sourceId);
+    const targetItem = items.find((item) => item.i === targetId);
+
+    if (!sourceItem || !targetItem) {
+      acc[key] = items;
+      return acc;
+    }
+
+    acc[key] = sanitizeLayoutItems(
+      items.map((item) => {
+        if (item.i === sourceId) {
+          return { ...item, x: targetItem.x, y: targetItem.y };
+        }
+        if (item.i === targetId) {
+          return { ...item, x: sourceItem.x, y: sourceItem.y };
+        }
+        return item;
+      }),
+      instances,
+    );
+    return acc;
+  }, {});
+};
+
 const areDashboardStatesEqual = (firstState, secondState) =>
   JSON.stringify(firstState) === JSON.stringify(secondState);
 
@@ -282,18 +311,46 @@ const scheduleChartResize = () => {
 };
 
 const GridItemWrapper = React.forwardRef(function GridItemWrapper(
-  { instanceId, isEditMode, onRemove, children, style, className, ...rest },
+  {
+    instanceId,
+    isEditMode,
+    isBoardDragging,
+    onBoardDragEnd,
+    onBoardDragOver,
+    onBoardDragStart,
+    onBoardDrop,
+    onRemove,
+    children,
+    style,
+    className,
+    ...rest
+  },
   ref,
 ) {
   return (
     <div
       ref={ref}
-      style={{ ...style, display: 'flex', flexDirection: 'column' }}
+      style={{
+        ...style,
+        display: 'flex',
+        flexDirection: 'column',
+        opacity: isBoardDragging ? 0.55 : style?.opacity,
+      }}
       className={className}
       {...rest}
+      onDragOver={(event) => onBoardDragOver?.(event, instanceId)}
+      onDrop={(event) => onBoardDrop?.(event, instanceId)}
     >
       <Box
         className="widget-drag-handle drag-handle"
+        draggable={isEditMode}
+        onMouseDown={(event) => {
+          if (isEditMode) {
+            event.stopPropagation();
+          }
+        }}
+        onDragStart={(event) => onBoardDragStart?.(event, instanceId)}
+        onDragEnd={onBoardDragEnd}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -375,6 +432,7 @@ export default function DraggableGrid({ widgets = [] }) {
   });
   const [activeDropType, setActiveDropType] = useState(null);
   const [currentBreakpoint, setCurrentBreakpoint] = useState('lg');
+  const [draggedBoardInstanceId, setDraggedBoardInstanceId] = useState(null);
 
   const widgetMap = useMemo(() => {
     return widgets.reduce((acc, widget) => {
@@ -573,6 +631,53 @@ export default function DraggableGrid({ widgets = [] }) {
     scheduleChartResize();
   }, [dispatch, role]);
 
+  const handleBoardDragStart = useCallback((event, instanceId) => {
+    if (!isEditMode) return;
+
+    event.stopPropagation();
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('application/x-dashboard-widget-instance', instanceId);
+    setDraggedBoardInstanceId(instanceId);
+  }, [isEditMode]);
+
+  const handleBoardDragOver = useCallback((event) => {
+    if (!isEditMode || !draggedBoardInstanceId) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = 'move';
+  }, [draggedBoardInstanceId, isEditMode]);
+
+  const handleBoardDrop = useCallback((event, targetInstanceId) => {
+    if (!isEditMode || !draggedBoardInstanceId || draggedBoardInstanceId === targetInstanceId) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    setDraftState((currentState) => {
+      const nextLayouts = swapInstancePositionsInLayouts(
+        currentState.layouts,
+        draggedBoardInstanceId,
+        targetInstanceId,
+        currentState.widgets,
+      );
+
+      if (areLayoutsEqual(nextLayouts, currentState.layouts)) {
+        return currentState;
+      }
+
+      return {
+        ...currentState,
+        layouts: nextLayouts,
+      };
+    });
+    setDraggedBoardInstanceId(null);
+    scheduleChartResize();
+  }, [draggedBoardInstanceId, isEditMode]);
+
+  const handleBoardDragEnd = useCallback(() => {
+    setDraggedBoardInstanceId(null);
+  }, []);
+
   const onDrop = useCallback((layout, layoutItem, event) => {
     const eventWidgetType = event?.dataTransfer?.getData('text/plain');
     const widgetType = droppingWidgetTypeRef.current || eventWidgetType;
@@ -730,6 +835,11 @@ export default function DraggableGrid({ widgets = [] }) {
             key={id}
             instanceId={id}
             isEditMode={isEditMode}
+            isBoardDragging={draggedBoardInstanceId === id}
+            onBoardDragEnd={handleBoardDragEnd}
+            onBoardDragOver={handleBoardDragOver}
+            onBoardDragStart={handleBoardDragStart}
+            onBoardDrop={handleBoardDrop}
             onRemove={handleRemove}
           >
             {widgetMap[type]?.children}
