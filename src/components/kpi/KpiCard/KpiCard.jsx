@@ -88,28 +88,33 @@ function KpiCard({
   };
 
   return (
-    <Card hoverable className="flex h-auto flex-col justify-between lg:h-full p-4 lg:p-2.5">
+    <Card hoverable className="flex h-auto flex-col justify-between lg:h-full p-3 lg:p-2.5">
       <div className="mb-2 flex items-start justify-between lg:mb-0.5">
-        <div className="flex-1 min-w-0 pr-2">
-          <p className="mb-0.5 text-sm font-medium text-slate-900 dark:text-white lg:text-[11px] truncate">{title}</p>
+        <div className="flex-1 min-w-0 pr-1.5">
+          <p 
+            className="mb-0.5 text-xs font-medium text-slate-900 dark:text-white lg:text-[11px] leading-tight line-clamp-2" 
+            style={{ wordBreak: 'break-word' }}
+          >
+            {title}
+          </p>
           {isEditMode ? (
             <div className="mt-2 lg:mt-1">
-              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 lg:text-[10px] leading-tight break-words whitespace-normal">
+              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 lg:text-[10px] leading-tight line-clamp-2">
                 Düzenleme modunda önizleme devre dışı
               </span>
             </div>
           ) : (
-            <div className="flex items-baseline gap-1 truncate">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white lg:text-lg xl:text-xl truncate">{value}</h3>
-              {unit && <span className="text-sm font-medium text-slate-500 dark:text-slate-400 lg:text-[10px] xl:text-xs">{unit}</span>}
+            <div className="flex items-baseline gap-1 flex-wrap">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white lg:text-lg xl:text-xl truncate">{value}</h3>
+              {unit && <span className="text-xs font-medium text-slate-500 dark:text-slate-400 lg:text-[10px] xl:text-xs">{unit}</span>}
             </div>
           )}
         </div>
         <Box
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg lg:h-7 lg:w-7 xl:h-9 xl:w-9"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg lg:h-7 lg:w-7 xl:h-9 xl:w-9"
           sx={{ backgroundColor: `${color}15`, color: color }}
         >
-          <IconComponent sx={{ fontSize: { xs: 20, lg: 16, xl: 20 } }} />
+          <IconComponent sx={{ fontSize: { xs: 18, lg: 16, xl: 20 } }} />
         </Box>
       </div>
       

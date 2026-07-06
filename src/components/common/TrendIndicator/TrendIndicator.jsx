@@ -17,12 +17,12 @@ function TrendIndicator({ percentage, direction, label }) {
   const colorClass = isUp ? 'text-emerald-600' : 'text-red-600';
 
   return (
-    <div className="flex items-center gap-1.5 text-xs">
-      <span className={`inline-flex items-center gap-0.5 font-semibold ${colorClass}`}>
+    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs lg:text-[10px] xl:text-xs">
+      <span className={`inline-flex items-center gap-0.5 font-semibold shrink-0 ${colorClass}`}>
         <Icon sx={{ fontSize: 14 }} />
         {percentage}%
       </span>
-      {label && <span className="text-slate-500 dark:text-slate-400">{label}</span>}
+      {label && <span className="text-slate-500 dark:text-slate-400 leading-tight line-clamp-1">{label}</span>}
     </div>
   );
 }

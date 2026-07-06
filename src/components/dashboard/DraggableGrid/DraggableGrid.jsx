@@ -97,7 +97,7 @@ const getInstanceTypeMap = (instances = []) =>
     return acc;
   }, {});
 
-const sanitizeLayoutItems = (items = [], instances = []) => {
+const sanitizeLayoutItems = (items = [], instances = [], breakpoint = 'lg') => {
   const instanceTypeMap = getInstanceTypeMap(instances);
   const safeItems = Array.isArray(items) ? items : [];
 
@@ -110,21 +110,50 @@ const sanitizeLayoutItems = (items = [], instances = []) => {
       const minH = original.minH ?? item.minH ?? 1;
       const maxW = original.maxW ?? item.maxW ?? 12;
       const maxH = original.maxH ?? item.maxH ?? 12;
-      const nextW = Number.isFinite(item.w) ? item.w : original.w ?? 4;
-      const nextH = Number.isFinite(item.h) ? item.h : original.h ?? 4;
-      const h = Math.max(minH, Math.min(nextH, maxH, EDIT_BOARD_ROWS));
+      
+      let nextW = Number.isFinite(item.w) ? item.w : original.w ?? 4;
+      const cols = COLS[breakpoint] || COLS.lg;
+      
+      if (breakpoint === 'xs' || breakpoint === 'sm') {
+        nextW = cols;
+      } else if (breakpoint === 'md') {
+        if (type === 'kpiGrid' || type === 'devicesTable') {
+          nextW = 12;
+        } else {
+          nextW = Math.max(nextW, 6);
+        }
+      }
+      
+      let nextH = Number.isFinite(item.h) ? item.h : original.h ?? 4;
+      
+      if (breakpoint === 'xs') {
+        if (type === 'kpiGrid') nextH = 14;
+        else if (type === 'devicesTable') nextH = 8;
+        else if (type === 'systemSummary') nextH = 3;
+        else nextH = 6;
+      } else if (breakpoint === 'sm') {
+        if (type === 'kpiGrid') nextH = 8;
+        else if (type === 'devicesTable') nextH = 8;
+        else if (type === 'systemSummary') nextH = 3;
+        else nextH = 5;
+      } else if (breakpoint === 'md') {
+        if (type === 'kpiGrid') nextH = 5;
+        else if (type === 'systemSummary') nextH = 3;
+      }
+
+      const h = Math.max(minH, Math.min(nextH, maxH, 100));
 
       return {
         i: item.i,
-        x: Number.isFinite(item.x) ? item.x : original.x ?? 0,
+        x: (breakpoint === 'xs' || breakpoint === 'sm') ? 0 : (Number.isFinite(item.x) ? item.x : original.x ?? 0),
         y: Math.max(
           0,
           Math.min(
             Number.isFinite(item.y) ? item.y : original.y ?? 0,
-            Math.max(EDIT_BOARD_ROWS - h, 0),
+            100,
           ),
         ),
-        w: Math.max(minW, Math.min(nextW, maxW)),
+        w: Math.max(minW, Math.min(nextW, maxW, cols)),
         h,
         minW,
         minH,
@@ -138,21 +167,52 @@ const sanitizeLayouts = (nextLayouts, instances = []) => {
   if (!nextLayouts) return null;
 
   return Object.keys(COLS).reduce((acc, key) => {
-    acc[key] = sanitizeLayoutItems(nextLayouts[key], instances);
+    acc[key] = sanitizeLayoutItems(nextLayouts[key], instances, key);
     return acc;
   }, {});
 };
 
 const fitItemToBreakpoint = (item, breakpoint) => {
   const cols = COLS[breakpoint] || COLS.lg;
-  const maxW = Math.min(item.maxW ?? cols, cols);
-  const width = Math.min(item.w, maxW);
+  let maxW = Math.min(item.maxW ?? cols, cols);
+  let width = Math.min(item.w, maxW);
+  let minW = item.minW || 1;
+  let nextH = item.h || 4;
+
+  if (breakpoint === 'xs' || breakpoint === 'sm') {
+    width = cols;
+    minW = Math.min(minW, cols);
+  } else if (breakpoint === 'md') {
+    if (item.i.includes('kpiGrid') || item.i.includes('devicesTable')) {
+      width = 12;
+    } else {
+      width = Math.max(width, 6);
+    }
+  }
+  
+  if (breakpoint === 'xs') {
+    if (item.i.includes('kpiGrid')) nextH = 14;
+    else if (item.i.includes('devicesTable')) nextH = 8;
+    else if (item.i.includes('systemSummary')) nextH = 3;
+    else nextH = 6;
+  } else if (breakpoint === 'sm') {
+    if (item.i.includes('kpiGrid')) nextH = 8;
+    else if (item.i.includes('devicesTable')) nextH = 8;
+    else if (item.i.includes('systemSummary')) nextH = 3;
+    else nextH = 5;
+  } else if (breakpoint === 'md') {
+    if (item.i.includes('kpiGrid')) nextH = 5;
+    else if (item.i.includes('systemSummary')) nextH = 3;
+  }
+
+  width = Math.min(width, cols);
 
   return {
     ...item,
-    x: Math.max(0, Math.min(item.x, Math.max(cols - width, 0))),
+    x: (breakpoint === 'xs' || breakpoint === 'sm') ? 0 : Math.max(0, Math.min(item.x, Math.max(cols - width, 0))),
     w: width,
-    minW: Math.min(item.minW || 1, width),
+    h: nextH,
+    minW: Math.min(minW, width),
     maxW,
   };
 };
@@ -255,11 +315,11 @@ const removeInstanceFromLayouts = (layouts, instanceId) =>
   }, {});
 
 const syncLayoutItemsAcrossBreakpoints = (layouts, changedItems, instances) => {
-  const sanitizedChangedItems = sanitizeLayoutItems(changedItems, instances);
-  const changedItemMap = new Map(sanitizedChangedItems.map((item) => [item.i, item]));
-
   return Object.keys(COLS).reduce((acc, key) => {
     const existingItems = layouts[key] || [];
+    const sanitizedChangedItems = sanitizeLayoutItems(changedItems, instances, key);
+    const changedItemMap = new Map(sanitizedChangedItems.map((item) => [item.i, item]));
+
     acc[key] = existingItems.map((item) => {
       const changedItem = changedItemMap.get(item.i);
       return changedItem ? fitItemToBreakpoint(changedItem, key) : item;
@@ -300,6 +360,13 @@ const calculateRowHeight = (container, layouts, isEditMode) => {
   }
 
   const availableHeight = getAvailableGridHeight(container, isEditMode);
+  // Use a fixed comfortable row height for tablets and mobiles
+  const isSmallScreen = window.innerWidth <= 996;
+  
+  if (isSmallScreen) {
+    return 56;
+  }
+  
   const rows = Math.max(getLayoutRows(layouts?.lg), EDIT_BOARD_ROWS);
   const verticalMargins = Math.max(rows - 1, 0) * GRID_MARGIN[1];
   const nextRowHeight = Math.floor((availableHeight - verticalMargins) / rows);
@@ -633,7 +700,7 @@ export default function DraggableGrid({ widgets = [] }) {
       };
       const nextWidgets = [...currentState.widgets, newInstance];
       const updatedLayouts = sanitizeLayouts(currentState.layouts, currentState.widgets) || createDefaultLayouts(currentState.widgets);
-      const resolvedLayout = sanitizeLayoutItems(layout, currentState.widgets);
+      const resolvedLayout = sanitizeLayoutItems(layout, currentState.widgets, 'lg');
       const resolvedItemMap = new Map(resolvedLayout.map((item) => [item.i, item]));
 
       Object.keys(COLS).forEach((key) => {
@@ -659,10 +726,11 @@ export default function DraggableGrid({ widgets = [] }) {
       ref={containerRef}
       sx={{
         flex: { xs: '0 0 auto', lg: 1 },
+        width: '100%',
         height: { xs: 'auto', lg: '100%' },
         minHeight: { xs: 'auto', lg: 0 },
-        overflowX: 'hidden',
-        overflowY: 'hidden',
+        overflowX: 'visible',
+        overflowY: 'visible',
         border: isEditMode ? '1px solid' : 0,
         borderColor: 'divider',
         borderRadius: isEditMode ? 2 : 0,
