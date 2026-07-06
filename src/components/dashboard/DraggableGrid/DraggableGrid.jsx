@@ -226,45 +226,11 @@ const removeInstanceFromLayouts = (layouts, instanceId) =>
     return acc;
   }, {});
 
-const swapInstancePositionsInLayouts = (layouts, sourceId, targetId, instances) => {
-  const source = sanitizeLayouts(layouts, instances) || createDefaultLayouts(instances);
-
-  return Object.keys(COLS).reduce((acc, key) => {
-    const items = source[key] || [];
-    const sourceItem = items.find((item) => item.i === sourceId);
-    const targetItem = items.find((item) => item.i === targetId);
-
-    if (!sourceItem || !targetItem) {
-      acc[key] = items;
-      return acc;
-    }
-
-    acc[key] = sanitizeLayoutItems(
-      items.map((item) => {
-        if (item.i === sourceId) {
-          return { ...item, x: targetItem.x, y: targetItem.y };
-        }
-        if (item.i === targetId) {
-          return { ...item, x: sourceItem.x, y: sourceItem.y };
-        }
-        return item;
-      }),
-      instances,
-    );
-    return acc;
-  }, {});
-};
-
 const areDashboardStatesEqual = (firstState, secondState) =>
   JSON.stringify(firstState) === JSON.stringify(secondState);
 
 const areLayoutsEqual = (firstLayouts, secondLayouts) =>
   JSON.stringify(firstLayouts) === JSON.stringify(secondLayouts);
-
-const hasDroppingItem = (nextLayouts) =>
-  Object.values(nextLayouts || {}).some((items = []) =>
-    items.some((item) => item.i === DROPPING_ITEM_ID),
-  );
 
 const getLayoutRows = (items = []) =>
   items.reduce((max, item) => Math.max(max, (item.y || 0) + (item.h || 1)), 1);
@@ -314,11 +280,6 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
   {
     instanceId,
     isEditMode,
-    isBoardDragging,
-    onBoardDragEnd,
-    onBoardDragOver,
-    onBoardDragStart,
-    onBoardDrop,
     onRemove,
     children,
     style,
@@ -334,23 +295,12 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
         ...style,
         display: 'flex',
         flexDirection: 'column',
-        opacity: isBoardDragging ? 0.55 : style?.opacity,
       }}
       className={className}
       {...rest}
-      onDragOver={(event) => onBoardDragOver?.(event, instanceId)}
-      onDrop={(event) => onBoardDrop?.(event, instanceId)}
     >
       <Box
         className="widget-drag-handle drag-handle"
-        draggable={isEditMode}
-        onMouseDown={(event) => {
-          if (isEditMode) {
-            event.stopPropagation();
-          }
-        }}
-        onDragStart={(event) => onBoardDragStart?.(event, instanceId)}
-        onDragEnd={onBoardDragEnd}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -432,7 +382,6 @@ export default function DraggableGrid({ widgets = [] }) {
   });
   const [activeDropType, setActiveDropType] = useState(null);
   const [currentBreakpoint, setCurrentBreakpoint] = useState('lg');
-  const [draggedBoardInstanceId, setDraggedBoardInstanceId] = useState(null);
 
   const widgetMap = useMemo(() => {
     return widgets.reduce((acc, widget) => {
@@ -530,7 +479,7 @@ export default function DraggableGrid({ widgets = [] }) {
 
       return { widgets: nextWidgets, layouts: nextLayouts };
     });
-  }, [availableTypes, visibility]);
+  }, [availableTypesKey, visibility]);
 
   useEffect(() => {
     dispatch(setIsDirty(!areDashboardStatesEqual(savedState, draftState)));
@@ -576,26 +525,6 @@ export default function DraggableGrid({ widgets = [] }) {
     };
   }, [containerRef, isDesktop, isEditMode, layoutRows]);
 
-  const handleLayoutChange = useCallback((_currentLayout, allLayouts) => {
-    if (!isEditMode) return;
-
-    if (hasDroppingItem(allLayouts)) {
-      return;
-    }
-
-    setDraftState((currentState) => {
-      const nextLayouts = sanitizeLayouts(allLayouts, currentState.widgets) || currentState.layouts;
-      if (areLayoutsEqual(nextLayouts, currentState.layouts)) {
-        return currentState;
-      }
-
-      return {
-        ...currentState,
-        layouts: nextLayouts,
-      };
-    });
-  }, [isEditMode]);
-
   const handleInteractionStop = useCallback((layout) => {
     if (isEditMode && Array.isArray(layout)) {
       setDraftState((currentState) => {
@@ -631,53 +560,6 @@ export default function DraggableGrid({ widgets = [] }) {
     scheduleChartResize();
   }, [dispatch, role]);
 
-  const handleBoardDragStart = useCallback((event, instanceId) => {
-    if (!isEditMode) return;
-
-    event.stopPropagation();
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('application/x-dashboard-widget-instance', instanceId);
-    setDraggedBoardInstanceId(instanceId);
-  }, [isEditMode]);
-
-  const handleBoardDragOver = useCallback((event) => {
-    if (!isEditMode || !draggedBoardInstanceId) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    event.dataTransfer.dropEffect = 'move';
-  }, [draggedBoardInstanceId, isEditMode]);
-
-  const handleBoardDrop = useCallback((event, targetInstanceId) => {
-    if (!isEditMode || !draggedBoardInstanceId || draggedBoardInstanceId === targetInstanceId) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    setDraftState((currentState) => {
-      const nextLayouts = swapInstancePositionsInLayouts(
-        currentState.layouts,
-        draggedBoardInstanceId,
-        targetInstanceId,
-        currentState.widgets,
-      );
-
-      if (areLayoutsEqual(nextLayouts, currentState.layouts)) {
-        return currentState;
-      }
-
-      return {
-        ...currentState,
-        layouts: nextLayouts,
-      };
-    });
-    setDraggedBoardInstanceId(null);
-    scheduleChartResize();
-  }, [draggedBoardInstanceId, isEditMode]);
-
-  const handleBoardDragEnd = useCallback(() => {
-    setDraggedBoardInstanceId(null);
-  }, []);
-
   const onDrop = useCallback((layout, layoutItem, event) => {
     const eventWidgetType = event?.dataTransfer?.getData('text/plain');
     const widgetType = droppingWidgetTypeRef.current || eventWidgetType;
@@ -693,10 +575,11 @@ export default function DraggableGrid({ widgets = [] }) {
 
       const newInstance = { id: createInstanceId(widgetType), type: widgetType };
       const original = ORIGINAL_POSITIONS[widgetType] || {};
+      const resolvedDropItem = layoutItem || layout?.find((item) => item.i === DROPPING_ITEM_ID) || {};
       const newItem = {
         i: newInstance.id,
-        x: layoutItem.x,
-        y: layoutItem.y,
+        x: Number.isFinite(resolvedDropItem.x) ? resolvedDropItem.x : original.x ?? 0,
+        y: Number.isFinite(resolvedDropItem.y) ? resolvedDropItem.y : original.y ?? 0,
         w: original.w ?? 4,
         h: original.h ?? 4,
         minW: original.minW ?? 2,
@@ -824,7 +707,6 @@ export default function DraggableGrid({ widgets = [] }) {
         resizeHandles={['se', 's', 'e']}
         droppingItem={droppingItem}
         onDrop={onDrop}
-        onLayoutChange={handleLayoutChange}
         onBreakpointChange={setCurrentBreakpoint}
         onDragStop={handleInteractionStop}
         onResizeStop={handleInteractionStop}
@@ -835,11 +717,6 @@ export default function DraggableGrid({ widgets = [] }) {
             key={id}
             instanceId={id}
             isEditMode={isEditMode}
-            isBoardDragging={draggedBoardInstanceId === id}
-            onBoardDragEnd={handleBoardDragEnd}
-            onBoardDragOver={handleBoardDragOver}
-            onBoardDragStart={handleBoardDragStart}
-            onBoardDrop={handleBoardDrop}
             onRemove={handleRemove}
           >
             {widgetMap[type]?.children}

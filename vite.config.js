@@ -2,6 +2,18 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
+const nodeEnv = process.env.NODE_ENV || 'development';
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+  },
+  optimizeDeps: {
+    rolldownOptions: {
+      define: {
+        'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+      },
+    },
+  },
 });

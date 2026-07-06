@@ -102,8 +102,10 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               onClose={handleTimeClose}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
               transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-              PaperProps={{
-                sx: { mt: 1, minWidth: 150, borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+              slotProps={{
+                paper: {
+                  sx: { mt: 1, minWidth: 150, borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
+                },
               }}
             >
               {timeRangeOptions.map((opt) => (
@@ -177,8 +179,10 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               onClose={handleClose}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-              PaperProps={{
-                sx: { mt: 1, minWidth: 150, borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+              slotProps={{
+                paper: {
+                  sx: { mt: 1, minWidth: 150, borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
+                },
               }}
             >
               <MenuItem onClick={() => handleRoleChange('admin')} sx={{ fontSize: '0.875rem', py: 1 }}>
