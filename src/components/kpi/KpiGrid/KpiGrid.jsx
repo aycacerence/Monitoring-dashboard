@@ -1,10 +1,10 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import KpiCard from '../KpiCard/KpiCard';
 import KpiCardSkeleton from '../KpiCardSkeleton/KpiCardSkeleton';
 import ErrorState from '../../common/ErrorState/ErrorState';
 import { fetchKpis } from '../../../features/dashboard/kpiSlice';
-import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
+import { selectIsEditMode, setIsDirty } from '../../../features/ui/uiSlice';
 
 const editModeKpis = [
   { id: 'placeholder-1', title: 'CPU', value: '—', unit: '%', changePercentage: 0, changeDirection: 'neutral', changeLabel: '—', icon: 'cpu', sparklineData: [], color: '#8b5cf6' },
@@ -15,15 +15,92 @@ const editModeKpis = [
   { id: 'placeholder-6', title: 'Çalışma', value: '—', unit: '', changePercentage: 0, changeDirection: 'neutral', changeLabel: '—', icon: 'activity', sparklineData: [], color: '#6366f1' },
 ];
 
+const getKpiOrderKey = (role) => `kpiCardOrder_${role || 'user'}`;
+
+const loadKpiOrder = (role) => {
+  try {
+    const raw = localStorage.getItem(getKpiOrderKey(role));
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveKpiOrder = (order, role) => {
+  try {
+    localStorage.setItem(getKpiOrderKey(role), JSON.stringify(order));
+  } catch {}
+};
+
+const sortKpisByOrder = (items, order) => {
+  if (!Array.isArray(order) || order.length === 0) return items;
+
+  const itemMap = new Map(items.map((item) => [item.id, item]));
+  const orderedItems = order
+    .map((id) => itemMap.get(id))
+    .filter(Boolean);
+  const remainingItems = items.filter((item) => !order.includes(item.id));
+
+  return [...orderedItems, ...remainingItems];
+};
+
 function KpiGrid() {
   const dispatch = useAppDispatch();
   const { data: kpiData, status, error } = useAppSelector((state) => state.kpi);
+  const role = useAppSelector((state) => state.auth.role);
   const isEditMode = useAppSelector(selectIsEditMode);
-  if (isEditMode) return <WidgetPlaceholder widgetId="kpiGrid" />;
+  const [draggedKpiId, setDraggedKpiId] = useState(null);
+  const [savedKpiOrder, setSavedKpiOrder] = useState(() => loadKpiOrder(role));
+  const [draftKpiOrder, setDraftKpiOrder] = useState(savedKpiOrder);
+
+  useEffect(() => {
+    const savedOrder = loadKpiOrder(role);
+    setSavedKpiOrder(savedOrder);
+    setDraftKpiOrder(savedOrder);
+  }, [role]);
+
+  useEffect(() => {
+    const handleSaveLayout = () => {
+      saveKpiOrder(draftKpiOrder, role);
+      setSavedKpiOrder(draftKpiOrder);
+      dispatch(setIsDirty(false));
+    };
+
+    const handleCancelLayout = () => {
+      setDraftKpiOrder(savedKpiOrder);
+      dispatch(setIsDirty(false));
+    };
+
+    window.addEventListener('save-layout', handleSaveLayout);
+    window.addEventListener('cancel-layout', handleCancelLayout);
+
+    return () => {
+      window.removeEventListener('save-layout', handleSaveLayout);
+      window.removeEventListener('cancel-layout', handleCancelLayout);
+    };
+  }, [dispatch, draftKpiOrder, role, savedKpiOrder]);
 
   const showLoadingState = !isEditMode && (status === 'loading' || status === 'idle');
   const showErrorState = !isEditMode && status === 'failed';
-  const items = isEditMode && kpiData.length === 0 ? editModeKpis : kpiData;
+  const sourceItems = isEditMode && kpiData.length === 0 ? editModeKpis : kpiData;
+  const items = useMemo(() => sortKpisByOrder(sourceItems, draftKpiOrder), [sourceItems, draftKpiOrder]);
+
+  const handleKpiDrop = (targetKpiId) => {
+    if (!isEditMode || !draggedKpiId || draggedKpiId === targetKpiId) return;
+
+    const currentIds = items.map((item) => item.id);
+    const fromIndex = currentIds.indexOf(draggedKpiId);
+    const toIndex = currentIds.indexOf(targetKpiId);
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    const nextIds = [...currentIds];
+    const [movedId] = nextIds.splice(fromIndex, 1);
+    nextIds.splice(toIndex, 0, movedId);
+
+    setDraftKpiOrder(nextIds);
+    dispatch(setIsDirty(true));
+    setDraggedKpiId(null);
+  };
 
   if (showLoadingState) {
     return (
@@ -44,7 +121,36 @@ function KpiGrid() {
   return (
     <div className="grid grid-cols-1 gap-4 transition-opacity duration-500 ease-in opacity-100 md:grid-cols-2 lg:h-full lg:grid-cols-12">
       {items.map((kpi) => (
-        <div key={kpi.id} className="lg:col-span-2 lg:min-h-0">
+        <div
+          key={kpi.id}
+          draggable={isEditMode}
+          onDragStart={(event) => {
+            if (!isEditMode) return;
+            event.stopPropagation();
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', kpi.id);
+            setDraggedKpiId(kpi.id);
+          }}
+          onDragOver={(event) => {
+            if (!isEditMode) return;
+            event.preventDefault();
+            event.stopPropagation();
+            event.dataTransfer.dropEffect = 'move';
+          }}
+          onDrop={(event) => {
+            if (!isEditMode) return;
+            event.preventDefault();
+            event.stopPropagation();
+            handleKpiDrop(kpi.id);
+          }}
+          onDragEnd={() => setDraggedKpiId(null)}
+          className={`relative lg:col-span-2 lg:min-h-0 ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedKpiId === kpi.id ? 'opacity-50' : ''}`}
+        >
+          {isEditMode && (
+            <div className="pointer-events-none absolute left-2 top-2 z-10 rounded bg-white/80 px-1 text-xs text-slate-400 shadow-sm">
+              ⠿
+            </div>
+          )}
           <KpiCard
             title={kpi.title}
             value={kpi.value}
