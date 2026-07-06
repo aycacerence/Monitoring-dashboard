@@ -6,6 +6,7 @@ import WidgetSidebar from '../WidgetSidebar/WidgetSidebar';
 import MainSidebar from '../MainSidebar/index.js';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks.js';
 import { loadVisibility, setVisibilityConfig } from '../../../features/widgetVisibility/widgetVisibilitySlice.js';
+import { setEditMode } from '../../../features/ui/uiSlice.js';
 
 function AppLayout() {
   const location = useLocation();
@@ -25,12 +26,13 @@ function AppLayout() {
 
   useEffect(() => {
     setSidebarOpen(isEditMode);
+    dispatch(setEditMode(isEditMode));
     // When sidebar toggles, wait for transition and trigger resize for charts
     const timer = setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
     return () => clearTimeout(timer);
-  }, [isEditMode]);
+  }, [dispatch, isEditMode]);
 
   useEffect(() => {
     dispatch(setVisibilityConfig(loadVisibility(role)));

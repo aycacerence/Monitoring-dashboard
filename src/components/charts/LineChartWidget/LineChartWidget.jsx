@@ -3,9 +3,13 @@ import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
+import { useAppSelector } from '../../../app/hooks';
+import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import ChartPlaceholder from '../../common/ChartPlaceholder';
 
 function LineChartWidget({ data, seriesName, color, height = '300px' }) {
   const theme = useTheme();
+  const isEditMode = useAppSelector(selectIsEditMode);
   const containerRef = useRef(null);
   const chartRef = useRef(null);
 
@@ -67,6 +71,14 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
     return () => observer.disconnect();
   }, [option]);
 
+  if (isEditMode) {
+    return (
+      <div className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
+        <ChartPlaceholder label="CPU Grafiği" />
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
       <ReactECharts
@@ -87,7 +99,7 @@ LineChartWidget.propTypes = {
       time: PropTypes.string.isRequired,
       value: PropTypes.number.isRequired,
     })
-  ).isRequired,
+  ),
   seriesName: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

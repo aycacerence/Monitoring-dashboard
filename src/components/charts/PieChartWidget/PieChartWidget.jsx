@@ -3,9 +3,13 @@ import PropTypes from 'prop-types';
 import ReactECharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
+import { useAppSelector } from '../../../app/hooks';
+import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import ChartPlaceholder from '../../common/ChartPlaceholder';
 
 function PieChartWidget({ data, height = '300px' }) {
   const theme = useTheme();
+  const isEditMode = useAppSelector(selectIsEditMode);
   const containerRef = useRef(null);
   const chartRef = useRef(null);
 
@@ -60,6 +64,14 @@ function PieChartWidget({ data, height = '300px' }) {
     return () => observer.disconnect();
   }, [option]);
 
+  if (isEditMode) {
+    return (
+      <div className="relative h-full min-h-[120px] w-full" style={{ height }}>
+        <ChartPlaceholder label="Cihaz Durumu" />
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} className="relative h-full min-h-[120px] w-full" style={{ height }}>
       <ReactECharts
@@ -91,7 +103,7 @@ PieChartWidget.propTypes = {
       count: PropTypes.number.isRequired,
       color: PropTypes.string.isRequired,
     })
-  ).isRequired,
+  ),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 

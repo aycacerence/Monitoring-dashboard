@@ -2,6 +2,7 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
+import { useLocation } from 'react-router-dom';
 import { Box, IconButton, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
@@ -139,25 +140,64 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
       className={className}
       {...rest}
     >
-      {isEditMode && (
-        <Box className="drag-handle" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 1.5, py: 0.5, cursor: 'grab', userSelect: 'none', flexShrink: 0, bgcolor: 'background.paper', borderTopLeftRadius: 8, borderTopRightRadius: 8, borderBottom: '1px solid', borderColor: 'divider', '&:active': { cursor: 'grabbing' }}}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+      <Box
+        className="drag-handle"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 1.5,
+          py: isEditMode ? 0.5 : 0,
+          cursor: 'grab',
+          userSelect: 'none',
+          flexShrink: 0,
+          height: isEditMode ? 32 : 6,
+          bgcolor: isEditMode ? 'action.hover' : 'transparent',
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+          borderBottom: isEditMode ? '1px solid' : 'none',
+          borderColor: 'divider',
+          overflow: 'hidden',
+          transition: 'height 0.2s, background-color 0.2s',
+          '&:active': { cursor: 'grabbing' },
+        }}
+      >
+        {isEditMode && (
+          <>
             <DragIndicatorIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-          </Box>
-          <IconButton size="small" onMouseDown={(e) => e.stopPropagation()} onClick={() => onRemove(widgetId)} sx={{ p: 0.3 }}>
-            <CloseIcon sx={{ fontSize: 15 }} />
-          </IconButton>
-        </Box>
-      )}
-      <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden', bgcolor: 'background.paper', borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+            <IconButton size="small" onMouseDown={(e) => e.stopPropagation()} onClick={() => onRemove(widgetId)} sx={{ p: 0.3 }}>
+              <CloseIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </>
+        )}
+      </Box>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          mb: isEditMode ? '8px' : 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 1,
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
         {children}
       </Box>
     </div>
   );
 });
 
-export default function DraggableGrid({ widgets = [], isEditMode = false }) {
+export default function DraggableGrid({ widgets = [] }) {
   const theme = useTheme();
+  const location = useLocation();
+  const isEditMode = location.pathname.includes('settings');
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
@@ -172,6 +212,11 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   );
   const [draftLayouts, setDraftLayouts] = useState(savedLayouts);
   const [rowHeight, setRowHeight] = useState(MAX_ROW_HEIGHT);
+  const [droppingItem, setDroppingItem] = useState({
+    i: DROPPING_ITEM_ID,
+    w: 4,
+    h: 4,
+  });
 
   const widgetMap = useMemo(() => {
     return widgets.reduce((acc, widget) => {
@@ -183,6 +228,11 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   useEffect(() => {
     const handleDragStart = (event) => {
       droppingWidgetIdRef.current = event.detail?.widgetId || null;
+      setDroppingItem({
+        i: DROPPING_ITEM_ID,
+        w: event.detail?.w ?? 4,
+        h: event.detail?.h ?? 4,
+      });
     };
 
     window.addEventListener('rgl:dragstart', handleDragStart);
@@ -335,15 +385,15 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     if (!widgetId || !ORIGINAL_POSITIONS[widgetId]) return;
     droppingWidgetIdRef.current = null;
 
-    const original = ORIGINAL_POSITIONS[widgetId] || { x: 0, y: 99, w: 4, h: 4 };
+    const original = ORIGINAL_POSITIONS[widgetId];
     const newItem = {
       i: widgetId,
-      x: Number.isFinite(layoutItem?.x) ? layoutItem.x : original.x,
-      y: Number.isFinite(layoutItem?.y) ? layoutItem.y : original.y,
+      x: layoutItem.x,
+      y: layoutItem.y,
       w: original.w,
       h: original.h,
-      minW: original.minW || 2,
-      minH: original.minH || 2,
+      minW: original.minW ?? 2,
+      minH: original.minH ?? 2,
     };
 
     setDraftLayouts((currentLayouts) => {
@@ -451,7 +501,7 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
         isDraggable={isEditMode}
         isDroppable={isEditMode}
         resizeHandles={['se']}
-        droppingItem={{ i: DROPPING_ITEM_ID, w: 4, h: 4 }}
+        droppingItem={droppingItem}
         onDrop={onDrop}
         onLayoutChange={handleLayoutChange}
         onDragStart={handleInteractionStart}

@@ -16,12 +16,14 @@ import ErrorState from '../../common/ErrorState/ErrorState';
 import { useTranslation } from 'react-i18next';
 import { selectRole } from '../../../features/auth/authSlice';
 import LockIcon from '@mui/icons-material/Lock';
+import { selectIsEditMode } from '../../../features/ui/uiSlice';
 
 function DevicesSection() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { status, searchTerm, error } = useAppSelector((state) => state.devices);
   const role = useAppSelector(selectRole);
+  const isEditMode = useAppSelector(selectIsEditMode);
   
   // Memoized selectors üzerinden verileri çekiyoruz
   const paginatedDevices = useAppSelector(selectPaginatedDevices);
@@ -40,7 +42,10 @@ function DevicesSection() {
     dispatch(setCurrentPage(page));
   };
 
-  if (status === 'failed') {
+  const showErrorState = !isEditMode && status === 'failed';
+  const isTableLoading = !isEditMode && (status === 'loading' || status === 'idle');
+
+  if (showErrorState) {
     return <ErrorState message={error || t("Cihaz verileri yüklenirken bir hata oluştu.", "Cihaz verileri yüklenirken bir hata oluştu.")} onRetry={() => dispatch(fetchDevices())} />;
   }
 
@@ -64,8 +69,9 @@ function DevicesSection() {
         {role === 'admin' ? (
           <DeviceTable 
             devices={paginatedDevices} 
-            isLoading={status === 'loading' || status === 'idle'} 
+            isLoading={isTableLoading} 
             searchTerm={searchTerm}
+            isEditMode={isEditMode}
           />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center h-full w-full bg-slate-50/50 dark:bg-slate-900/20">
@@ -79,7 +85,7 @@ function DevicesSection() {
       
       <div className="mt-auto flex shrink-0 flex-col sm:flex-row items-center justify-between px-4 pt-2 pb-2 border-t border-slate-100 gap-3 dark:border-slate-800">
         <span className="text-sm font-medium text-slate-500">
-          {status === 'loading' ? t('Hesaplanıyor...', 'Hesaplanıyor...') : recordInfoText}
+          {!isEditMode && status === 'loading' ? t('Hesaplanıyor...', 'Hesaplanıyor...') : recordInfoText}
         </span>
         <div className="shrink-0">
           <Pagination 

@@ -4,6 +4,8 @@ import { Box } from '@mui/material';
 import Card from '../../common/Card';
 import TrendIndicator from '../../common/TrendIndicator';
 import { getIconComponent } from '../../../utils/iconMap';
+import { useAppSelector } from '../../../app/hooks';
+import { selectIsEditMode } from '../../../features/ui/uiSlice';
 
 function KpiCard({
   title,
@@ -16,6 +18,7 @@ function KpiCard({
   sparklineData,
   color,
 }) {
+  const isEditMode = useAppSelector(selectIsEditMode);
   const IconComponent = getIconComponent(icon);
 
   const chartOptions = {
@@ -82,7 +85,9 @@ function KpiCard({
       </div>
       
       <div className="my-2 min-h-[40px] flex-1 lg:my-1 lg:min-h-[28px] xl:min-h-[36px]">
-        {sparklineData && sparklineData.length > 0 && (
+        {isEditMode ? (
+          <Box sx={{ height: 40, bgcolor: 'action.hover', borderRadius: 1 }} />
+        ) : sparklineData && sparklineData.length > 0 && (
           <ReactECharts
             option={chartOptions}
             style={{ height: '100%', width: '100%' }}

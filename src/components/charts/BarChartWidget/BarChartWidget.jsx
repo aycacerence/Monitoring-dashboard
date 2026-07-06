@@ -4,10 +4,14 @@ import ReactECharts from 'echarts-for-react';
 import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../app/hooks';
+import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import ChartPlaceholder from '../../common/ChartPlaceholder';
 
 function BarChartWidget({ data, height = '300px' }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const isEditMode = useAppSelector(selectIsEditMode);
   const containerRef = useRef(null);
   const chartRef = useRef(null);
 
@@ -73,6 +77,14 @@ function BarChartWidget({ data, height = '300px' }) {
     return () => observer.disconnect();
   }, [option]);
 
+  if (isEditMode) {
+    return (
+      <div className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
+        <ChartPlaceholder label="Ağ Trafiği" />
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
       <ReactECharts
@@ -94,7 +106,7 @@ BarChartWidget.propTypes = {
       incoming: PropTypes.number.isRequired,
       outgoing: PropTypes.number.isRequired,
     })
-  ).isRequired,
+  ),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 

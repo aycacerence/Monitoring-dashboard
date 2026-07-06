@@ -65,7 +65,7 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
     return () => clearTimeout(timer);
   }, []);
 
-  const isVisible = isInitialLoad.current && (!minTimePassed || isLoading);
+  const isVisible = !isEditMode && isInitialLoad.current && (!minTimePassed || isLoading);
 
   useEffect(() => {
     if (!isVisible) {
@@ -128,7 +128,18 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
       { label: t('Toplam Trafik'), value: summaryData.totalTraffic },
       { label: t('Kritik Olaylar'), value: summaryData.criticalEvents, sublabel: t('Son 24 saat') },
       { label: t('Başarılı İşlemler'), value: summaryData.successfulOperations, sublabel: t('Saatlik ortalama') },
-    ] : [];
+    ] : [
+      { label: t('Kesintisiz Çalışma'), value: '—' },
+      { label: t('Toplam Trafik'), value: '—' },
+      { label: t('Kritik Olaylar'), value: '—', sublabel: t('Son 24 saat') },
+      { label: t('Başarılı İşlemler'), value: '—', sublabel: t('Saatlik ortalama') },
+    ];
+    const showChartLoadingState = !isEditMode && (chartsStatus === 'loading' || chartsStatus === 'idle');
+    const showChartErrorState = !isEditMode && chartsStatus === 'failed';
+    const showAlertsLoadingState = !isEditMode && (alertsStatus === 'loading' || alertsStatus === 'idle');
+    const showAlertsErrorState = !isEditMode && alertsStatus === 'failed';
+    const showSummaryLoadingState = !isEditMode && (summaryStatus === 'loading' || summaryStatus === 'idle');
+    const showSummaryErrorState = !isEditMode && summaryStatus === 'failed';
 
     return [
       {
@@ -139,34 +150,34 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
       {
         id: WIDGET_IDS.CPU_CHART,
         title: t('sidebar.widgets.cpuChart', 'CPU Kullanımı'),
-        children: chartsStatus === 'failed' ? chartError() : chartsStatus === 'loading' || chartsStatus === 'idle' ? chartSkeleton(t('charts.cpuUsageTitle')) : (
+        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.cpuUsageTitle')) : (
           <ChartCard title={t('charts.cpuUsageTitle')} subtitle={t('charts.cpuUsageSubtitle')} infoText={t('charts.cpuUsageInfo')}>
-            <LineChartWidget data={chartsData.cpuUsage} seriesName={t('charts.cpuUsageSeries', 'CPU Kullanımı')} color="#8b5cf6" height="100%" />
+            <LineChartWidget data={chartsData.cpuUsage || []} seriesName={t('charts.cpuUsageSeries', 'CPU Kullanımı')} color="#8b5cf6" height="100%" />
           </ChartCard>
         ),
       },
       {
         id: WIDGET_IDS.NETWORK_CHART,
         title: t('sidebar.widgets.networkChart', 'Ağ Trafiği'),
-        children: chartsStatus === 'failed' ? chartError() : chartsStatus === 'loading' || chartsStatus === 'idle' ? chartSkeleton(t('charts.networkTrafficTitle')) : (
+        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.networkTrafficTitle')) : (
           <ChartCard title={t('charts.networkTrafficTitle')} subtitle={t('charts.networkTrafficSubtitle')} infoText={t('charts.networkTrafficInfo')}>
-            <BarChartWidget data={chartsData.networkTraffic} height="100%" />
+            <BarChartWidget data={chartsData.networkTraffic || []} height="100%" />
           </ChartCard>
         ),
       },
       {
         id: WIDGET_IDS.DEVICE_STATUS_CHART,
         title: t('sidebar.widgets.deviceStatusChart', 'Cihaz Durumları'),
-        children: chartsStatus === 'failed' ? chartError() : chartsStatus === 'loading' || chartsStatus === 'idle' ? chartSkeleton(t('charts.deviceStatusTitle')) : (
+        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.deviceStatusTitle')) : (
           <ChartCard title={t('charts.deviceStatusTitle')} subtitle={t('charts.deviceStatusSubtitle')}>
             <div className="flex h-full min-h-[240px] flex-col items-center justify-center gap-5 sm:min-h-[220px] sm:flex-row lg:min-h-0">
               <div className="flex shrink-0 justify-center sm:w-36">
                 <div className="h-36 w-36 sm:h-32 sm:w-32">
-                  <PieChartWidget data={chartsData.deviceStatusDistribution} height="100%" />
+                  <PieChartWidget data={chartsData.deviceStatusDistribution || []} height="100%" />
                 </div>
               </div>
               <div className="w-full min-w-0 flex-1 border-t border-slate-100 pt-4 dark:border-slate-800 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0">
-                <PieLegendList data={chartsData.deviceStatusDistribution} />
+                <PieLegendList data={chartsData.deviceStatusDistribution || []} />
               </div>
             </div>
           </ChartCard>
@@ -175,13 +186,13 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
       {
         id: WIDGET_IDS.ALERTS_CARD,
         title: t('sidebar.widgets.alertsCard', 'Son Alarmlar'),
-        children: alertsStatus === 'failed' ? (
+        children: showAlertsErrorState ? (
           <ErrorState message={alertsError || "Alarm verileri yüklenirken hata oluştu."} onRetry={() => dispatch(fetchAlerts())} />
-        ) : alertsStatus === 'loading' || alertsStatus === 'idle' ? (
+        ) : showAlertsLoadingState ? (
           <Skeleton variant="rectangular" className="h-full min-h-[120px] w-full rounded-lg" />
         ) : (
           <AlertsCard count={unresolvedAlerts.length}>
-            {visibleAlerts.map((alert) => (
+            {visibleAlerts.length > 0 ? visibleAlerts.map((alert) => (
               <AlertItem
                 key={alert.id}
                 deviceName={alert.deviceName}
@@ -189,16 +200,16 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
                 severity={alert.severity}
                 timestamp={alert.timestamp}
               />
-            ))}
+            )) : <span className="text-sm text-slate-400">—</span>}
           </AlertsCard>
         ),
       },
       {
         id: WIDGET_IDS.SYSTEM_SUMMARY,
         title: t('sidebar.widgets.systemSummary', 'Sistem Özeti'),
-        children: summaryStatus === 'failed' ? (
+        children: showSummaryErrorState ? (
           <ErrorState message={summaryError || "Sistem özeti yüklenirken hata oluştu."} onRetry={() => dispatch(fetchSystemSummary())} />
-        ) : summaryStatus === 'loading' || summaryStatus === 'idle' ? (
+        ) : showSummaryLoadingState ? (
           <Skeleton variant="rectangular" className="h-full min-h-[120px] w-full rounded-lg" />
         ) : (
           <SystemSummaryCard items={summaryItems} />
@@ -215,14 +226,14 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
         children: <ResourceUsageList />,
       },
     ];
-  }, [alertsData, alertsError, alertsStatus, chartsData, chartsError, chartsStatus, dispatch, summaryData, summaryError, summaryStatus, t]);
+  }, [alertsData, alertsError, alertsStatus, chartsData, chartsError, chartsStatus, dispatch, isEditMode, summaryData, summaryError, summaryStatus, t]);
 
   return (
     <>
       <SplashScreen isVisible={isVisible} />
 
       <PageContainer key={role} className="flex h-full min-h-0 flex-col overflow-y-auto p-4 lg:overflow-hidden">
-        <DraggableGrid widgets={dashboardWidgets} isEditMode={isEditMode} />
+        <DraggableGrid widgets={dashboardWidgets} />
       </PageContainer>
     </>
   );

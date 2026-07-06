@@ -2,7 +2,7 @@ import { Drawer, Box, Typography, Divider, useMediaQuery, Dialog, DialogActions,
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { selectVisibility, hideAllWidgets, resetVisibility, setWidgetVisibility, WIDGET_IDS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
+import { selectVisibility, hideAllWidgets, resetVisibility, setWidgetVisibility, WIDGET_IDS, ORIGINAL_POSITIONS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
 import { selectRole } from '../../../features/auth/authSlice';
 import Button from '@mui/material/Button';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -170,7 +170,13 @@ function WidgetSidebar({ open, onClose }) {
                 onDragStart={(e) => {
                   e.dataTransfer.effectAllowed = 'copy';
                   e.dataTransfer.setData('text/plain', id); // RGL'nin drop anında bu veriyi okuyabilmesi için zorunludur
-                  window.dispatchEvent(new CustomEvent('rgl:dragstart', { detail: { widgetId: id } }));
+                  window.dispatchEvent(new CustomEvent('rgl:dragstart', {
+                    detail: {
+                      widgetId: id,
+                      w: ORIGINAL_POSITIONS[id]?.w ?? 4,
+                      h: ORIGINAL_POSITIONS[id]?.h ?? 4,
+                    },
+                  }));
                 }}
                 sx={{
                   display: 'flex',

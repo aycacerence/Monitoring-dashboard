@@ -35,7 +35,7 @@ const thSx = {
   whiteSpace: 'nowrap',
 };
 
-function DeviceTable({ devices, isLoading, searchTerm }) {
+function DeviceTable({ devices, isLoading, searchTerm, isEditMode = false }) {
   const { t } = useTranslation();
 
   /* ── Loading skeleton ── */
@@ -84,7 +84,7 @@ function DeviceTable({ devices, isLoading, searchTerm }) {
   }
 
   /* ── Empty state ── */
-  if (devices.length === 0) {
+  if (!isEditMode && devices.length === 0) {
     const message = searchTerm
       ? t('Arama bulunamadı', `"${searchTerm}" aramasına uygun cihaz bulunamadı.`, { search: searchTerm })
       : t('Sistemde cihaz bulunmuyor', 'Sistemde kayıtlı cihaz bulunmuyor.');
@@ -148,6 +148,7 @@ DeviceTable.propTypes = {
   devices: PropTypes.array.isRequired,
   isLoading: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
+  isEditMode: PropTypes.bool,
 };
 
 export default DeviceTable;
