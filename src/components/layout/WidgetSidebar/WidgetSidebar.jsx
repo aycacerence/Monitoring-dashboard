@@ -1,4 +1,4 @@
-import { Drawer, Box, Typography, Divider, useMediaQuery } from '@mui/material';
+import { Drawer, Box, Typography, Divider, useMediaQuery, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
@@ -13,12 +13,14 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SpeedIcon from '@mui/icons-material/Speed';
+import { useState } from 'react';
 
 function WidgetSidebar({ open, onClose }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const useToggleControls = useMediaQuery(theme.breakpoints.down('lg'));
+  const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
   
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
@@ -30,6 +32,11 @@ function WidgetSidebar({ open, onClose }) {
     localStorage.removeItem(`dashboardLayout_${role}`);
     window.dispatchEvent(new CustomEvent('dashboard:reset-layout'));
     window.dispatchEvent(new Event('resize'));
+  };
+
+  const handleConfirmSave = () => {
+    window.dispatchEvent(new Event('save-layout'));
+    setSaveConfirmOpen(false);
   };
 
   const widgets = [
@@ -203,25 +210,39 @@ function WidgetSidebar({ open, onClose }) {
 
         <Divider sx={{ my: 2 }} />
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1 }}>
           <Button
             variant="contained"
             size="small"
             disabled={!isDirty}
-            onClick={() => window.dispatchEvent(new Event('save-layout'))}
+            onClick={() => setSaveConfirmOpen(true)}
           >
             {t('sidebar.save', 'Kaydet')}
           </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            disabled={!isDirty}
-            onClick={() => window.dispatchEvent(new Event('cancel-layout'))}
-          >
-            {t('sidebar.cancel', 'İptal')}
-          </Button>
         </Box>
       </Box>
+
+      <Dialog
+        open={saveConfirmOpen}
+        onClose={() => setSaveConfirmOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>{t('sidebar.saveConfirmTitle', 'Kaydet')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('sidebar.saveConfirmMessage', 'Değişiklikleri kaydetmek istediğinize emin misiniz?')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setSaveConfirmOpen(false)}>
+            {t('sidebar.cancel', 'İptal')}
+          </Button>
+          <Button variant="contained" onClick={handleConfirmSave}>
+            {t('sidebar.confirm', 'Onayla')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Drawer>
   );
 }
