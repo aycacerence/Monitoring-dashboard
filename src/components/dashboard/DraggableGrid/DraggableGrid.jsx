@@ -393,6 +393,8 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
           boxShadow: 1,
           position: 'relative',
           zIndex: 1,
+          cursor: isEditMode ? 'grab' : 'default',
+          '&:active': { cursor: isEditMode ? 'grabbing' : 'default' }
         }}
       >
         {children}
@@ -693,8 +695,7 @@ export default function DraggableGrid({ widgets = [] }) {
         allowOverlap={false}
         isBounded={isEditMode}
         maxRows={isEditMode ? EDIT_BOARD_ROWS : 100}
-        draggableHandle=".widget-drag-handle"
-        draggableCancel=".react-resizable-handle,button,.MuiIconButton-root"
+        draggableCancel=".react-resizable-handle,button,.MuiIconButton-root,.kpi-draggable-item"
         isResizable={isEditMode}
         isDraggable={isEditMode}
         isDroppable={isEditMode && Boolean(activeDropType)}

@@ -144,7 +144,7 @@ function KpiGrid() {
             handleKpiDrop(kpi.id);
           }}
           onDragEnd={() => setDraggedKpiId(null)}
-          className={`relative lg:col-span-2 lg:min-h-0 animate-fade-in-up ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedKpiId === kpi.id ? 'opacity-50' : ''}`}
+          className={`kpi-draggable-item relative lg:col-span-2 lg:min-h-0 animate-fade-in-up ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedKpiId === kpi.id ? 'opacity-50' : ''}`}
           style={{ animationDelay: `${index * 75}ms` }}
         >
           {isEditMode && (
