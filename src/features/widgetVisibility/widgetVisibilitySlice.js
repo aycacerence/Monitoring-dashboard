@@ -13,14 +13,14 @@ export const WIDGET_IDS = {
 };
 
 export const ORIGINAL_POSITIONS = {
-  [WIDGET_IDS.KPI_GRID]:            { x: 0, y: 0, w: 12, h: 3, minW: 6, minH: 3 },
-  [WIDGET_IDS.CPU_CHART]:           { x: 0, y: 3, w: 5,  h: 4, minW: 3, minH: 3 },
-  [WIDGET_IDS.NETWORK_CHART]:       { x: 5, y: 3, w: 3,  h: 4, minW: 3, minH: 3 },
-  [WIDGET_IDS.DEVICE_STATUS_CHART]: { x: 8, y: 3, w: 4,  h: 4, minW: 3, minH: 3 },
-  [WIDGET_IDS.ALERTS_CARD]:         { x: 0, y: 7, w: 6,  h: 3, minW: 3, minH: 2 },
-  [WIDGET_IDS.SYSTEM_SUMMARY]:      { x: 6, y: 7, w: 6,  h: 3, minW: 3, minH: 2 },
-  [WIDGET_IDS.DEVICES_TABLE]:       { x: 0, y: 10, w: 8,  h: 4, minW: 4, minH: 3 },
-  [WIDGET_IDS.RESOURCE_USAGE]:      { x: 8, y: 10, w: 4,  h: 4, minW: 3, minH: 4 },
+  [WIDGET_IDS.KPI_GRID]:            { x: 0, y: 0, w: 12, h: 2, minW: 6, minH: 2 },
+  [WIDGET_IDS.CPU_CHART]:           { x: 0, y: 2, w: 5,  h: 4, minW: 3, minH: 3 },
+  [WIDGET_IDS.NETWORK_CHART]:       { x: 5, y: 2, w: 3,  h: 4, minW: 3, minH: 3 },
+  [WIDGET_IDS.DEVICE_STATUS_CHART]: { x: 8, y: 2, w: 4,  h: 4, minW: 3, minH: 3 },
+  [WIDGET_IDS.ALERTS_CARD]:         { x: 0, y: 6, w: 6,  h: 3, minW: 3, minH: 2 },
+  [WIDGET_IDS.SYSTEM_SUMMARY]:      { x: 6, y: 6, w: 6,  h: 3, minW: 3, minH: 2 },
+  [WIDGET_IDS.DEVICES_TABLE]:       { x: 0, y: 9, w: 12, h: 5, minW: 4, minH: 3 },
+  [WIDGET_IDS.RESOURCE_USAGE]:      { x: 8, y: 9, w: 4,  h: 3, minW: 3, minH: 3 },
 };
 
 // Tüm widget'lar başlangıçta görünür.

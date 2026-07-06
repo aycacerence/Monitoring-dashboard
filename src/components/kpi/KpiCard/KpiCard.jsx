@@ -84,26 +84,26 @@ function KpiCard({
   };
 
   return (
-    <Card className="flex h-auto flex-col justify-between lg:h-full lg:p-3">
-      <div className="mb-2 flex items-start justify-between lg:mb-1">
-        <div className="flex-1">
-          <p className="mb-1 text-sm font-medium text-slate-900 dark:text-white lg:text-xs">{title}</p>
-          <div className="flex items-baseline gap-1">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white lg:text-xl xl:text-2xl">{value}</h3>
-            {unit && <span className="text-sm font-medium text-slate-500 dark:text-slate-400 lg:text-xs xl:text-sm">{unit}</span>}
+    <Card className="flex h-auto flex-col justify-between lg:h-full p-4 lg:p-2.5">
+      <div className="mb-2 flex items-start justify-between lg:mb-0.5">
+        <div className="flex-1 min-w-0 pr-2">
+          <p className="mb-0.5 text-sm font-medium text-slate-900 dark:text-white lg:text-[11px] truncate">{title}</p>
+          <div className="flex items-baseline gap-1 truncate">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white lg:text-lg xl:text-xl truncate">{value}</h3>
+            {unit && <span className="text-sm font-medium text-slate-500 dark:text-slate-400 lg:text-[10px] xl:text-xs">{unit}</span>}
           </div>
         </div>
         <Box
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg lg:h-8 lg:w-8 xl:h-10 xl:w-10"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg lg:h-7 lg:w-7 xl:h-9 xl:w-9"
           sx={{ backgroundColor: `${color}15`, color: color }}
         >
-          <IconComponent fontSize="small" />
+          <IconComponent sx={{ fontSize: { xs: 20, lg: 16, xl: 20 } }} />
         </Box>
       </div>
       
-      <div ref={sparklineRef} className="my-2 min-h-[40px] flex-1 lg:my-1 lg:min-h-[28px] xl:min-h-[36px]">
+      <div ref={sparklineRef} className="my-2 min-h-[40px] flex-1 lg:my-0.5 lg:min-h-[20px] xl:min-h-[28px]">
         {isEditMode ? (
-          <Box sx={{ height: 40, bgcolor: 'action.hover', borderRadius: 1 }} />
+          <Box sx={{ height: '100%', minHeight: 20, bgcolor: 'action.hover', borderRadius: 1 }} />
         ) : sparklineData && sparklineData.length > 0 && (
           <ReactECharts
             ref={chartRef}
@@ -114,7 +114,7 @@ function KpiCard({
         )}
       </div>
 
-      <div className="mt-2 lg:mt-1">
+      <div className="mt-2 lg:mt-0.5">
         <TrendIndicator
           percentage={changePercentage}
           direction={changeDirection}

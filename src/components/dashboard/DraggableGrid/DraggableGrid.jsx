@@ -27,14 +27,14 @@ const MAX_ROW_HEIGHT = 64;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DEFAULT_PRESET_POSITIONS = {
-  kpiGrid: { x: 0, y: 0, w: 12, h: 3 },
-  cpuChart: { x: 0, y: 3, w: 4, h: 3 },
-  networkChart: { x: 4, y: 3, w: 4, h: 3 },
-  deviceStatusChart: { x: 8, y: 3, w: 4, h: 3 },
-  alertsCard: { x: 0, y: 6, w: 4, h: 2 },
-  systemSummary: { x: 4, y: 6, w: 4, h: 2 },
-  resourceUsage: { x: 8, y: 6, w: 4, h: 4 },
-  devicesTable: { x: 0, y: 8, w: 8, h: 3 },
+  kpiGrid: { x: 0, y: 0, w: 12, h: 2 },
+  cpuChart: { x: 0, y: 2, w: 4, h: 3 },
+  networkChart: { x: 4, y: 2, w: 4, h: 3 },
+  deviceStatusChart: { x: 8, y: 2, w: 4, h: 3 },
+  alertsCard: { x: 0, y: 5, w: 4, h: 3 },
+  systemSummary: { x: 4, y: 5, w: 4, h: 3 },
+  resourceUsage: { x: 8, y: 5, w: 4, h: 3 },
+  devicesTable: { x: 0, y: 8, w: 12, h: 4 },
 };
 
 const createInstanceId = (type) =>

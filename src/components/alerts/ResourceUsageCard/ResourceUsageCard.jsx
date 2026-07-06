@@ -17,14 +17,14 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
   return (
     <Card hoverable className="h-auto lg:h-full" noPadding>
       <div className="flex min-h-[96px] w-full flex-col justify-between px-3 py-3 sm:px-4 lg:h-full lg:min-h-0 lg:px-3 lg:py-2">
-        <div className="flex w-full items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 lg:h-8 lg:w-8">
-              <IconComponent fontSize="small" />
+        <div className="flex w-full items-start justify-between gap-2 lg:items-center">
+          <div className="flex min-w-0 items-start gap-2.5 lg:items-center lg:gap-2">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 lg:h-7 lg:w-7">
+              <IconComponent sx={{ fontSize: { xs: 20, lg: 16 } }} />
             </div>
-            <div className="min-w-0">
-              <h3 className="break-words text-sm font-semibold leading-snug text-slate-900 dark:text-white lg:truncate">{label}</h3>
-              <div className="mt-1 max-w-full overflow-hidden">
+            <div className="min-w-0 flex flex-col lg:flex-row lg:items-center lg:gap-2">
+              <h3 className="break-words text-sm font-semibold leading-snug text-slate-900 dark:text-white lg:text-xs lg:truncate">{label}</h3>
+              <div className="mt-1 max-w-full overflow-hidden lg:mt-0 lg:scale-[0.85] lg:origin-left">
                 <TrendIndicator 
                   percentage={changePercentage} 
                   direction={changeDirection} 
@@ -33,13 +33,13 @@ function ResourceUsageCard({ label, percentage, changePercentage, changeDirectio
               </div>
             </div>
           </div>
-          <div className="shrink-0 text-right text-lg font-bold leading-none text-slate-900 dark:text-white sm:text-xl lg:text-lg">
+          <div className="shrink-0 text-right text-lg font-bold leading-none text-slate-900 dark:text-white sm:text-xl lg:text-base">
             {percentage}%
           </div>
         </div>
         
         <div className="mt-3 w-full shrink-0 lg:mt-1">
-          <ProgressBar value={percentage} color={progressColor} showPercentage={false} />
+          <ProgressBar value={percentage} color={progressColor} showPercentage={false} height={6} />
         </div>
       </div>
     </Card>
