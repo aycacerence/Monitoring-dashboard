@@ -15,8 +15,8 @@ import { Paper } from '@mui/material';
 function Card({ children, className = '', title, action, noPadding = false, hoverable = false }) {
   const paddingClass = noPadding ? 'overflow-hidden' : 'p-5';
   const hoverClass = hoverable 
-    ? 'transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-lg hover:shadow-[#a42350]/25 dark:hover:shadow-[#a42350]/20' 
-    : 'transition-all duration-500 ease-out hover:shadow-sm';
+    ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-[2px] hover:shadow-md hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600 z-10 relative' 
+    : 'transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-slate-300 dark:hover:border-slate-600';
 
   return (
     <Paper

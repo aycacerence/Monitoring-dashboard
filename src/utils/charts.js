@@ -39,6 +39,10 @@ export const getCommonChartOptions = (mode, palette) => {
       splitLine: { lineStyle: { color: gridLine, type: 'dashed' } },
       axisLabel: { color: labelColor, fontSize: 11 },
     },
+    animation: true,
+    animationDuration: 1200,
+    animationEasing: 'cubicOut',
+    animationDelay: (idx) => idx * 50,
   };
 };
 

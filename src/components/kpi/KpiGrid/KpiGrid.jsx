@@ -120,7 +120,7 @@ function KpiGrid() {
 
   return (
     <div className="grid grid-cols-1 gap-4 transition-opacity duration-500 ease-in opacity-100 md:grid-cols-2 lg:h-full lg:grid-cols-12">
-      {items.map((kpi) => (
+      {items.map((kpi, index) => (
         <div
           key={kpi.id}
           draggable={isEditMode}
@@ -144,7 +144,8 @@ function KpiGrid() {
             handleKpiDrop(kpi.id);
           }}
           onDragEnd={() => setDraggedKpiId(null)}
-          className={`relative lg:col-span-2 lg:min-h-0 ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedKpiId === kpi.id ? 'opacity-50' : ''}`}
+          className={`relative lg:col-span-2 lg:min-h-0 animate-fade-in-up ${isEditMode ? 'cursor-grab active:cursor-grabbing' : ''} ${draggedKpiId === kpi.id ? 'opacity-50' : ''}`}
+          style={{ animationDelay: `${index * 75}ms` }}
         >
           {isEditMode && (
             <div className="pointer-events-none absolute left-2 top-2 z-10 rounded bg-white/80 px-1 text-xs text-slate-400 shadow-sm">

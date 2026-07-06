@@ -321,6 +321,7 @@ const scheduleChartResize = () => {
 const GridItemWrapper = React.forwardRef(function GridItemWrapper(
   {
     instanceId,
+    index = 0,
     isEditMode,
     onRemove,
     children,
@@ -704,10 +705,11 @@ export default function DraggableGrid({ widgets = [] }) {
         onResizeStop={handleInteractionStop}
         style={{ height: isEditMode ? '100%' : undefined, minHeight: isEditMode ? undefined : '100%' }}
       >
-        {renderedWidgets.map(({ id, type }) => (
+        {renderedWidgets.map(({ id, type }, index) => (
           <GridItemWrapper
             key={id}
             instanceId={id}
+            index={index}
             isEditMode={isEditMode}
             onRemove={handleRemove}
           >
