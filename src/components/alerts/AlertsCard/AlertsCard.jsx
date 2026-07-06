@@ -2,9 +2,15 @@ import PropTypes from 'prop-types';
 import Card from '../../common/Card';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../app/hooks';
+import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function AlertsCard({ count, children }) {
   const { t } = useTranslation();
+  const isEditMode = useAppSelector(selectIsEditMode);
+  if (isEditMode) return <WidgetPlaceholder widgetId="alertsCard" />;
+
   return (
     <Card hoverable className="flex h-auto flex-col overflow-hidden lg:h-full" noPadding>
       <div className="flex shrink-0 items-center justify-between px-4 pt-4 mb-2">

@@ -6,15 +6,15 @@ import WidgetSidebar from '../WidgetSidebar/WidgetSidebar';
 import MainSidebar from '../MainSidebar/index.js';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks.js';
 import { loadVisibility, setVisibilityConfig } from '../../../features/widgetVisibility/widgetVisibilitySlice.js';
-import { setEditMode } from '../../../features/ui/uiSlice.js';
+import { selectIsEditMode, setEditMode } from '../../../features/ui/uiSlice.js';
 
 function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const role = useAppSelector((state) => state.auth.role);
+  const isEditMode = useAppSelector(selectIsEditMode);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isEditMode = location.pathname === '/settings';
   const activePanelSection = isEditMode ? 'settings' : 'panel';
   const [headerProps, setHeaderProps] = useState({
     title: 'Monitoring Dashboard',
@@ -25,14 +25,17 @@ function AppLayout() {
   });
 
   useEffect(() => {
+    dispatch(setEditMode(location.pathname.includes('settings')));
+  }, [location.pathname, dispatch]);
+
+  useEffect(() => {
     setSidebarOpen(isEditMode);
-    dispatch(setEditMode(isEditMode));
     // When sidebar toggles, wait for transition and trigger resize for charts
     const timer = setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
     return () => clearTimeout(timer);
-  }, [dispatch, isEditMode]);
+  }, [isEditMode]);
 
   useEffect(() => {
     dispatch(setVisibilityConfig(loadVisibility(role)));
@@ -65,7 +68,6 @@ function AppLayout() {
           <WidgetSidebar
             open={sidebarOpen}
             onClose={requestViewMode}
-            isEditMode={isEditMode}
           />
           <Box
             key={role}
@@ -78,7 +80,7 @@ function AppLayout() {
               flexDirection: 'column',
             }}
           >
-            <Outlet context={{ setHeaderProps, isEditMode }} />
+            <Outlet context={{ setHeaderProps }} />
           </Box>
         </Box>
       </Box>

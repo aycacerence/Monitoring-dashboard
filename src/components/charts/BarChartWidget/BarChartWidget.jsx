@@ -6,7 +6,7 @@ import { getCommonChartOptions } from '../../../utils/charts';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import ChartPlaceholder from '../../common/ChartPlaceholder';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function BarChartWidget({ data, height = '300px' }) {
   const { t } = useTranslation();
@@ -65,6 +65,8 @@ function BarChartWidget({ data, height = '300px' }) {
   }, [data, theme.palette.mode, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (isEditMode) return undefined;
+
     const container = containerRef.current;
     const chart = chartRef.current?.getEchartsInstance?.();
     if (!container || !chart) return undefined;
@@ -75,15 +77,9 @@ function BarChartWidget({ data, height = '300px' }) {
     requestAnimationFrame(resizeChart);
 
     return () => observer.disconnect();
-  }, [option]);
+  }, [isEditMode, option]);
 
-  if (isEditMode) {
-    return (
-      <div className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
-        <ChartPlaceholder label="Ağ Trafiği" />
-      </div>
-    );
-  }
+  if (isEditMode) return <WidgetPlaceholder widgetId="networkChart" />;
 
   return (
     <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>

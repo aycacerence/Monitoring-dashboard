@@ -4,6 +4,7 @@ import ResourceUsageCard from '../ResourceUsageCard/ResourceUsageCard';
 import ErrorState from '../../common/ErrorState/ErrorState';
 import { fetchResourceUsage } from '../../../features/dashboard/resourceUsageSlice';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 const editModeResourceUsage = [
   { id: 'cpu', label: 'CPU', percentage: 0, changePercentage: 0, changeDirection: 'neutral', icon: 'cpu' },
@@ -15,6 +16,8 @@ function ResourceUsageList() {
   const dispatch = useAppDispatch();
   const { data, status, error } = useAppSelector((state) => state.resourceUsage);
   const isEditMode = useAppSelector(selectIsEditMode);
+  if (isEditMode) return <WidgetPlaceholder widgetId="resourceUsage" />;
+
   const showLoadingState = !isEditMode && (status === 'loading' || status === 'idle');
   const showErrorState = !isEditMode && status === 'failed';
   const items = isEditMode && data.length === 0 ? editModeResourceUsage : data;

@@ -4,6 +4,7 @@ import KpiCardSkeleton from '../KpiCardSkeleton/KpiCardSkeleton';
 import ErrorState from '../../common/ErrorState/ErrorState';
 import { fetchKpis } from '../../../features/dashboard/kpiSlice';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 const editModeKpis = [
   { id: 'placeholder-1', title: 'CPU', value: '—', unit: '%', changePercentage: 0, changeDirection: 'neutral', changeLabel: '—', icon: 'cpu', sparklineData: [], color: '#8b5cf6' },
@@ -18,6 +19,8 @@ function KpiGrid() {
   const dispatch = useAppDispatch();
   const { data: kpiData, status, error } = useAppSelector((state) => state.kpi);
   const isEditMode = useAppSelector(selectIsEditMode);
+  if (isEditMode) return <WidgetPlaceholder widgetId="kpiGrid" />;
+
   const showLoadingState = !isEditMode && (status === 'loading' || status === 'idle');
   const showErrorState = !isEditMode && status === 'failed';
   const items = isEditMode && kpiData.length === 0 ? editModeKpis : kpiData;

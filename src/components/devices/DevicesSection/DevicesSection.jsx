@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { selectRole } from '../../../features/auth/authSlice';
 import LockIcon from '@mui/icons-material/Lock';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function DevicesSection() {
   const { t } = useTranslation();
@@ -31,8 +32,11 @@ function DevicesSection() {
 
   // Kompakt masaüstü görünümünde alt satırı verimli kullanmak için.
   useEffect(() => {
+    if (isEditMode) return;
     dispatch(setItemsPerPage(6));
-  }, [dispatch]);
+  }, [dispatch, isEditMode]);
+
+  if (isEditMode) return <WidgetPlaceholder widgetId="devicesTable" />;
 
   const handleSearchChange = (value) => {
     dispatch(setSearchTerm(value));

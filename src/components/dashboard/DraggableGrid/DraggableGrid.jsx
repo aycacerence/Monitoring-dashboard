@@ -3,7 +3,7 @@ import 'react-resizable/css/styles.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout/legacy';
 import { useLocation } from 'react-router-dom';
-import { Box, IconButton, Typography, useMediaQuery } from '@mui/material';
+import { Box, IconButton, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -13,72 +13,221 @@ import {
   selectVisibility,
   setWidgetVisibility,
 } from '../../../features/widgetVisibility/widgetVisibilitySlice';
-import { setIsDirty } from '../../../features/ui/uiSlice';
+import { selectIsEditMode, setIsDirty } from '../../../features/ui/uiSlice';
 import { loadLayout, saveLayout } from '../../../utils/layoutStorage';
 
 const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480 };
 const COLS = { lg: 12, md: 12, sm: 6, xs: 4 };
 const DROPPING_ITEM_ID = '__dropping_widget__';
 const GRID_MARGIN = [16, 12];
+const EDIT_BOARD_ROWS = 12;
+const MIN_EDIT_ROW_HEIGHT = 34;
+const MAX_EDIT_ROW_HEIGHT = 58;
 const MIN_ROW_HEIGHT = 44;
 const MAX_ROW_HEIGHT = 64;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const createDefaultLayoutItems = () =>
-  Object.entries(ORIGINAL_POSITIONS).map(([id, position]) => ({
-    i: id,
-    ...position,
-  }));
+const DEFAULT_PRESET_POSITIONS = {
+  kpiGrid: { x: 0, y: 0, w: 12, h: 3 },
+  cpuChart: { x: 0, y: 3, w: 4, h: 3 },
+  networkChart: { x: 4, y: 3, w: 4, h: 3 },
+  deviceStatusChart: { x: 8, y: 3, w: 4, h: 3 },
+  alertsCard: { x: 0, y: 6, w: 4, h: 2 },
+  systemSummary: { x: 4, y: 6, w: 4, h: 2 },
+  resourceUsage: { x: 8, y: 6, w: 4, h: 4 },
+  devicesTable: { x: 0, y: 8, w: 8, h: 3 },
+};
 
-const createDefaultLayouts = () => {
+const createInstanceId = (type) =>
+  `widget-${type}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+const createDefaultInstanceId = (type) => `widget-${type}-default`;
+
+const getAvailableTypes = (widgets = []) =>
+  widgets.map((widget) => widget.id).filter((id) => ORIGINAL_POSITIONS[id]);
+
+const createDefaultInstances = (types = Object.keys(ORIGINAL_POSITIONS)) =>
+  types.map((type) => ({ id: createDefaultInstanceId(type), type }));
+
+const getDefaultPosition = (type) => ({
+  ...(ORIGINAL_POSITIONS[type] || {}),
+  ...(DEFAULT_PRESET_POSITIONS[type] || {}),
+});
+
+const createLayoutItem = (instance) => {
+  const original = getDefaultPosition(instance.type);
+  const minW = original.minW ?? 1;
+  const minH = original.minH ?? 1;
+  const maxW = original.maxW ?? 12;
+  const maxH = original.maxH ?? 12;
+
   return {
-    lg: createDefaultLayoutItems(),
-    md: createDefaultLayoutItems(),
-    sm: createDefaultLayoutItems(),
-    xs: createDefaultLayoutItems(),
+    i: instance.id,
+    x: original.x ?? 0,
+    y: original.y ?? 0,
+    w: original.w ?? 4,
+    h: original.h ?? 4,
+    minW,
+    minH,
+    maxW,
+    maxH,
   };
 };
 
-const buildDefaultLayouts = createDefaultLayouts;
+const createDefaultLayouts = (instances) => {
+  const items = instances.map(createLayoutItem);
+  return {
+    lg: items,
+    md: items.map((item) => fitItemToBreakpoint(item, 'md')),
+    sm: items.map((item) => fitItemToBreakpoint(item, 'sm')),
+    xs: items.map((item) => fitItemToBreakpoint(item, 'xs')),
+  };
+};
 
-const sanitizeLayoutItems = (items = []) => {
+const createDefaultDashboardState = (types) => {
+  const widgets = createDefaultInstances(types);
+  return {
+    widgets,
+    layouts: createDefaultLayouts(widgets),
+  };
+};
+
+const getInstanceTypeMap = (instances = []) =>
+  instances.reduce((acc, instance) => {
+    acc[instance.id] = instance.type;
+    return acc;
+  }, {});
+
+const sanitizeLayoutItems = (items = [], instances = []) => {
+  const instanceTypeMap = getInstanceTypeMap(instances);
   const safeItems = Array.isArray(items) ? items : [];
+
   return safeItems
-    .filter((item) => item.i !== DROPPING_ITEM_ID && ORIGINAL_POSITIONS[item.i])
+    .filter((item) => item.i !== DROPPING_ITEM_ID && instanceTypeMap[item.i])
     .map((item) => {
-      const original = ORIGINAL_POSITIONS[item.i];
-      const minW = original.minW || 1;
-      const minH = original.minH || 1;
-      const {
-        static: _static,
-        isDraggable: _isDraggable,
-        isResizable: _isResizable,
-        resizeHandles: _resizeHandles,
-        ...safeItem
-      } = item;
+      const type = instanceTypeMap[item.i];
+      const original = ORIGINAL_POSITIONS[type] || {};
+      const minW = original.minW ?? item.minW ?? 1;
+      const minH = original.minH ?? item.minH ?? 1;
+      const maxW = original.maxW ?? item.maxW ?? 12;
+      const maxH = original.maxH ?? item.maxH ?? 12;
+      const nextW = Number.isFinite(item.w) ? item.w : original.w ?? 4;
+      const nextH = Number.isFinite(item.h) ? item.h : original.h ?? 4;
+      const h = Math.max(minH, Math.min(nextH, maxH, EDIT_BOARD_ROWS));
 
       return {
-        ...safeItem,
-        x: Number.isFinite(item.x) ? item.x : original.x,
-        y: Number.isFinite(item.y) ? item.y : original.y,
-        w: Number.isFinite(item.w) && item.w >= minW ? item.w : original.w,
-        h: Number.isFinite(item.h) && item.h >= minH ? item.h : original.h,
+        i: item.i,
+        x: Number.isFinite(item.x) ? item.x : original.x ?? 0,
+        y: Math.max(
+          0,
+          Math.min(
+            Number.isFinite(item.y) ? item.y : original.y ?? 0,
+            Math.max(EDIT_BOARD_ROWS - h, 0),
+          ),
+        ),
+        w: Math.max(minW, Math.min(nextW, maxW)),
+        h,
         minW,
         minH,
+        maxW,
+        maxH,
       };
     });
 };
 
-const sanitizeLayouts = (nextLayouts) => {
+const sanitizeLayouts = (nextLayouts, instances = []) => {
   if (!nextLayouts) return null;
 
-  return Object.entries(nextLayouts).reduce((acc, [key, value]) => {
-    acc[key] = sanitizeLayoutItems(value);
+  return Object.keys(COLS).reduce((acc, key) => {
+    acc[key] = sanitizeLayoutItems(nextLayouts[key], instances);
     return acc;
   }, {});
 };
 
-const cleanLayouts = sanitizeLayouts;
+const fitItemToBreakpoint = (item, breakpoint) => {
+  const cols = COLS[breakpoint] || COLS.lg;
+  const maxW = Math.min(item.maxW ?? cols, cols);
+  const width = Math.min(item.w, maxW);
+
+  return {
+    ...item,
+    x: Math.max(0, Math.min(item.x, Math.max(cols - width, 0))),
+    w: width,
+    minW: Math.min(item.minW || 1, width),
+    maxW,
+  };
+};
+
+const ensureLayoutsForInstances = (layouts, instances) =>
+  Object.keys(COLS).reduce((acc, key) => {
+    const items = layouts?.[key] || [];
+    const missingItems = instances
+      .filter((instance) => !items.some((item) => item.i === instance.id))
+      .map((instance) => fitItemToBreakpoint(createLayoutItem(instance), key));
+
+    acc[key] = [...items, ...missingItems];
+    return acc;
+  }, {});
+
+const normalizeStoredDashboardState = (storedState, availableTypes) => {
+  const defaultState = createDefaultDashboardState(availableTypes);
+  if (!storedState) return defaultState;
+
+  if (storedState.widgets && storedState.layouts) {
+    const widgets = storedState.widgets
+      .filter((instance) => availableTypes.includes(instance.type))
+      .map((instance) => ({ id: instance.id, type: instance.type }));
+
+    if (!widgets.length) return defaultState;
+
+    const layouts = ensureLayoutsForInstances(
+      sanitizeLayouts(storedState.layouts, widgets) || createDefaultLayouts(widgets),
+      widgets,
+    );
+    return { widgets, layouts };
+  }
+
+  const oldLayoutIds = Array.from(
+    new Set(
+      Object.values(storedState || {})
+        .flat()
+        .map((item) => item?.i)
+        .filter((id) => availableTypes.includes(id)),
+    ),
+  );
+
+  if (!oldLayoutIds.length) return defaultState;
+
+  const widgets = oldLayoutIds.map((type) => ({
+    id: createDefaultInstanceId(type),
+    type,
+  }));
+
+  const migratedLayouts = Object.keys(COLS).reduce((acc, key) => {
+    acc[key] = (storedState[key] || []).map((item) => {
+      const instance = widgets.find((widget) => widget.type === item.i);
+      return instance ? { ...item, i: instance.id } : item;
+    });
+    return acc;
+  }, {});
+
+  return {
+    widgets,
+    layouts: ensureLayoutsForInstances(
+      sanitizeLayouts(migratedLayouts, widgets) || createDefaultLayouts(widgets),
+      widgets,
+    ),
+  };
+};
+
+const removeInstanceFromLayouts = (layouts, instanceId) =>
+  Object.keys(COLS).reduce((acc, key) => {
+    acc[key] = (layouts[key] || []).filter((item) => item.i !== instanceId);
+    return acc;
+  }, {});
+
+const areDashboardStatesEqual = (firstState, secondState) =>
+  JSON.stringify(firstState) === JSON.stringify(secondState);
 
 const areLayoutsEqual = (firstLayouts, secondLayouts) =>
   JSON.stringify(firstLayouts) === JSON.stringify(secondLayouts);
@@ -88,39 +237,41 @@ const hasDroppingItem = (nextLayouts) =>
     items.some((item) => item.i === DROPPING_ITEM_ID),
   );
 
-const getBreakpointLayoutsWithItem = (currentLayouts, nextItem) => {
-  const source = sanitizeLayouts(currentLayouts) || createDefaultLayouts();
-  return Object.entries(source).reduce((acc, [key, items]) => {
-    acc[key] = (items || []).map((item) =>
-      item.i === nextItem.i
-        ? {
-            ...item,
-            x: nextItem.x,
-            y: nextItem.y,
-            w: nextItem.w,
-            h: nextItem.h,
-            minW: nextItem.minW || item.minW,
-            minH: nextItem.minH || item.minH,
-          }
-        : item,
-    );
-    return acc;
-  }, {});
-};
-
-const fitItemToBreakpoint = (item, breakpoint) => {
-  const cols = COLS[breakpoint] || COLS.lg;
-  const width = Math.min(item.w, cols);
-  return {
-    ...item,
-    x: Math.max(0, Math.min(item.x, Math.max(cols - width, 0))),
-    w: width,
-    minW: Math.min(item.minW || 1, width),
-  };
-};
-
 const getLayoutRows = (items = []) =>
   items.reduce((max, item) => Math.max(max, (item.y || 0) + (item.h || 1)), 1);
+
+const getAvailableGridHeight = (container, isEditMode) => {
+  if (!container) return 0;
+  const containerHeight = container.clientHeight || 0;
+  const rect = container.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || 0;
+  const viewportSpace = rect?.top ? viewportHeight - rect.top : 0;
+
+  return Math.max(containerHeight, viewportSpace, 0);
+};
+
+const calculateRowHeight = (container, layouts, isEditMode) => {
+  if (isEditMode) {
+    const availableHeight = getAvailableGridHeight(container, isEditMode);
+    const verticalMargins = Math.max(EDIT_BOARD_ROWS - 1, 0) * GRID_MARGIN[1];
+    const nextRowHeight = Math.floor((availableHeight - verticalMargins) / EDIT_BOARD_ROWS);
+
+    return Math.max(
+      MIN_EDIT_ROW_HEIGHT,
+      Math.min(MAX_EDIT_ROW_HEIGHT, Number.isFinite(nextRowHeight) ? nextRowHeight : MAX_EDIT_ROW_HEIGHT),
+    );
+  }
+
+  const availableHeight = getAvailableGridHeight(container, isEditMode);
+  const rows = getLayoutRows(layouts?.lg);
+  const verticalMargins = Math.max(rows - 1, 0) * GRID_MARGIN[1];
+  const nextRowHeight = Math.floor((availableHeight - verticalMargins) / rows);
+
+  return Math.max(
+    MIN_ROW_HEIGHT,
+    Math.min(MAX_ROW_HEIGHT, Number.isFinite(nextRowHeight) ? nextRowHeight : MAX_ROW_HEIGHT),
+  );
+};
 
 const scheduleChartResize = () => {
   window.requestAnimationFrame(() => {
@@ -131,7 +282,8 @@ const scheduleChartResize = () => {
 };
 
 const GridItemWrapper = React.forwardRef(function GridItemWrapper(
-  { widgetId, isEditMode, onRemove, children, style, className, ...rest }, ref
+  { instanceId, isEditMode, onRemove, children, style, className, ...rest },
+  ref,
 ) {
   return (
     <div
@@ -141,31 +293,36 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
       {...rest}
     >
       <Box
-        className="drag-handle"
+        className="widget-drag-handle drag-handle"
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: 1.5,
+          px: isEditMode ? 1.5 : 0,
           py: isEditMode ? 0.5 : 0,
-          cursor: 'grab',
+          cursor: isEditMode ? 'grab' : 'default',
           userSelect: 'none',
           flexShrink: 0,
-          height: isEditMode ? 32 : 6,
+          height: isEditMode ? 32 : 4,
           bgcolor: isEditMode ? 'action.hover' : 'transparent',
           borderTopLeftRadius: 8,
           borderTopRightRadius: 8,
           borderBottom: isEditMode ? '1px solid' : 'none',
           borderColor: 'divider',
           overflow: 'hidden',
-          transition: 'height 0.2s, background-color 0.2s',
-          '&:active': { cursor: 'grabbing' },
+          transition: 'height 0.2s ease, background-color 0.2s ease',
+          '&:active': { cursor: isEditMode ? 'grabbing' : 'default' },
         }}
       >
         {isEditMode && (
           <>
             <DragIndicatorIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-            <IconButton size="small" onMouseDown={(e) => e.stopPropagation()} onClick={() => onRemove(widgetId)} sx={{ p: 0.3 }}>
+            <IconButton
+              size="small"
+              onMouseDown={(event) => event.stopPropagation()}
+              onClick={() => onRemove?.(instanceId)}
+              sx={{ p: 0.3, opacity: 0.6, '&:hover': { opacity: 1 } }}
+            >
               <CloseIcon sx={{ fontSize: 14 }} />
             </IconButton>
           </>
@@ -196,27 +353,28 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
 
 export default function DraggableGrid({ widgets = [] }) {
   const theme = useTheme();
-  const location = useLocation();
-  const isEditMode = location.pathname.includes('settings');
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
+  const isEditMode = useAppSelector(selectIsEditMode) || location.pathname.includes('settings');
   const role = useAppSelector((state) => state.auth.role);
   const containerRef = useRef(null);
-  const droppingWidgetIdRef = useRef(null);
-  const pendingLayoutsRef = useRef(null);
-  const isInteractingRef = useRef(false);
-  const layoutFrameRef = useRef(null);
-  const [savedLayouts, setSavedLayouts] = useState(
-    () => cleanLayouts(loadLayout(role)) ?? buildDefaultLayouts(),
+  const droppingWidgetTypeRef = useRef(null);
+  const availableTypes = useMemo(() => getAvailableTypes(widgets), [widgets]);
+  const availableTypesKey = availableTypes.join('|');
+  const [savedState, setSavedState] = useState(() =>
+    normalizeStoredDashboardState(loadLayout(role), availableTypes),
   );
-  const [draftLayouts, setDraftLayouts] = useState(savedLayouts);
+  const [draftState, setDraftState] = useState(savedState);
   const [rowHeight, setRowHeight] = useState(MAX_ROW_HEIGHT);
   const [droppingItem, setDroppingItem] = useState({
     i: DROPPING_ITEM_ID,
     w: 4,
     h: 4,
   });
+  const [activeDropType, setActiveDropType] = useState(null);
+  const [currentBreakpoint, setCurrentBreakpoint] = useState('lg');
 
   const widgetMap = useMemo(() => {
     return widgets.reduce((acc, widget) => {
@@ -225,58 +383,110 @@ export default function DraggableGrid({ widgets = [] }) {
     }, {});
   }, [widgets]);
 
+  const renderedWidgets = useMemo(
+    () => draftState.widgets.filter((instance) => widgetMap[instance.type]),
+    [draftState.widgets, widgetMap],
+  );
+  const layoutRows = useMemo(() => getLayoutRows(draftState.layouts.lg), [draftState.layouts.lg]);
+
   useEffect(() => {
     const handleDragStart = (event) => {
-      droppingWidgetIdRef.current = event.detail?.widgetId || null;
-      setDroppingItem({
-        i: DROPPING_ITEM_ID,
-        w: event.detail?.w ?? 4,
-        h: event.detail?.h ?? 4,
-      });
+      const type = event.detail?.widgetId;
+      droppingWidgetTypeRef.current = type || null;
+      setActiveDropType(type || null);
+
+      if (type && ORIGINAL_POSITIONS[type]) {
+        const { w, h } = ORIGINAL_POSITIONS[type];
+        setDroppingItem({ i: DROPPING_ITEM_ID, w, h });
+      } else {
+        setDroppingItem({ i: DROPPING_ITEM_ID, w: 4, h: 4 });
+      }
+    };
+    const handleDragEnd = () => {
+      droppingWidgetTypeRef.current = null;
+      setActiveDropType(null);
+      setDroppingItem({ i: DROPPING_ITEM_ID, w: 4, h: 4 });
     };
 
     window.addEventListener('rgl:dragstart', handleDragStart);
-    return () => window.removeEventListener('rgl:dragstart', handleDragStart);
+    window.addEventListener('rgl:dragend', handleDragEnd);
+    window.addEventListener('dragend', handleDragEnd);
+    return () => {
+      window.removeEventListener('rgl:dragstart', handleDragStart);
+      window.removeEventListener('rgl:dragend', handleDragEnd);
+      window.removeEventListener('dragend', handleDragEnd);
+    };
   }, []);
 
   useEffect(() => {
     const handleResetLayout = () => {
-      const defaultLayouts = buildDefaultLayouts();
-      setDraftLayouts(defaultLayouts);
+      const defaultState = createDefaultDashboardState(availableTypes);
+      setSavedState(defaultState);
+      setDraftState(defaultState);
+      dispatch(setIsDirty(false));
       scheduleChartResize();
     };
 
     window.addEventListener('dashboard:reset-layout', handleResetLayout);
     return () => window.removeEventListener('dashboard:reset-layout', handleResetLayout);
-  }, []);
+  }, [availableTypes, dispatch]);
 
   useEffect(() => {
-    const saved = cleanLayouts(loadLayout(role)) ?? buildDefaultLayouts();
-    pendingLayoutsRef.current = null;
-    isInteractingRef.current = false;
-    if (layoutFrameRef.current) {
-      window.cancelAnimationFrame(layoutFrameRef.current);
-      layoutFrameRef.current = null;
-    }
-    setSavedLayouts(saved);
-    setDraftLayouts(saved);
+    const nextState = normalizeStoredDashboardState(loadLayout(role), availableTypes);
+    setSavedState(nextState);
+    setDraftState(nextState);
     dispatch(setIsDirty(false));
     scheduleChartResize();
-  }, [dispatch, role]);
+  }, [availableTypesKey, dispatch, role]);
 
   useEffect(() => {
-    dispatch(setIsDirty(!areLayoutsEqual(savedLayouts, draftLayouts)));
-  }, [dispatch, savedLayouts, draftLayouts]);
+    setDraftState((currentState) => {
+      const nextWidgets = currentState.widgets.filter(
+        (instance) => visibility[instance.type] && availableTypes.includes(instance.type),
+      );
+      const existingTypes = new Set(nextWidgets.map((instance) => instance.type));
+
+      availableTypes.forEach((type) => {
+        if (visibility[type] && !existingTypes.has(type)) {
+          nextWidgets.push({ id: createInstanceId(type), type });
+          existingTypes.add(type);
+        }
+      });
+
+      if (
+        nextWidgets.length === currentState.widgets.length &&
+        nextWidgets.every((instance, index) => instance.id === currentState.widgets[index]?.id)
+      ) {
+        return currentState;
+      }
+
+      const nextIds = new Set(nextWidgets.map((instance) => instance.id));
+      const nextLayouts = Object.keys(COLS).reduce((acc, key) => {
+        const existingItems = (currentState.layouts[key] || []).filter((item) => nextIds.has(item.i));
+        const missingItems = nextWidgets
+          .filter((instance) => !existingItems.some((item) => item.i === instance.id))
+          .map((instance) => fitItemToBreakpoint(createLayoutItem(instance), key));
+        acc[key] = [...existingItems, ...missingItems];
+        return acc;
+      }, {});
+
+      return { widgets: nextWidgets, layouts: nextLayouts };
+    });
+  }, [availableTypes, visibility]);
+
+  useEffect(() => {
+    dispatch(setIsDirty(!areDashboardStatesEqual(savedState, draftState)));
+  }, [dispatch, savedState, draftState]);
 
   useEffect(() => {
     const handleSaveLayout = () => {
-      setSavedLayouts(draftLayouts);
-      saveLayout(draftLayouts, role);
+      setSavedState(draftState);
+      saveLayout(draftState, role);
       dispatch(setIsDirty(false));
     };
 
     const handleCancelLayout = () => {
-      setDraftLayouts(savedLayouts);
+      setDraftState(savedState);
       dispatch(setIsDirty(false));
       scheduleChartResize();
     };
@@ -288,47 +498,25 @@ export default function DraggableGrid({ widgets = [] }) {
       window.removeEventListener('save-layout', handleSaveLayout);
       window.removeEventListener('cancel-layout', handleCancelLayout);
     };
-  }, [dispatch, draftLayouts, role, savedLayouts]);
+  }, [dispatch, draftState, role, savedState]);
 
   useEffect(() => {
     if (!isDesktop || !containerRef.current) return undefined;
-    if (isEditMode) return undefined;
 
-    const calculateRowHeight = () => {
-      const availableHeight = containerRef.current?.clientHeight || 0;
-      const rows = getLayoutRows(draftLayouts.lg);
-      const verticalMargins = Math.max(rows - 1, 0) * GRID_MARGIN[1];
-      const nextRowHeight = Math.floor((availableHeight - verticalMargins) / rows);
-      setRowHeight(Math.max(MIN_ROW_HEIGHT, Math.min(MAX_ROW_HEIGHT, nextRowHeight || MAX_ROW_HEIGHT)));
-      scheduleChartResize();
+    const updateRowHeight = () => {
+      const nextRowHeight = calculateRowHeight(containerRef.current, draftState.layouts, isEditMode);
+      setRowHeight((currentRowHeight) =>
+        currentRowHeight === nextRowHeight ? currentRowHeight : nextRowHeight,
+      );
     };
 
-    calculateRowHeight();
-    const resizeObserver = new ResizeObserver(calculateRowHeight);
-    resizeObserver.observe(containerRef.current);
+    updateRowHeight();
+    window.addEventListener('resize', updateRowHeight);
 
-    return () => resizeObserver.disconnect();
-  }, [containerRef, isDesktop, isEditMode, draftLayouts.lg]);
-
-  const queueLiveLayouts = useCallback((nextLayouts) => {
-    pendingLayoutsRef.current = nextLayouts;
-    if (layoutFrameRef.current) return;
-
-    layoutFrameRef.current = window.requestAnimationFrame(() => {
-      layoutFrameRef.current = null;
-      if (pendingLayoutsRef.current) {
-        setDraftLayouts(pendingLayoutsRef.current);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
     return () => {
-      if (layoutFrameRef.current) {
-        window.cancelAnimationFrame(layoutFrameRef.current);
-      }
+      window.removeEventListener('resize', updateRowHeight);
     };
-  }, []);
+  }, [containerRef, isDesktop, isEditMode, layoutRows]);
 
   const handleLayoutChange = useCallback((_currentLayout, allLayouts) => {
     if (!isEditMode) return;
@@ -337,87 +525,105 @@ export default function DraggableGrid({ widgets = [] }) {
       return;
     }
 
-    const sanitized = cleanLayouts(allLayouts) ?? buildDefaultLayouts();
-    setDraftLayouts(sanitized);
+    setDraftState((currentState) => {
+      const nextLayouts = sanitizeLayouts(allLayouts, currentState.widgets) || currentState.layouts;
+      if (areLayoutsEqual(nextLayouts, currentState.layouts)) {
+        return currentState;
+      }
+
+      return {
+        ...currentState,
+        layouts: nextLayouts,
+      };
+    });
   }, [isEditMode]);
 
-  const handleInteractionStart = useCallback(() => {
-    isInteractingRef.current = true;
-    pendingLayoutsRef.current = draftLayouts;
-  }, [draftLayouts]);
+  const handleInteractionStop = useCallback((layout) => {
+    if (isEditMode && Array.isArray(layout)) {
+      setDraftState((currentState) => {
+        const nextLayouts = {
+          ...currentState.layouts,
+          [currentBreakpoint]: sanitizeLayoutItems(layout, currentState.widgets),
+        };
 
-  const handleInteractionStop = useCallback(() => {
-    isInteractingRef.current = false;
-    if (layoutFrameRef.current) {
-      window.cancelAnimationFrame(layoutFrameRef.current);
-      layoutFrameRef.current = null;
-    }
-    if (pendingLayoutsRef.current) {
-      setDraftLayouts(pendingLayoutsRef.current);
-    }
-    scheduleChartResize();
-  }, []);
+        if (areLayoutsEqual(nextLayouts, currentState.layouts)) {
+          return currentState;
+        }
 
-  const handleResize = useCallback((_layout, _oldItem, newItem) => {
-    if (!isEditMode || !newItem?.i || newItem.i === DROPPING_ITEM_ID) return;
-
-    const sanitizedItem = sanitizeLayoutItems([newItem])[0];
-    if (!sanitizedItem) return;
-
-    const resizedLayouts = getBreakpointLayoutsWithItem(draftLayouts, sanitizedItem);
-    queueLiveLayouts(resizedLayouts);
-  }, [isEditMode, draftLayouts, queueLiveLayouts]);
-
-  const handleRemove = useCallback((widgetId) => {
-    const updated = { ...draftLayouts };
-    Object.keys(updated).forEach((key) => {
-      updated[key] = (updated[key] || []).filter((item) => item.i !== widgetId);
-    });
-
-    setDraftLayouts(updated);
-    dispatch(setWidgetVisibility({ id: widgetId, visible: false, role }));
-    scheduleChartResize();
-  }, [dispatch, draftLayouts, role]);
-
-  const onDrop = useCallback((layout, layoutItem, event) => {
-    const eventWidgetId = event?.dataTransfer?.getData('text/plain');
-    const widgetId = droppingWidgetIdRef.current || eventWidgetId;
-    if (!widgetId || !ORIGINAL_POSITIONS[widgetId]) return;
-    droppingWidgetIdRef.current = null;
-
-    const original = ORIGINAL_POSITIONS[widgetId];
-    const newItem = {
-      i: widgetId,
-      x: layoutItem.x,
-      y: layoutItem.y,
-      w: original.w,
-      h: original.h,
-      minW: original.minW ?? 2,
-      minH: original.minH ?? 2,
-    };
-
-    setDraftLayouts((currentLayouts) => {
-      const updated = cleanLayouts(currentLayouts) ?? buildDefaultLayouts();
-      const resolvedLayout = sanitizeLayoutItems(layout).filter(item => item.i !== widgetId);
-      Object.keys(COLS).forEach((key) => {
-        const baseLayout = key === 'lg'
-          ? resolvedLayout
-          : (updated[key] || []).filter(item => item.i !== widgetId);
-        updated[key] = [...baseLayout, fitItemToBreakpoint(newItem, key)];
+        return {
+          ...currentState,
+          layouts: nextLayouts,
+        };
       });
-      return updated;
-    });
+    }
+  }, [currentBreakpoint, isEditMode]);
 
-    dispatch(setWidgetVisibility({ id: widgetId, visible: true, role }));
+  const handleRemove = useCallback((instanceId) => {
+    setDraftState((currentState) => {
+      const removedInstance = currentState.widgets.find((instance) => instance.id === instanceId);
+      const nextWidgets = currentState.widgets.filter((instance) => instance.id !== instanceId);
+      const nextLayouts = removeInstanceFromLayouts(currentState.layouts, instanceId);
+
+      if (removedInstance) {
+        dispatch(setWidgetVisibility({ id: removedInstance.type, visible: false, role }));
+      }
+
+      return { widgets: nextWidgets, layouts: nextLayouts };
+    });
     scheduleChartResize();
   }, [dispatch, role]);
 
-  const visibleWidgets = widgets.filter((widget) => visibility[widget.id]);
+  const onDrop = useCallback((layout, layoutItem, event) => {
+    const eventWidgetType = event?.dataTransfer?.getData('text/plain');
+    const widgetType = droppingWidgetTypeRef.current || eventWidgetType;
+    droppingWidgetTypeRef.current = null;
+    setActiveDropType(null);
+    setDroppingItem({ i: DROPPING_ITEM_ID, w: 4, h: 4 });
+    if (!widgetType || !ORIGINAL_POSITIONS[widgetType] || !widgetMap[widgetType]) return;
 
-  if (!isDesktop) {
+    setDraftState((currentState) => {
+      if (currentState.widgets.some((instance) => instance.type === widgetType)) {
+        return currentState;
+      }
+
+      const newInstance = { id: createInstanceId(widgetType), type: widgetType };
+      const original = ORIGINAL_POSITIONS[widgetType] || {};
+      const newItem = {
+        i: newInstance.id,
+        x: layoutItem.x,
+        y: layoutItem.y,
+        w: original.w ?? 4,
+        h: original.h ?? 4,
+        minW: original.minW ?? 2,
+        minH: original.minH ?? 2,
+        maxW: original.maxW ?? 12,
+        maxH: original.maxH ?? 12,
+      };
+      const nextWidgets = [...currentState.widgets, newInstance];
+      const updatedLayouts = sanitizeLayouts(currentState.layouts, currentState.widgets) || createDefaultLayouts(currentState.widgets);
+      const resolvedLayout = sanitizeLayoutItems(layout, currentState.widgets);
+
+      Object.keys(COLS).forEach((key) => {
+        const baseLayout = key === 'lg'
+          ? resolvedLayout
+          : (updatedLayouts[key] || []);
+        updatedLayouts[key] = [
+          ...baseLayout.filter((item) => item.i !== DROPPING_ITEM_ID),
+          fitItemToBreakpoint(newItem, key),
+        ];
+      });
+
+      return { widgets: nextWidgets, layouts: updatedLayouts };
+    });
+
+    dispatch(setWidgetVisibility({ id: widgetType, visible: true, role }));
+    scheduleChartResize();
+  }, [dispatch, role, widgetMap]);
+
+  if (!isDesktop && !isEditMode) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-        {visibleWidgets.map(({ id, title, children }) => (
+        {renderedWidgets.map(({ id, type }) => (
           <Box key={id} sx={{ minWidth: 0 }}>
             {isEditMode && (
               <Box
@@ -435,7 +641,7 @@ export default function DraggableGrid({ widgets = [] }) {
                   borderBottom: 0,
                 }}
               >
-                <IconButton size="small" onClick={() => dispatch(setWidgetVisibility({ id, visible: false, role }))} sx={{ p: 0.3 }}>
+                <IconButton size="small" onClick={() => handleRemove(id)} sx={{ p: 0.3 }}>
                   <CloseIcon sx={{ fontSize: 15 }} />
                 </IconButton>
               </Box>
@@ -456,7 +662,7 @@ export default function DraggableGrid({ widgets = [] }) {
                 },
               }}
             >
-              {children || widgetMap[id]?.children}
+              {widgetMap[type]?.children}
             </Box>
           </Box>
         ))}
@@ -472,7 +678,14 @@ export default function DraggableGrid({ widgets = [] }) {
         height: { xs: 'auto', lg: '100%' },
         minHeight: { xs: 'auto', lg: 0 },
         overflowX: 'hidden',
-        overflowY: { xs: 'visible', lg: 'hidden' },
+        overflowY: 'hidden',
+        border: isEditMode ? '1px solid' : 0,
+        borderColor: 'divider',
+        borderRadius: isEditMode ? 2 : 0,
+        bgcolor: isEditMode ? 'rgba(15, 23, 42, 0.025)' : 'transparent',
+        boxShadow: isEditMode ? 'inset 0 0 0 1px rgba(148, 163, 184, 0.16)' : 'none',
+        px: isEditMode ? 1.5 : 0,
+        pt: isEditMode ? 1.5 : 0,
         '& .react-grid-item.react-grid-placeholder': {
           bgcolor: 'primary.main',
           opacity: 0.08,
@@ -484,41 +697,42 @@ export default function DraggableGrid({ widgets = [] }) {
     >
       <ResponsiveGridLayout
         key={role}
-        className={`layout smart-snap-grid ${isEditMode ? 'is-editing' : ''}`}
-        layouts={draftLayouts}
+        className={`layout smart-snap-grid ${isEditMode ? 'is-editing' : ''} ${activeDropType ? 'has-external-drop' : ''}`}
+        layouts={draftState.layouts}
         breakpoints={BREAKPOINTS}
         cols={COLS}
         measureBeforeMount={false}
+        useCSSTransforms={true}
         rowHeight={rowHeight}
         margin={GRID_MARGIN}
         containerPadding={[0, 0]}
         compactType="vertical"
         preventCollision={false}
         allowOverlap={false}
-        draggableHandle=".drag-handle"
+        isBounded={isEditMode}
+        maxRows={isEditMode ? EDIT_BOARD_ROWS : 100}
+        draggableHandle=".widget-drag-handle"
         draggableCancel=".react-resizable-handle,button,.MuiIconButton-root"
         isResizable={isEditMode}
         isDraggable={isEditMode}
-        isDroppable={isEditMode}
-        resizeHandles={['se']}
+        isDroppable={isEditMode && Boolean(activeDropType)}
+        resizeHandles={['se', 's', 'e']}
         droppingItem={droppingItem}
         onDrop={onDrop}
         onLayoutChange={handleLayoutChange}
-        onDragStart={handleInteractionStart}
-        onResizeStart={handleInteractionStart}
-        onResize={handleResize}
+        onBreakpointChange={setCurrentBreakpoint}
         onDragStop={handleInteractionStop}
         onResizeStop={handleInteractionStop}
-        style={{ minHeight: '100%' }}
+        style={{ height: isEditMode ? '100%' : undefined, minHeight: isEditMode ? undefined : '100%' }}
       >
-        {visibleWidgets.map(({ id, children }) => (
+        {renderedWidgets.map(({ id, type }) => (
           <GridItemWrapper
             key={id}
-            widgetId={id}
+            instanceId={id}
             isEditMode={isEditMode}
             onRemove={handleRemove}
           >
-            {children || widgetMap[id]?.children}
+            {widgetMap[type]?.children}
           </GridItemWrapper>
         ))}
       </ResponsiveGridLayout>

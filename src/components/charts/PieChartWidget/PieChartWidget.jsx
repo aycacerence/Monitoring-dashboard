@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import ChartPlaceholder from '../../common/ChartPlaceholder';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function PieChartWidget({ data, height = '300px' }) {
   const theme = useTheme();
@@ -52,6 +52,8 @@ function PieChartWidget({ data, height = '300px' }) {
   }, [data, theme.palette.mode]);
 
   useEffect(() => {
+    if (isEditMode) return undefined;
+
     const container = containerRef.current;
     const chart = chartRef.current?.getEchartsInstance?.();
     if (!container || !chart) return undefined;
@@ -62,15 +64,9 @@ function PieChartWidget({ data, height = '300px' }) {
     requestAnimationFrame(resizeChart);
 
     return () => observer.disconnect();
-  }, [option]);
+  }, [isEditMode, option]);
 
-  if (isEditMode) {
-    return (
-      <div className="relative h-full min-h-[120px] w-full" style={{ height }}>
-        <ChartPlaceholder label="Cihaz Durumu" />
-      </div>
-    );
-  }
+  if (isEditMode) return <WidgetPlaceholder widgetId="deviceStatusChart" />;
 
   return (
     <div ref={containerRef} className="relative h-full min-h-[120px] w-full" style={{ height }}>

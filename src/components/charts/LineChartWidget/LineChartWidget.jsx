@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import ChartPlaceholder from '../../common/ChartPlaceholder';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function LineChartWidget({ data, seriesName, color, height = '300px' }) {
   const theme = useTheme();
@@ -59,6 +59,8 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
   }, [data, seriesName, color, theme.palette.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (isEditMode) return undefined;
+
     const container = containerRef.current;
     const chart = chartRef.current?.getEchartsInstance?.();
     if (!container || !chart) return undefined;
@@ -69,15 +71,9 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
     requestAnimationFrame(resizeChart);
 
     return () => observer.disconnect();
-  }, [option]);
+  }, [isEditMode, option]);
 
-  if (isEditMode) {
-    return (
-      <div className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
-        <ChartPlaceholder label="CPU Grafiği" />
-      </div>
-    );
-  }
+  if (isEditMode) return <WidgetPlaceholder widgetId="cpuChart" />;
 
   return (
     <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>

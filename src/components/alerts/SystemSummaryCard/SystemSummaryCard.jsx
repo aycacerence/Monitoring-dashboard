@@ -1,9 +1,14 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import Card from '../../common/Card';
+import { useAppSelector } from '../../../app/hooks';
+import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function SystemSummaryCard({ items }) {
   const { t } = useTranslation();
+  const isEditMode = useAppSelector(selectIsEditMode);
+  if (isEditMode) return <WidgetPlaceholder widgetId="systemSummary" />;
 
   return (
     <Card hoverable className="h-auto overflow-hidden lg:h-full" noPadding>

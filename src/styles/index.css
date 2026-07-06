@@ -67,6 +67,13 @@ body {
   transition: none;
 }
 
+.smart-snap-grid.is-editing:not(.has-external-drop) .react-grid-item.react-grid-placeholder {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 0 !important;
+}
+
 .smart-snap-grid .react-resizable-handle,
 .smart-snap-grid .react-grid-item > .react-resizable-handle {
   position: absolute;
@@ -129,8 +136,8 @@ body {
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: rgba(164, 35, 80, 0.10) !important;
-  border: 2px dashed rgba(164, 35, 80, 0.45) !important;
+  background: rgba(164, 35, 80, 0.08) !important;
+  border: 2px dashed rgba(164, 35, 80, 0.4) !important;
   border-radius: 8px !important;
   opacity: 1 !important;
   transition: none !important;
@@ -138,25 +145,36 @@ body {
 }
 
 .react-grid-item.react-draggable-dragging {
-  z-index: 100;
-  opacity: 0.85;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 100 !important;
+  opacity: 0.9 !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18) !important;
   transition: none !important;
 }
 
+.react-grid-item.react-draggable-dragging .drag-handle {
+  cursor: grabbing !important;
+}
+
 .react-grid-item.resizing {
-  z-index: 100;
+  z-index: 100 !important;
   transition: none !important;
 }
 
 .react-resizable-handle {
-  z-index: 10 !important;
+  z-index: 20 !important;
   position: absolute !important;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.react-grid-item:hover .react-resizable-handle,
+.react-grid-item.resizing .react-resizable-handle {
+  opacity: 1;
 }
 
 .react-resizable-handle-se {
-  bottom: 2px;
-  right: 2px;
+  bottom: 3px;
+  right: 3px;
   width: 16px;
   height: 16px;
   cursor: se-resize;
@@ -164,4 +182,26 @@ body {
   background-repeat: no-repeat;
   background-position: bottom right;
   background-size: 10px;
+}
+
+.react-resizable-handle-s {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 6px;
+  cursor: s-resize;
+  background: rgba(164,35,80,0.3);
+  border-radius: 4px 4px 0 0;
+}
+
+.react-resizable-handle-e {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 40px;
+  cursor: e-resize;
+  background: rgba(164,35,80,0.3);
+  border-radius: 4px 0 0 4px;
 }

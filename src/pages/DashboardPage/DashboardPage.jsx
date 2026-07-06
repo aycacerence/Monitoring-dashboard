@@ -26,8 +26,9 @@ import { formatDateTime } from '../../utils/formatDateTime';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
 import { WIDGET_IDS } from '../../features/widgetVisibility/widgetVisibilitySlice';
+import { selectIsEditMode } from '../../features/ui/uiSlice';
 
-function DashboardPage({ isEditMode: isEditModeProp }) {
+function DashboardPage() {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const role = useAppSelector((state) => state.auth.role);
@@ -35,8 +36,8 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
   const [timeRange, setTimeRange] = useState('24h');
 
-  const { setHeaderProps, isEditMode: outletEditMode } = useOutletContext();
-  const isEditMode = isEditModeProp ?? outletEditMode;
+  const { setHeaderProps } = useOutletContext();
+  const isEditMode = useAppSelector(selectIsEditMode);
 
   // Redux status selectors
   const chartsData = useAppSelector((state) => state.charts.data);

@@ -115,13 +115,14 @@ function WidgetSidebar({ open, onClose }) {
 
         <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', pr: 0.5 }}>
           {widgets.map(({ id, label, Icon }) => {
-            const isVisible = !!visibility[id];
+            const isAlreadyVisible = visibility[id] === true;
 
             if (useToggleControls) {
               return (
                 <Box
                   key={id}
                   sx={{
+                    position: 'relative',
                     display: 'flex',
                     minHeight: 58,
                     alignItems: 'center',
@@ -132,33 +133,49 @@ function WidgetSidebar({ open, onClose }) {
                     py: 1,
                     borderRadius: 2,
                     border: '1px solid',
-                    borderColor: isVisible ? 'primary.light' : 'divider',
-                    bgcolor: isVisible ? 'primary.main' : 'action.hover',
-                    color: isVisible ? 'primary.contrastText' : 'text.primary',
+                    borderColor: isAlreadyVisible ? 'primary.light' : 'divider',
+                    bgcolor: isAlreadyVisible ? 'primary.main' : 'action.hover',
+                    color: isAlreadyVisible ? 'primary.contrastText' : 'text.primary',
+                    opacity: isAlreadyVisible ? 0.68 : 1,
                   }}
                 >
                   <Box sx={{ display: 'flex', minWidth: 0, alignItems: 'center', gap: 1.25 }}>
-                    <Icon sx={{ fontSize: 20, color: isVisible ? 'inherit' : 'primary.main' }} />
+                    <Icon sx={{ fontSize: 20, color: isAlreadyVisible ? 'inherit' : 'primary.main' }} />
                     <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
                       {label}
                     </Typography>
                   </Box>
                   <Button
                     size="small"
-                    variant={isVisible ? 'contained' : 'outlined'}
-                    color={isVisible ? 'inherit' : 'primary'}
-                    onClick={() => dispatch(setWidgetVisibility({ id, visible: !isVisible, role }))}
+                    variant={isAlreadyVisible ? 'contained' : 'outlined'}
+                    color={isAlreadyVisible ? 'inherit' : 'primary'}
+                    disabled={isAlreadyVisible}
+                    onClick={() => dispatch(setWidgetVisibility({ id, visible: true, role }))}
                     sx={{
                       minWidth: 70,
-                      bgcolor: isVisible ? 'background.paper' : undefined,
-                      color: isVisible ? 'primary.main' : undefined,
+                      bgcolor: isAlreadyVisible ? 'background.paper' : undefined,
+                      color: isAlreadyVisible ? 'primary.main' : undefined,
                       '&:hover': {
-                        bgcolor: isVisible ? 'background.paper' : undefined,
+                        bgcolor: isAlreadyVisible ? 'background.paper' : undefined,
                       },
                     }}
                   >
-                    {isVisible ? t('sidebar.hide', 'Kapat') : t('sidebar.show', 'Aç')}
+                    {isAlreadyVisible ? t('sidebar.onBoard', 'Panoda') : t('sidebar.show', 'Aç')}
                   </Button>
+                  {isAlreadyVisible && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 6,
+                        right: 6,
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        bgcolor: 'success.main',
+                        boxShadow: '0 0 0 2px white',
+                      }}
+                    />
+                  )}
                 </Box>
               );
             }
@@ -166,19 +183,23 @@ function WidgetSidebar({ open, onClose }) {
             return (
               <Box
                 key={id}
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.effectAllowed = 'copy';
-                  e.dataTransfer.setData('text/plain', id); // RGL'nin drop anında bu veriyi okuyabilmesi için zorunludur
-                  window.dispatchEvent(new CustomEvent('rgl:dragstart', {
-                    detail: {
-                      widgetId: id,
-                      w: ORIGINAL_POSITIONS[id]?.w ?? 4,
-                      h: ORIGINAL_POSITIONS[id]?.h ?? 4,
-                    },
-                  }));
-                }}
+                draggable={!isAlreadyVisible}
+                onDragStart={isAlreadyVisible
+                  ? undefined
+                  : (e) => {
+                      e.dataTransfer.effectAllowed = 'copy';
+                      e.dataTransfer.setData('text/plain', id); // RGL'nin drop anında bu veriyi okuyabilmesi için zorunludur
+                      window.dispatchEvent(new CustomEvent('rgl:dragstart', {
+                        detail: {
+                          widgetId: id,
+                          w: ORIGINAL_POSITIONS[id]?.w ?? 4,
+                          h: ORIGINAL_POSITIONS[id]?.h ?? 4,
+                        },
+                      }));
+                    }}
+                onDragEnd={() => window.dispatchEvent(new Event('rgl:dragend'))}
                 sx={{
+                  position: 'relative',
                   display: 'flex',
                   minHeight: 82,
                   alignItems: 'center',
@@ -191,14 +212,16 @@ function WidgetSidebar({ open, onClose }) {
                   borderColor: 'divider',
                   bgcolor: 'action.hover',
                   color: 'primary.main',
-                  cursor: 'grab',
+                  cursor: isAlreadyVisible ? 'not-allowed' : 'grab',
                   userSelect: 'none',
-                  opacity: isVisible ? 0.62 : 1,
+                  opacity: isAlreadyVisible ? 0.38 : 1,
+                  pointerEvents: isAlreadyVisible ? 'none' : 'auto',
                   transition: 'background-color 160ms ease, border-color 160ms ease, transform 160ms ease, opacity 160ms ease',
-                  '&:hover': {
+                  '&:hover': isAlreadyVisible ? {} : {
                     bgcolor: 'background.paper',
                     borderColor: 'primary.main',
-                    transform: 'translateY(-1px)',
+                    transform: 'translateY(-2px)',
+                    boxShadow: 3,
                   },
                   '&:active': {
                     cursor: 'grabbing',
@@ -209,6 +232,20 @@ function WidgetSidebar({ open, onClose }) {
                 <Typography variant="caption" color="text.primary" sx={{ fontWeight: 500, textAlign: 'center' }}>
                   {label}
                 </Typography>
+                {isAlreadyVisible && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 6,
+                      right: 6,
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      bgcolor: 'success.main',
+                      boxShadow: '0 0 0 2px white',
+                    }}
+                  />
+                )}
               </Box>
             );
           })}
