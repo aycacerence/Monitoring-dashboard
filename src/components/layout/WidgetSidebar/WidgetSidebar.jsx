@@ -23,10 +23,11 @@ function WidgetSidebar({ open, onClose }) {
   const dispatch = useAppDispatch();
   const visibility = useAppSelector(selectVisibility);
   const role = useAppSelector(selectRole);
+  const isDirty = useAppSelector((state) => state.ui.isDirty);
 
   const handleDefaultView = () => {
-    dispatch(resetVisibility());
-    localStorage.removeItem('dashboardLayout');
+    dispatch(resetVisibility({ role }));
+    localStorage.removeItem(`dashboardLayout_${role}`);
     window.dispatchEvent(new CustomEvent('dashboard:reset-layout'));
     window.dispatchEvent(new Event('resize'));
   };
@@ -72,7 +73,7 @@ function WidgetSidebar({ open, onClose }) {
           <Button 
             variant="outlined" 
             size="small" 
-            onClick={() => dispatch(hideAllWidgets())}
+            onClick={() => dispatch(hideAllWidgets({ role }))}
             sx={{
               color: 'primary.main',
               borderColor: 'primary.light',
@@ -139,7 +140,7 @@ function WidgetSidebar({ open, onClose }) {
                     size="small"
                     variant={isVisible ? 'contained' : 'outlined'}
                     color={isVisible ? 'inherit' : 'primary'}
-                    onClick={() => dispatch(setWidgetVisibility({ id, visible: !isVisible }))}
+                    onClick={() => dispatch(setWidgetVisibility({ id, visible: !isVisible, role }))}
                     sx={{
                       minWidth: 70,
                       bgcolor: isVisible ? 'background.paper' : undefined,
@@ -198,6 +199,27 @@ function WidgetSidebar({ open, onClose }) {
               </Box>
             );
           })}
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
+          <Button
+            variant="contained"
+            size="small"
+            disabled={!isDirty}
+            onClick={() => window.dispatchEvent(new Event('save-layout'))}
+          >
+            {t('sidebar.save', 'Kaydet')}
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            disabled={!isDirty}
+            onClick={() => window.dispatchEvent(new Event('cancel-layout'))}
+          >
+            {t('sidebar.cancel', 'İptal')}
+          </Button>
         </Box>
       </Box>
     </Drawer>

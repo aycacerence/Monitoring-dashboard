@@ -12,6 +12,7 @@ import {
   selectVisibility,
   setWidgetVisibility,
 } from '../../../features/widgetVisibility/widgetVisibilitySlice';
+import { setIsDirty } from '../../../features/ui/uiSlice';
 import { loadLayout, saveLayout } from '../../../utils/layoutStorage';
 
 const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480 };
@@ -36,6 +37,8 @@ const createDefaultLayouts = () => {
     xs: createDefaultLayoutItems(),
   };
 };
+
+const buildDefaultLayouts = createDefaultLayouts;
 
 const sanitizeLayoutItems = (items = []) => {
   const safeItems = Array.isArray(items) ? items : [];
@@ -73,6 +76,11 @@ const sanitizeLayouts = (nextLayouts) => {
     return acc;
   }, {});
 };
+
+const cleanLayouts = sanitizeLayouts;
+
+const areLayoutsEqual = (firstLayouts, secondLayouts) =>
+  JSON.stringify(firstLayouts) === JSON.stringify(secondLayouts);
 
 const hasDroppingItem = (nextLayouts) =>
   Object.values(nextLayouts || {}).some((items = []) =>
@@ -159,10 +167,10 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   const pendingLayoutsRef = useRef(null);
   const isInteractingRef = useRef(false);
   const layoutFrameRef = useRef(null);
-  const [layouts, setLayouts] = useState(() => {
-    const saved = loadLayout(role);
-    return sanitizeLayouts(saved) || createDefaultLayouts();
-  });
+  const [savedLayouts, setSavedLayouts] = useState(
+    () => cleanLayouts(loadLayout(role)) ?? buildDefaultLayouts(),
+  );
+  const [draftLayouts, setDraftLayouts] = useState(savedLayouts);
   const [rowHeight, setRowHeight] = useState(MAX_ROW_HEIGHT);
 
   const widgetMap = useMemo(() => {
@@ -183,8 +191,8 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
 
   useEffect(() => {
     const handleResetLayout = () => {
-      const defaultLayouts = createDefaultLayouts();
-      setLayouts(defaultLayouts);
+      const defaultLayouts = buildDefaultLayouts();
+      setDraftLayouts(defaultLayouts);
       scheduleChartResize();
     };
 
@@ -193,16 +201,44 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
   }, []);
 
   useEffect(() => {
-    const saved = loadLayout(role);
+    const saved = cleanLayouts(loadLayout(role)) ?? buildDefaultLayouts();
     pendingLayoutsRef.current = null;
     isInteractingRef.current = false;
     if (layoutFrameRef.current) {
       window.cancelAnimationFrame(layoutFrameRef.current);
       layoutFrameRef.current = null;
     }
-    setLayouts(sanitizeLayouts(saved) || createDefaultLayouts());
+    setSavedLayouts(saved);
+    setDraftLayouts(saved);
+    dispatch(setIsDirty(false));
     scheduleChartResize();
-  }, [role]);
+  }, [dispatch, role]);
+
+  useEffect(() => {
+    dispatch(setIsDirty(!areLayoutsEqual(savedLayouts, draftLayouts)));
+  }, [dispatch, savedLayouts, draftLayouts]);
+
+  useEffect(() => {
+    const handleSaveLayout = () => {
+      setSavedLayouts(draftLayouts);
+      saveLayout(draftLayouts, role);
+      dispatch(setIsDirty(false));
+    };
+
+    const handleCancelLayout = () => {
+      setDraftLayouts(savedLayouts);
+      dispatch(setIsDirty(false));
+      scheduleChartResize();
+    };
+
+    window.addEventListener('save-layout', handleSaveLayout);
+    window.addEventListener('cancel-layout', handleCancelLayout);
+
+    return () => {
+      window.removeEventListener('save-layout', handleSaveLayout);
+      window.removeEventListener('cancel-layout', handleCancelLayout);
+    };
+  }, [dispatch, draftLayouts, role, savedLayouts]);
 
   useEffect(() => {
     if (!isDesktop || !containerRef.current) return undefined;
@@ -210,7 +246,7 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
 
     const calculateRowHeight = () => {
       const availableHeight = containerRef.current?.clientHeight || 0;
-      const rows = getLayoutRows(layouts.lg);
+      const rows = getLayoutRows(draftLayouts.lg);
       const verticalMargins = Math.max(rows - 1, 0) * GRID_MARGIN[1];
       const nextRowHeight = Math.floor((availableHeight - verticalMargins) / rows);
       setRowHeight(Math.max(MIN_ROW_HEIGHT, Math.min(MAX_ROW_HEIGHT, nextRowHeight || MAX_ROW_HEIGHT)));
@@ -222,13 +258,7 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     resizeObserver.observe(containerRef.current);
 
     return () => resizeObserver.disconnect();
-  }, [containerRef, isDesktop, isEditMode, layouts.lg]);
-
-  const applyLayouts = useCallback((nextLayouts) => {
-    if (!nextLayouts) return;
-    setLayouts(nextLayouts);
-    saveLayout(nextLayouts, role);
-  }, [role]);
+  }, [containerRef, isDesktop, isEditMode, draftLayouts.lg]);
 
   const queueLiveLayouts = useCallback((nextLayouts) => {
     pendingLayoutsRef.current = nextLayouts;
@@ -237,7 +267,7 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     layoutFrameRef.current = window.requestAnimationFrame(() => {
       layoutFrameRef.current = null;
       if (pendingLayoutsRef.current) {
-        setLayouts(pendingLayoutsRef.current);
+        setDraftLayouts(pendingLayoutsRef.current);
       }
     });
   }, []);
@@ -257,18 +287,14 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
       return;
     }
 
-    const sanitized = sanitizeLayouts(allLayouts) || createDefaultLayouts();
-    queueLiveLayouts(sanitized);
-
-    if (!isInteractingRef.current) {
-      saveLayout(sanitized, role);
-    }
-  }, [isEditMode, queueLiveLayouts, role]);
+    const sanitized = cleanLayouts(allLayouts) ?? buildDefaultLayouts();
+    setDraftLayouts(sanitized);
+  }, [isEditMode]);
 
   const handleInteractionStart = useCallback(() => {
     isInteractingRef.current = true;
-    pendingLayoutsRef.current = layouts;
-  }, [layouts]);
+    pendingLayoutsRef.current = draftLayouts;
+  }, [draftLayouts]);
 
   const handleInteractionStop = useCallback(() => {
     isInteractingRef.current = false;
@@ -276,9 +302,11 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
       window.cancelAnimationFrame(layoutFrameRef.current);
       layoutFrameRef.current = null;
     }
-    applyLayouts(pendingLayoutsRef.current);
+    if (pendingLayoutsRef.current) {
+      setDraftLayouts(pendingLayoutsRef.current);
+    }
     scheduleChartResize();
-  }, [applyLayouts]);
+  }, []);
 
   const handleResize = useCallback((_layout, _oldItem, newItem) => {
     if (!isEditMode || !newItem?.i || newItem.i === DROPPING_ITEM_ID) return;
@@ -286,21 +314,20 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
     const sanitizedItem = sanitizeLayoutItems([newItem])[0];
     if (!sanitizedItem) return;
 
-    const resizedLayouts = getBreakpointLayoutsWithItem(layouts, sanitizedItem);
+    const resizedLayouts = getBreakpointLayoutsWithItem(draftLayouts, sanitizedItem);
     queueLiveLayouts(resizedLayouts);
-  }, [isEditMode, layouts, queueLiveLayouts]);
+  }, [isEditMode, draftLayouts, queueLiveLayouts]);
 
   const handleRemove = useCallback((widgetId) => {
-    const updated = { ...layouts };
+    const updated = { ...draftLayouts };
     Object.keys(updated).forEach((key) => {
       updated[key] = (updated[key] || []).filter((item) => item.i !== widgetId);
     });
 
-    setLayouts(updated);
-    saveLayout(updated, role);
-    dispatch(setWidgetVisibility({ id: widgetId, visible: false }));
+    setDraftLayouts(updated);
+    dispatch(setWidgetVisibility({ id: widgetId, visible: false, role }));
     scheduleChartResize();
-  }, [dispatch, layouts, role]);
+  }, [dispatch, draftLayouts, role]);
 
   const onDrop = useCallback((layout, layoutItem, event) => {
     const eventWidgetId = event?.dataTransfer?.getData('text/plain');
@@ -319,8 +346,8 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
       minH: original.minH || 2,
     };
 
-    setLayouts((currentLayouts) => {
-      const updated = sanitizeLayouts(currentLayouts) || createDefaultLayouts();
+    setDraftLayouts((currentLayouts) => {
+      const updated = cleanLayouts(currentLayouts) ?? buildDefaultLayouts();
       const resolvedLayout = sanitizeLayoutItems(layout).filter(item => item.i !== widgetId);
       Object.keys(COLS).forEach((key) => {
         const baseLayout = key === 'lg'
@@ -328,11 +355,10 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
           : (updated[key] || []).filter(item => item.i !== widgetId);
         updated[key] = [...baseLayout, fitItemToBreakpoint(newItem, key)];
       });
-      saveLayout(updated, role);
       return updated;
     });
 
-    dispatch(setWidgetVisibility({ id: widgetId, visible: true }));
+    dispatch(setWidgetVisibility({ id: widgetId, visible: true, role }));
     scheduleChartResize();
   }, [dispatch, role]);
 
@@ -359,7 +385,7 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
                   borderBottom: 0,
                 }}
               >
-                <IconButton size="small" onClick={() => dispatch(setWidgetVisibility({ id, visible: false }))} sx={{ p: 0.3 }}>
+                <IconButton size="small" onClick={() => dispatch(setWidgetVisibility({ id, visible: false, role }))} sx={{ p: 0.3 }}>
                   <CloseIcon sx={{ fontSize: 15 }} />
                 </IconButton>
               </Box>
@@ -409,7 +435,7 @@ export default function DraggableGrid({ widgets = [], isEditMode = false }) {
       <ResponsiveGridLayout
         key={role}
         className={`layout smart-snap-grid ${isEditMode ? 'is-editing' : ''}`}
-        layouts={layouts}
+        layouts={draftLayouts}
         breakpoints={BREAKPOINTS}
         cols={COLS}
         measureBeforeMount={false}

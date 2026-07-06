@@ -4,10 +4,14 @@ import { Box } from '@mui/material';
 import Header from '../Header/index.js';
 import WidgetSidebar from '../WidgetSidebar/WidgetSidebar';
 import MainSidebar from '../MainSidebar/index.js';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks.js';
+import { loadVisibility, setVisibilityConfig } from '../../../features/widgetVisibility/widgetVisibilitySlice.js';
 
 function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const role = useAppSelector((state) => state.auth.role);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isEditMode = location.pathname === '/settings';
   const activePanelSection = isEditMode ? 'settings' : 'panel';
@@ -27,6 +31,10 @@ function AppLayout() {
     }, 300);
     return () => clearTimeout(timer);
   }, [isEditMode]);
+
+  useEffect(() => {
+    dispatch(setVisibilityConfig(loadVisibility(role)));
+  }, [dispatch, role]);
 
   const openEditMode = () => {
     setSidebarOpen(true);
@@ -58,6 +66,7 @@ function AppLayout() {
             isEditMode={isEditMode}
           />
           <Box
+            key={role}
             component="main"
             sx={{
               flex: 1,

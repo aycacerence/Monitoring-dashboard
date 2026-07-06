@@ -30,6 +30,7 @@ import { WIDGET_IDS } from '../../features/widgetVisibility/widgetVisibilitySlic
 function DashboardPage({ isEditMode: isEditModeProp }) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const role = useAppSelector((state) => state.auth.role);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
   const [timeRange, setTimeRange] = useState('24h');
@@ -220,7 +221,7 @@ function DashboardPage({ isEditMode: isEditModeProp }) {
     <>
       <SplashScreen isVisible={isVisible} />
 
-      <PageContainer className="flex h-full min-h-0 flex-col overflow-y-auto p-4 lg:overflow-hidden">
+      <PageContainer key={role} className="flex h-full min-h-0 flex-col overflow-y-auto p-4 lg:overflow-hidden">
         <DraggableGrid widgets={dashboardWidgets} isEditMode={isEditMode} />
       </PageContainer>
     </>

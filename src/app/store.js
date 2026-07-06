@@ -8,6 +8,7 @@ import systemSummaryReducer from '../features/dashboard/systemSummarySlice.js';
 import themeReducer from '../features/theme/themeSlice.js';
 import authReducer from '../features/auth/authSlice.js';
 import widgetVisibilityReducer from '../features/widgetVisibility/widgetVisibilitySlice.js';
+import uiReducer from '../features/ui/uiSlice.js';
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +21,6 @@ export const store = configureStore({
     theme: themeReducer,
     auth: authReducer,
     widgetVisibility: widgetVisibilityReducer,
+    ui: uiReducer,
   },
 });

@@ -1,7 +1,10 @@
 import DashboardPage from '../DashboardPage/DashboardPage';
+import { useAppSelector } from '../../app/hooks';
 
 function DashboardSettingsPage() {
-  return <DashboardPage isEditMode />;
+  const role = useAppSelector((state) => state.auth.role);
+
+  return <DashboardPage key={role} isEditMode />;
 }
 
 export default DashboardSettingsPage;

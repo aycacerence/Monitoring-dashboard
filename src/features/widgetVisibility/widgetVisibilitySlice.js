@@ -28,44 +28,64 @@ const defaultVisibility = Object.values(WIDGET_IDS).reduce(
   (acc, id) => ({ ...acc, [id]: true }), {}
 );
 
-const savedVisibility = (() => {
+const cloneDefaultVisibility = () => ({ ...defaultVisibility });
+
+const getVisibilityKey = (role) => `widgetVisibility_${role || 'user'}`;
+
+export const loadVisibility = (role) => {
   try {
-    const raw = localStorage.getItem('widgetVisibility');
-    return raw ? JSON.parse(raw) : defaultVisibility;
-  } catch { return defaultVisibility; }
-})();
+    const raw = localStorage.getItem(getVisibilityKey(role));
+    return raw ? JSON.parse(raw) : cloneDefaultVisibility();
+  } catch { return cloneDefaultVisibility(); }
+};
+
+export const saveVisibility = (visibility, role) => {
+  try {
+    localStorage.setItem(getVisibilityKey(role), JSON.stringify(visibility));
+  } catch {}
+};
+
+export const clearVisibility = (role) => {
+  try {
+    localStorage.removeItem(getVisibilityKey(role));
+  } catch {}
+};
+
+const getPayloadRole = (payload) => payload?.role || localStorage.getItem('userRole') || 'admin';
+
+const savedVisibility = loadVisibility(localStorage.getItem('userRole') || 'admin');
 
 const widgetVisibilitySlice = createSlice({
   name: 'widgetVisibility',
   initialState: { visibility: savedVisibility },
   reducers: {
     toggleWidget: (state, action) => {
-      const id = action.payload;
+      const id = typeof action.payload === 'string' ? action.payload : action.payload.id;
+      const role = getPayloadRole(action.payload);
       state.visibility[id] = !state.visibility[id];
-      localStorage.setItem(
-        'widgetVisibility',
-        JSON.stringify(state.visibility)
-      );
+      saveVisibility(state.visibility, role);
     },
     setWidgetVisibility: (state, action) => {
       // { id, visible } payload
       state.visibility[action.payload.id] = action.payload.visible;
-      localStorage.setItem(
-        'widgetVisibility',
-        JSON.stringify(state.visibility)
-      );
+      saveVisibility(state.visibility, getPayloadRole(action.payload));
     },
-    resetVisibility: (state) => {
-      state.visibility = defaultVisibility;
-      localStorage.removeItem('widgetVisibility');
+    setVisibilityConfig: (state, action) => {
+      state.visibility = action.payload || cloneDefaultVisibility();
     },
-    hideAllWidgets: (state) => {
+    resetVisibility: (state, action) => {
+      const role = getPayloadRole(action.payload);
+      state.visibility = cloneDefaultVisibility();
+      clearVisibility(role);
+    },
+    hideAllWidgets: (state, action) => {
+      const role = getPayloadRole(action.payload);
       Object.keys(state.visibility).forEach(key => state.visibility[key] = false);
-      localStorage.setItem('widgetVisibility', JSON.stringify(state.visibility));
+      saveVisibility(state.visibility, role);
     },
   },
 });
 
-export const { toggleWidget, setWidgetVisibility, resetVisibility, hideAllWidgets } = widgetVisibilitySlice.actions;
+export const { toggleWidget, setWidgetVisibility, setVisibilityConfig, resetVisibility, hideAllWidgets } = widgetVisibilitySlice.actions;
 export const selectVisibility = (state) => state.widgetVisibility.visibility;
 export default widgetVisibilitySlice.reducer;
