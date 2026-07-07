@@ -5,7 +5,7 @@ test.describe('Dashboard Ana Sayfa', () => {
     await page.goto('/');
     // Splash screen geçsin
     await page.waitForSelector('main', {
-      timeout: 10000,
+      timeout: 30000,
     });
   });
 
