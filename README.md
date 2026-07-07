@@ -84,6 +84,23 @@ src/
 
 ---
 
+## Test Mimarisi ve CI/CD Süreçleri
+
+Projenin kalite güvencesi (QA), endüstri standartlarında bir "Test Piramidi" ve modern CI/CD (Sürekli Entegrasyon) akışlarıyla sağlanmaktadır:
+
+*   **Birim ve Bileşen Testleri (Vitest & JSDOM):** 
+    *   Testler, ilgili kodun hemen yanında (`__tests__` klasörlerinde) yaşar **(Colocation)**. Bu sayede bir bileşen güncellendiğinde veya silindiğinde, testi de anında geliştiricinin karşısına çıkar.
+    *   Uygulamanın mantıksal beyni olan Redux Slice'lar ve Helper fonksiyonların kusursuz çalıştığı izole olarak test edilir.
+    *   React bileşenlerinin kullanıcıya doğru render edildiği ve Mock araçlar (Örn: `ResizeObserver` ve `i18n` sahtelemesi) sayesinde çökmeden UI katmanını çizdiği test edilir.
+*   **E2E (Uçtan Uca) Testleri (Playwright):** 
+    *   Projenin kök dizinindeki `e2e/` klasöründe yer alır. Gerçek bir tarayıcı (Chromium) üzerinden canlı sisteme girerek; güvenlik yetkilendirmeleri (RBAC kısıtlamaları), sayfa geçişleri, tema değişikliği ve sürükle-bırak (Drag&Drop) işlemleri bir insanın yapacağı gibi canlı simüle edilir.
+*   **GitHub Actions (Sürekli Entegrasyon - CI):**
+    *   Tüm kod değişiklikleri (Push veya Pull Request) GitHub sunucularında 2 aşamalı bir kalite geçidinden (Quality Gate) geçer.
+    *   **Aşama 1 (`test` Job):** Kodun temelini test eder (Birim/Bileşen). Burası başarılı  olmazsa diğer aşamaya geçilmez.
+    *   **Aşama 2 (`e2e` Job):** Vite'in süper hızlı Production (Preview) sunucusunda gerçek arayüz test edilir. Tamamen sorunsuzsa kod canlıya alınmaya hazır hale gelir.
+
+---
+
 ## Kurulum ve Çalıştırma
 
 Projeyi yerel makinenizde (local) çalıştırmak için aşağıdaki adımları izleyebilirsiniz. Node.js'in bilgisayarınızda kurulu olması gerekmektedir.
