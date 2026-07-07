@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material';
+import '../i18n/i18n'; // Initialize real i18n for tests
 
 // Tüm slice'ları import et (mevcut store.js'teki ile aynı)
 import kpiReducer          from '../features/dashboard/kpiSlice';
