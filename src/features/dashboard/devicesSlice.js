@@ -99,4 +99,11 @@ export const selectDevicesPagination = createSelector(
   }
 );
 
+export const selectTotalPages = createSelector(
+  [selectFilteredDevices, selectItemsPerPage],
+  (filteredDevices, itemsPerPage) => {
+    return Math.ceil(filteredDevices.length / itemsPerPage);
+  }
+);
+
 export default devicesSlice.reducer;

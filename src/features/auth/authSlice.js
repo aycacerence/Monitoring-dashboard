@@ -1,12 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const savedRole = localStorage.getItem('userRole') || 'admin';
-
 const authSlice = createSlice({
   name: 'auth',
-  initialState: {
-    role: savedRole,  // 'admin' | 'user'
-  },
+  initialState: () => ({
+    role: localStorage.getItem('userRole') || 'admin',  // 'admin' | 'user'
+  }),
   reducers: {
     setRole: (state, action) => {
       state.role = action.payload;
