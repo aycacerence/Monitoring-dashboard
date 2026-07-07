@@ -149,6 +149,9 @@ function DashboardPage() {
     const showSummaryErrorState = !isEditMode && summaryStatus === 'failed';
 
     const getKpiWidgetContent = (kpiId, fallbackTitle) => {
+      if (isEditMode) {
+        return <WidgetPlaceholder widgetId={`kpi-${kpiId}`} />;
+      }
       if (showKpiErrorState) {
         return <ErrorState message={kpiError || "KPI verileri yüklenirken bir hata oluştu."} onRetry={() => dispatch(fetchKpis())} />;
       }

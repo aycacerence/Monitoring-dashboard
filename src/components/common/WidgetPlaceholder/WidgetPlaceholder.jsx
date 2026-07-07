@@ -1,24 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
-
-const WIDGET_STYLES = {
-  'kpi-total-devices': { color: '#6366f1', label: 'Toplam Cihaz (KPI)', icon: '▦' },
-  'kpi-online-devices': { color: '#6366f1', label: 'Çevrimiçi Cihaz (KPI)', icon: '▦' },
-  'kpi-active-alarms': { color: '#6366f1', label: 'Aktif Alarm (KPI)', icon: '▦' },
-  'kpi-average-cpu': { color: '#6366f1', label: 'CPU (KPI)', icon: '▦' },
-  'kpi-average-memory': { color: '#6366f1', label: 'Bellek (KPI)', icon: '▦' },
-  'kpi-average-disk': { color: '#6366f1', label: 'Disk (KPI)', icon: '▦' },
-  cpuChart: { color: '#3b82f6', label: 'CPU Kullanımı', icon: '📈' },
-  networkChart: { color: '#06b6d4', label: 'Ağ Trafiği', icon: '📊' },
-  deviceStatusChart: { color: '#8b5cf6', label: 'Cihaz Durumları', icon: '🍩' },
-  alertsCard: { color: '#ef4444', label: 'Son Alarmlar', icon: '🔔' },
-  systemSummary: { color: '#10b981', label: 'Sistem Özeti', icon: '📋' },
-  devicesTable: { color: '#f59e0b', label: 'Cihaz Yönetimi', icon: '🖥️' },
-  resourceUsage: { color: '#a42350', label: 'Kaynak Kullanımı', icon: '⚡' },
-};
+import { useTranslation } from 'react-i18next';
 
 export default function WidgetPlaceholder({ widgetId }) {
+  const { t } = useTranslation();
+
+  const WIDGET_STYLES = {
+    'kpi-total-devices': { color: '#6366f1', label: t('kpi.totalDevices', 'Toplam Cihaz'), icon: '▦' },
+    'kpi-online-devices': { color: '#6366f1', label: t('kpi.onlineDevices', 'Çevrimiçi Cihaz'), icon: '▦' },
+    'kpi-active-alarms': { color: '#6366f1', label: t('kpi.activeAlarms', 'Aktif Alarm'), icon: '▦' },
+    'kpi-average-cpu': { color: '#6366f1', label: t('kpi.cpuUsage', 'CPU Kullanımı'), icon: '▦' },
+    'kpi-average-memory': { color: '#6366f1', label: t('kpi.memoryUsage', 'Bellek Kullanımı'), icon: '▦' },
+    'kpi-average-disk': { color: '#6366f1', label: t('kpi.diskUsage', 'Disk Kullanımı'), icon: '▦' },
+    cpuChart: { color: '#3b82f6', label: t('sidebar.widgets.cpuChart', 'CPU Kullanımı (Grafik)'), icon: '📈' },
+    networkChart: { color: '#06b6d4', label: t('sidebar.widgets.networkChart', 'Ağ Trafiği'), icon: '📊' },
+    deviceStatusChart: { color: '#8b5cf6', label: t('sidebar.widgets.deviceStatusChart', 'Cihaz Durumları'), icon: '🍩' },
+    alertsCard: { color: '#ef4444', label: t('sidebar.widgets.alertsCard', 'Son Alarmlar'), icon: '🔔' },
+    systemSummary: { color: '#10b981', label: t('sidebar.widgets.systemSummary', 'Sistem Özeti'), icon: '📋' },
+    devicesTable: { color: '#f59e0b', label: t('sidebar.widgets.devicesTable', 'Cihaz Yönetimi'), icon: '🖥️' },
+    resourceUsage: { color: '#a42350', label: t('sidebar.widgets.resourceUsage', 'Kaynak Kullanımı'), icon: '⚡' },
+  };
+
   const style = WIDGET_STYLES[widgetId] ?? { color: '#94a3b8', label: widgetId, icon: '▦' };
 
   return (
@@ -44,7 +47,7 @@ export default function WidgetPlaceholder({ widgetId }) {
           {style.label}
         </Typography>
         <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: 10 }}>
-          Düzenleme modunda önizleme devre dışı
+          {t('sidebar.editModePreviewDisabled', 'Düzenleme modunda önizleme devre dışı')}
         </Typography>
       </Box>
     </Box>

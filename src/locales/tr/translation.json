@@ -109,6 +109,7 @@
       "systemSummary": "Sistem Özeti",
       "devicesTable": "Cihaz Yönetimi",
       "resourceUsage": "Kaynak Kullanımı"
-    }
+    },
+    "editModePreviewDisabled": "Düzenleme modunda önizleme devre dışı"
   }
 }

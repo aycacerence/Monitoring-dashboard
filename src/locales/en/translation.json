@@ -109,6 +109,7 @@
       "systemSummary": "System Summary",
       "devicesTable": "Device Management",
       "resourceUsage": "Resource Usage"
-    }
+    },
+    "editModePreviewDisabled": "Preview disabled in edit mode"
   }
 }

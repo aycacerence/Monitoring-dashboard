@@ -7,6 +7,7 @@ import TrendIndicator from '../../common/TrendIndicator';
 import { getIconComponent } from '../../../utils/iconMap';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
+import { useTranslation } from 'react-i18next';
 
 function KpiCard({
   title,
@@ -19,6 +20,7 @@ function KpiCard({
   sparklineData,
   color,
 }) {
+  const { t } = useTranslation();
   const isEditMode = useAppSelector(selectIsEditMode);
   const IconComponent = getIconComponent(icon);
   const sparklineRef = useRef(null);
@@ -100,7 +102,7 @@ function KpiCard({
           {isEditMode ? (
             <div className="mt-2 lg:mt-1">
               <span className="text-xs font-medium text-slate-400 dark:text-slate-500 lg:text-[10px] leading-tight line-clamp-2">
-                Düzenleme modunda önizleme devre dışı
+                {t('sidebar.editModePreviewDisabled', 'Düzenleme modunda önizleme devre dışı')}
               </span>
             </div>
           ) : (
