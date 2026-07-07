@@ -35,7 +35,8 @@
     "deviceStatusSubtitle": "Instant availability status of devices in the system",
     "cpuUsageSeries": "CPU Usage",
     "incoming": "Incoming",
-    "outgoing": "Outgoing"
+    "outgoing": "Outgoing",
+    "total": "Total"
   },
   "alerts": {
     "title": "Recent Alerts",

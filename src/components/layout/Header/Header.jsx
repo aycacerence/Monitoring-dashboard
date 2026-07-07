@@ -42,6 +42,13 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
 
   const handleRoleChange = (newRole) => {
     dispatch(setRole(newRole));
+    
+    // Dil secimini role gore guncelle
+    const newRoleLang = localStorage.getItem(`i18nLang_${newRole}`) || 'tr';
+    if (newRoleLang !== i18nInstance.language) {
+      i18nInstance.changeLanguage(newRoleLang);
+    }
+    
     handleClose();
   };
 
@@ -204,6 +211,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               exclusive
               onChange={(_, newLang) => {
                 if (newLang && newLang !== i18nInstance.language) {
+                  localStorage.setItem(`i18nLang_${role}`, newLang);
                   i18nInstance.changeLanguage(newLang).then(() => {
                     window.location.reload();
                   });

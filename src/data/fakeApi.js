@@ -18,7 +18,8 @@ import {
 
 const getLang = () => {
   try {
-    const lang = localStorage.getItem('i18nLang') || 'tr';
+    const role = localStorage.getItem('userRole') || 'admin';
+    const lang = localStorage.getItem(`i18nLang_${role}`) || localStorage.getItem('i18nLang') || 'tr';
     return lang.startsWith('en') ? 'en' : 'tr';
   } catch {
     return 'tr';

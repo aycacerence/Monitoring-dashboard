@@ -35,7 +35,8 @@
     "deviceStatusSubtitle": "Sistemdeki cihazların anlık erişilebilirlik durumu",
     "cpuUsageSeries": "CPU Kullanımı",
     "incoming": "Gelen",
-    "outgoing": "Giden"
+    "outgoing": "Giden",
+    "total": "Toplam"
   },
   "alerts": {
     "title": "Son Alarmlar",

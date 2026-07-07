@@ -6,8 +6,10 @@ import { getCommonChartOptions } from '../../../utils/charts';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
 import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
+import { useTranslation } from 'react-i18next';
 
 function PieChartWidget({ data, height = '300px' }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isEditMode = useAppSelector(selectIsEditMode);
   const containerRef = useRef(null);
@@ -88,7 +90,7 @@ function PieChartWidget({ data, height = '300px' }) {
             {data.reduce((acc, item) => acc + item.count, 0)}
           </div>
           <div className="mt-0.5 text-[10px] font-medium leading-3 text-slate-500 dark:text-slate-400">
-            Toplam
+            {t('charts.total', 'Toplam')}
           </div>
         </div>
       </div>
