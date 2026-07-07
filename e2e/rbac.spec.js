@@ -6,10 +6,9 @@ test.describe('Rol Bazlı Yetkilendirme', () => {
     await page.goto('/');
     await page.evaluate(() => localStorage.setItem('userRole', 'admin'));
     await page.reload();
-    await page.waitForLoadState('networkidle');
 
     await expect(
-      page.getByText(/cihaz yönetimi|device management/i)
+      page.getByRole('heading', { name: /Cihaz Y.netimi|Device Management/i })
     ).toBeVisible({ timeout: 8000 });
 
     // Tablo satırları görünmeli
@@ -21,7 +20,6 @@ test.describe('Rol Bazlı Yetkilendirme', () => {
     await page.goto('/');
     await page.evaluate(() => localStorage.setItem('userRole', 'user'));
     await page.reload();
-    await page.waitForLoadState('networkidle');
 
     // Tablo satırları görünmemeli
     const lockIcon = page.locator('[data-testid="access-denied"]')

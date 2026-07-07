@@ -8,9 +8,9 @@ import PropTypes from 'prop-types';
  * @param {string} [props.className] Ek Tailwind class'lari.
  * @returns {JSX.Element}
  */
-function PageContainer({ children, className = '' }) {
+function PageContainer({ children, className = '', ...props }) {
   return (
-    <main className={`mx-auto w-full max-w-[1560px] px-4 py-5 sm:px-6 lg:px-8 lg:py-8 ${className}`}>
+    <main className={`mx-auto w-full max-w-[1560px] px-4 py-5 sm:px-6 lg:px-8 lg:py-8 ${className}`} {...props}>
       {children}
     </main>
   );

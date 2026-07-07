@@ -3,11 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Widget Yönetimi (Edit Mod)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/settings');
-    await page.waitForLoadState('networkidle');
   });
 
   test('/settings route\'u yükleniyor', async ({ page }) => {
-    await expect(page.getByText(/widget yönetimi|panel ayarları/i)).toBeVisible();
+    await expect(page.getByText(/widget yönetimi|panel ayarları/i).first()).toBeVisible();
   });
 
   test('edit modda widget placeholder\'lar görünüyor', async ({ page }) => {
@@ -31,6 +30,6 @@ test.describe('Widget Yönetimi (Edit Mod)', () => {
     await defaultBtn.click();
     await page.waitForTimeout(300);
     // Crash olmadığını doğrula
-    await expect(page.getByText(/widget yönetimi|panel ayarları/i)).toBeVisible();
+    await expect(page.getByText(/widget yönetimi|panel ayarları/i).first()).toBeVisible();
   });
 });
