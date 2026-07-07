@@ -27,7 +27,12 @@ const MAX_ROW_HEIGHT = 64;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DEFAULT_PRESET_POSITIONS = {
-  kpiGrid: { x: 0, y: 0, w: 12, h: 2 },
+  'kpi-total-devices': { x: 0, y: 0, w: 2, h: 2 },
+  'kpi-online-devices': { x: 2, y: 0, w: 2, h: 2 },
+  'kpi-active-alarms': { x: 4, y: 0, w: 2, h: 2 },
+  'kpi-average-cpu': { x: 6, y: 0, w: 2, h: 2 },
+  'kpi-average-memory': { x: 8, y: 0, w: 2, h: 2 },
+  'kpi-average-disk': { x: 10, y: 0, w: 2, h: 2 },
   cpuChart: { x: 0, y: 2, w: 4, h: 3 },
   networkChart: { x: 4, y: 2, w: 4, h: 3 },
   deviceStatusChart: { x: 8, y: 2, w: 4, h: 3 },
@@ -115,10 +120,16 @@ const sanitizeLayoutItems = (items = [], instances = [], breakpoint = 'lg') => {
       const cols = COLS[breakpoint] || COLS.lg;
       
       if (breakpoint === 'xs' || breakpoint === 'sm') {
-        nextW = cols;
+        if (type.startsWith('kpi-')) {
+          nextW = breakpoint === 'sm' ? 3 : cols;
+        } else {
+          nextW = cols;
+        }
       } else if (breakpoint === 'md') {
-        if (type === 'kpiGrid' || type === 'devicesTable') {
+        if (type === 'devicesTable') {
           nextW = 12;
+        } else if (type.startsWith('kpi-')) {
+          nextW = Math.max(item.w ?? original.w ?? 2, 2); // keep it small on md
         } else {
           nextW = Math.max(nextW, 6);
         }
@@ -127,18 +138,18 @@ const sanitizeLayoutItems = (items = [], instances = [], breakpoint = 'lg') => {
       let nextH = Number.isFinite(item.h) ? item.h : original.h ?? 4;
       
       if (breakpoint === 'xs') {
-        if (type === 'kpiGrid') nextH = 14;
-        else if (type === 'devicesTable') nextH = 8;
+        if (type === 'devicesTable') nextH = 8;
         else if (type === 'systemSummary') nextH = 3;
+        else if (type.startsWith('kpi-')) nextH = 3;
         else nextH = 6;
       } else if (breakpoint === 'sm') {
-        if (type === 'kpiGrid') nextH = 8;
-        else if (type === 'devicesTable') nextH = 8;
+        if (type === 'devicesTable') nextH = 8;
         else if (type === 'systemSummary') nextH = 3;
+        else if (type.startsWith('kpi-')) nextH = 2;
         else nextH = 5;
       } else if (breakpoint === 'md') {
-        if (type === 'kpiGrid') nextH = 5;
-        else if (type === 'systemSummary') nextH = 3;
+        if (type === 'systemSummary') nextH = 3;
+        else if (type.startsWith('kpi-')) nextH = 2;
       }
 
       const h = Math.max(minH, Math.min(nextH, maxH, 100));
@@ -180,29 +191,35 @@ const fitItemToBreakpoint = (item, breakpoint) => {
   let nextH = item.h || 4;
 
   if (breakpoint === 'xs' || breakpoint === 'sm') {
-    width = cols;
+    if (item.i.includes('kpi-')) {
+      width = breakpoint === 'sm' ? 3 : cols;
+    } else {
+      width = cols;
+    }
     minW = Math.min(minW, cols);
   } else if (breakpoint === 'md') {
-    if (item.i.includes('kpiGrid') || item.i.includes('devicesTable')) {
+    if (item.i.includes('devicesTable')) {
       width = 12;
+    } else if (item.i.includes('kpi-')) {
+      width = Math.max(item.w ?? 2, 2);
     } else {
       width = Math.max(width, 6);
     }
   }
   
   if (breakpoint === 'xs') {
-    if (item.i.includes('kpiGrid')) nextH = 14;
-    else if (item.i.includes('devicesTable')) nextH = 8;
+    if (item.i.includes('devicesTable')) nextH = 8;
     else if (item.i.includes('systemSummary')) nextH = 3;
+    else if (item.i.includes('kpi-')) nextH = 3;
     else nextH = 6;
   } else if (breakpoint === 'sm') {
-    if (item.i.includes('kpiGrid')) nextH = 8;
-    else if (item.i.includes('devicesTable')) nextH = 8;
+    if (item.i.includes('devicesTable')) nextH = 8;
     else if (item.i.includes('systemSummary')) nextH = 3;
+    else if (item.i.includes('kpi-')) nextH = 2;
     else nextH = 5;
   } else if (breakpoint === 'md') {
-    if (item.i.includes('kpiGrid')) nextH = 5;
-    else if (item.i.includes('systemSummary')) nextH = 3;
+    if (item.i.includes('systemSummary')) nextH = 3;
+    else if (item.i.includes('kpi-')) nextH = 2;
   }
 
   width = Math.min(width, cols);

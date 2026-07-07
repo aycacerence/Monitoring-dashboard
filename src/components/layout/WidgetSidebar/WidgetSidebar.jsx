@@ -40,7 +40,12 @@ function WidgetSidebar({ open, onClose }) {
   };
 
   const widgets = [
-    { id: WIDGET_IDS.KPI_GRID, label: t('sidebar.widgets.kpiGrid', 'KPI Kartları'), Icon: DashboardIcon },
+    { id: WIDGET_IDS.KPI_TOTAL_DEVICES, label: t('kpi.totalDevices', 'Toplam Cihaz'), Icon: DashboardIcon },
+    { id: WIDGET_IDS.KPI_ONLINE_DEVICES, label: t('kpi.onlineDevices', 'Çevrimiçi Cihaz'), Icon: DashboardIcon },
+    { id: WIDGET_IDS.KPI_ACTIVE_ALARMS, label: t('kpi.activeAlarms', 'Aktif Alarm'), Icon: DashboardIcon },
+    { id: WIDGET_IDS.KPI_AVERAGE_CPU, label: t('kpi.averageCpu', 'CPU Kullanımı'), Icon: DashboardIcon },
+    { id: WIDGET_IDS.KPI_AVERAGE_MEMORY, label: t('kpi.averageMemory', 'Bellek Kullanımı'), Icon: DashboardIcon },
+    { id: WIDGET_IDS.KPI_AVERAGE_DISK, label: t('kpi.averageDisk', 'Disk Kullanımı'), Icon: DashboardIcon },
     { id: WIDGET_IDS.CPU_CHART, label: t('sidebar.widgets.cpuChart', 'CPU Kullanımı'), Icon: MemoryIcon },
     { id: WIDGET_IDS.NETWORK_CHART, label: t('sidebar.widgets.networkChart', 'Ağ Trafiği'), Icon: NetworkCheckIcon },
     { id: WIDGET_IDS.DEVICE_STATUS_CHART, label: t('sidebar.widgets.deviceStatusChart', 'Cihaz Durumları'), Icon: PieChartIcon },

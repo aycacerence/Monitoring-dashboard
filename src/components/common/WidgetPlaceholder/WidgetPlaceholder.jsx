@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
 
 const WIDGET_STYLES = {
-  kpiGrid: { color: '#6366f1', label: 'KPI Kartları', icon: '▦' },
+  'kpi-total-devices': { color: '#6366f1', label: 'Toplam Cihaz (KPI)', icon: '▦' },
+  'kpi-online-devices': { color: '#6366f1', label: 'Çevrimiçi Cihaz (KPI)', icon: '▦' },
+  'kpi-active-alarms': { color: '#6366f1', label: 'Aktif Alarm (KPI)', icon: '▦' },
+  'kpi-average-cpu': { color: '#6366f1', label: 'CPU (KPI)', icon: '▦' },
+  'kpi-average-memory': { color: '#6366f1', label: 'Bellek (KPI)', icon: '▦' },
+  'kpi-average-disk': { color: '#6366f1', label: 'Disk (KPI)', icon: '▦' },
   cpuChart: { color: '#3b82f6', label: 'CPU Kullanımı', icon: '📈' },
   networkChart: { color: '#06b6d4', label: 'Ağ Trafiği', icon: '📊' },
   deviceStatusChart: { color: '#8b5cf6', label: 'Cihaz Durumları', icon: '🍩' },

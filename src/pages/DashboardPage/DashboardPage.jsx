@@ -7,7 +7,8 @@ import { fetchAlerts } from '../../features/dashboard/alertsSlice';
 import { fetchSystemSummary } from '../../features/dashboard/systemSummarySlice';
 import { fetchResourceUsage } from '../../features/dashboard/resourceUsageSlice';
 import { fetchDevices } from '../../features/dashboard/devicesSlice';
-import KpiGrid from '../../components/kpi/KpiGrid/KpiGrid';
+import KpiCard from '../../components/kpi/KpiCard/KpiCard';
+import KpiCardSkeleton from '../../components/kpi/KpiCardSkeleton/KpiCardSkeleton';
 import ResourceUsageList from '../../components/alerts/ResourceUsageList/ResourceUsageList';
 import DevicesSection from '../../components/devices/DevicesSection/DevicesSection';
 import PageContainer from '../../components/layout/PageContainer/index.js';
@@ -44,7 +45,9 @@ function DashboardPage() {
   const chartsData = useAppSelector((state) => state.charts.data);
   const alertsData = useAppSelector((state) => state.alerts.data);
   const summaryData = useAppSelector((state) => state.systemSummary.data);
+  const kpiData = useAppSelector((state) => state.kpi.data);
   const kpiStatus = useAppSelector((state) => state.kpi.status);
+  const kpiError = useAppSelector((state) => state.kpi.error);
   const chartsStatus = useAppSelector((state) => state.charts.status);
   const alertsStatus = useAppSelector((state) => state.alerts.status);
   const summaryStatus = useAppSelector((state) => state.systemSummary.status);
@@ -136,6 +139,8 @@ function DashboardPage() {
       { label: t('Kritik Olaylar'), value: '—', sublabel: t('Son 24 saat') },
       { label: t('Başarılı İşlemler'), value: '—', sublabel: t('Saatlik ortalama') },
     ];
+    const showKpiLoadingState = !isEditMode && (kpiStatus === 'loading' || kpiStatus === 'idle');
+    const showKpiErrorState = !isEditMode && kpiStatus === 'failed';
     const showChartLoadingState = !isEditMode && (chartsStatus === 'loading' || chartsStatus === 'idle');
     const showChartErrorState = !isEditMode && chartsStatus === 'failed';
     const showAlertsLoadingState = !isEditMode && (alertsStatus === 'loading' || alertsStatus === 'idle');
@@ -143,11 +148,64 @@ function DashboardPage() {
     const showSummaryLoadingState = !isEditMode && (summaryStatus === 'loading' || summaryStatus === 'idle');
     const showSummaryErrorState = !isEditMode && summaryStatus === 'failed';
 
+    const getKpiWidgetContent = (kpiId, fallbackTitle) => {
+      if (showKpiErrorState) {
+        return <ErrorState message={kpiError || "KPI verileri yüklenirken bir hata oluştu."} onRetry={() => dispatch(fetchKpis())} />;
+      }
+      if (showKpiLoadingState) {
+        return <KpiCardSkeleton />;
+      }
+      const kpi = kpiData?.find((k) => k.id === kpiId);
+      if (!kpi) {
+        return <KpiCardSkeleton />; // Fallback if data is missing
+      }
+      return (
+        <div className="h-full w-full relative group">
+          <KpiCard
+            title={kpi.title}
+            value={kpi.value}
+            unit={kpi.unit}
+            changePercentage={kpi.changePercentage}
+            changeDirection={kpi.changeDirection}
+            changeLabel={kpi.changeLabel}
+            icon={kpi.icon}
+            sparklineData={kpi.sparklineData}
+            color={kpi.color}
+          />
+        </div>
+      );
+    };
+
     return [
       {
-        id: WIDGET_IDS.KPI_GRID,
-        title: t('sidebar.widgets.kpiGrid', 'KPI Kartları'),
-        children: <KpiGrid />,
+        id: WIDGET_IDS.KPI_TOTAL_DEVICES,
+        title: t('kpi.totalDevices', 'Toplam Cihaz'),
+        children: getKpiWidgetContent('total-devices', 'Toplam Cihaz'),
+      },
+      {
+        id: WIDGET_IDS.KPI_ONLINE_DEVICES,
+        title: t('kpi.onlineDevices', 'Çevrimiçi Cihaz'),
+        children: getKpiWidgetContent('online-devices', 'Çevrimiçi Cihaz'),
+      },
+      {
+        id: WIDGET_IDS.KPI_ACTIVE_ALARMS,
+        title: t('kpi.activeAlarms', 'Aktif Alarm'),
+        children: getKpiWidgetContent('active-alarms', 'Aktif Alarm'),
+      },
+      {
+        id: WIDGET_IDS.KPI_AVERAGE_CPU,
+        title: t('kpi.averageCpu', 'CPU Kullanımı'),
+        children: getKpiWidgetContent('average-cpu', 'CPU Kullanımı'),
+      },
+      {
+        id: WIDGET_IDS.KPI_AVERAGE_MEMORY,
+        title: t('kpi.averageMemory', 'Bellek Kullanımı'),
+        children: getKpiWidgetContent('average-memory', 'Bellek Kullanımı'),
+      },
+      {
+        id: WIDGET_IDS.KPI_AVERAGE_DISK,
+        title: t('kpi.averageDisk', 'Disk Kullanımı'),
+        children: getKpiWidgetContent('average-disk', 'Disk Kullanımı'),
       },
       {
         id: WIDGET_IDS.CPU_CHART,
@@ -228,7 +286,7 @@ function DashboardPage() {
         children: <ResourceUsageList />,
       },
     ];
-  }, [alertsData, alertsError, alertsStatus, chartsData, chartsError, chartsStatus, dispatch, isEditMode, summaryData, summaryError, summaryStatus, t]);
+  }, [alertsData, alertsError, alertsStatus, chartsData, chartsError, chartsStatus, dispatch, isEditMode, summaryData, summaryError, summaryStatus, t, kpiData, kpiStatus, kpiError]);
 
   return (
     <>

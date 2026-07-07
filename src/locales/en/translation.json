@@ -102,7 +102,7 @@
     "hide": "Hide",
     "widgets": {
       "kpiGrid": "KPI Cards",
-      "cpuChart": "CPU Usage",
+      "cpuChart": "CPU Usage (Chart)",
       "networkChart": "Network Traffic",
       "deviceStatusChart": "Device Status",
       "alertsCard": "Recent Alerts",

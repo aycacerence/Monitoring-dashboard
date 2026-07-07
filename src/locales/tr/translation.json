@@ -102,7 +102,7 @@
     "hide": "Kapat",
     "widgets": {
       "kpiGrid": "KPI Kartları",
-      "cpuChart": "CPU Kullanımı",
+      "cpuChart": "CPU Kullanımı (Grafik)",
       "networkChart": "Ağ Trafiği",
       "deviceStatusChart": "Cihaz Durumları",
       "alertsCard": "Son Alarmlar",

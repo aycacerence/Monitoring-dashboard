@@ -2,7 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 
 // Widget id'leri — react-grid-layout'ta layout key'leriyle eşleşecek
 export const WIDGET_IDS = {
-  KPI_GRID:            'kpiGrid',
+  KPI_TOTAL_DEVICES:   'kpi-total-devices',
+  KPI_ONLINE_DEVICES:  'kpi-online-devices',
+  KPI_ACTIVE_ALARMS:   'kpi-active-alarms',
+  KPI_AVERAGE_CPU:     'kpi-average-cpu',
+  KPI_AVERAGE_MEMORY:  'kpi-average-memory',
+  KPI_AVERAGE_DISK:    'kpi-average-disk',
   CPU_CHART:           'cpuChart',
   NETWORK_CHART:       'networkChart',
   DEVICE_STATUS_CHART: 'deviceStatusChart',
@@ -13,7 +18,12 @@ export const WIDGET_IDS = {
 };
 
 export const ORIGINAL_POSITIONS = {
-  [WIDGET_IDS.KPI_GRID]:            { x: 0, y: 0, w: 12, h: 2, minW: 6, minH: 2 },
+  [WIDGET_IDS.KPI_TOTAL_DEVICES]:   { x: 0, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+  [WIDGET_IDS.KPI_ONLINE_DEVICES]:  { x: 2, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+  [WIDGET_IDS.KPI_ACTIVE_ALARMS]:   { x: 4, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+  [WIDGET_IDS.KPI_AVERAGE_CPU]:     { x: 6, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+  [WIDGET_IDS.KPI_AVERAGE_MEMORY]:  { x: 8, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
+  [WIDGET_IDS.KPI_AVERAGE_DISK]:    { x: 10, y: 0, w: 2, h: 2, minW: 2, minH: 2 },
   [WIDGET_IDS.CPU_CHART]:           { x: 0, y: 2, w: 5,  h: 4, minW: 3, minH: 3 },
   [WIDGET_IDS.NETWORK_CHART]:       { x: 5, y: 2, w: 3,  h: 4, minW: 3, minH: 3 },
   [WIDGET_IDS.DEVICE_STATUS_CHART]: { x: 8, y: 2, w: 4,  h: 4, minW: 3, minH: 3 },
