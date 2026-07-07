@@ -21,6 +21,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.jsx'],
+    exclude: ['e2e/**', 'node_modules/**'],
     css: true,
     coverage: {
       provider: 'v8',
@@ -28,6 +29,7 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'src/test/',
+        'e2e/',
         '**/*.d.ts',
         'src/main.jsx',
         'src/router/',
