@@ -43,7 +43,7 @@ Kullanıcı bu modda:
 
 ---
 
-## 🛠️ Teknoloji Yığını 
+## Teknoloji Yığını 
 
 * **Çekirdek:** React 19, Vite (ESM tabanlı süper hızlı derleyici)
 * **Durum Yönetimi:** Redux Toolkit, Redux Thunk
@@ -56,7 +56,7 @@ Kullanıcı bu modda:
 
 ---
 
-## 📂 Kod Organizasyonu ve Klasör Hiyerarşisi
+## Kod Organizasyonu ve Klasör Hiyerarşisi
 
 Büyük ölçekli yazılım projelerinde kodlara müdahale edilmesini zorlaştıran mimari karmaşayı önlemek amacıyla "Separation of Concerns" (Kavramların Ayrılığı) ilkesi mutlak olarak uygulanmıştır:
 
