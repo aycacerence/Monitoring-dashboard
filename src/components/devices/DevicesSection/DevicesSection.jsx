@@ -107,7 +107,7 @@ function DevicesSection() {
               isEditMode={isEditMode}
             />
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center h-full w-full bg-slate-50/50 dark:bg-slate-900/20">
+            <div data-testid="access-denied" className="flex-1 flex flex-col items-center justify-center h-full w-full bg-slate-50/50 dark:bg-slate-900/20">
               <LockIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.5, mb: 2 }} />
               <span className="text-slate-500 font-medium text-sm">
                 {t('auth.noPermission', 'Bu içeriği görüntüleme yetkiniz bulunmamaktadır.')}

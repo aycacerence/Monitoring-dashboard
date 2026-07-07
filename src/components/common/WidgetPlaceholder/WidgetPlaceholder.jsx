@@ -26,6 +26,7 @@ export default function WidgetPlaceholder({ widgetId }) {
 
   return (
     <Box
+      data-testid="widget-placeholder"
       sx={{
         width: '100%',
         height: '100%',

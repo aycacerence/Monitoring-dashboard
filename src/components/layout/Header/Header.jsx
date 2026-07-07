@@ -245,6 +245,7 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
           {/* Dark / Light mode toggle */}
           <Tooltip title={mode === 'dark' ? t('header.lightMode', 'Açık Mod') : t('header.darkMode', 'Koyu Mod')} arrow>
             <IconButton
+              data-testid="theme-toggle"
               onClick={() => dispatch(toggleMode())}
               aria-label={mode === 'dark' ? 'Açık moda geç' : 'Koyu moda geç'}
               size="small"

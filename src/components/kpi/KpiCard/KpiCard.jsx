@@ -90,7 +90,7 @@ function KpiCard({
   };
 
   return (
-    <Card hoverable className="flex h-auto flex-col justify-between lg:h-full p-3 lg:p-2.5">
+    <Card data-testid="kpi-card" hoverable className="flex h-auto flex-col justify-between lg:h-full p-3 lg:p-2.5">
       <div className="mb-2 flex items-start justify-between lg:mb-0.5">
         <div className="flex-1 min-w-0 pr-1.5">
           <p 
