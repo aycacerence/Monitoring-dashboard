@@ -13,6 +13,7 @@ import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice'
 import { useTranslation } from 'react-i18next';
 import { selectRole, setRole } from '../../../features/auth/authSlice';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 
 // Removed static TIME_RANGE_OPTIONS
@@ -26,6 +27,8 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
   const role = useSelector(selectRole);
   const { t, i18n: i18nInstance } = useTranslation();
   const { title, subtitle } = usePageTitle();
+  const { pathname } = useLocation();
+  const isSettingsPage = pathname === '/settings';
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -92,14 +95,16 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-2 sm:flex-initial sm:justify-end sm:shrink-0">
 
           {/* Son güncelleme tarihi */}
-          {lastUpdated && (
-            <span className="hidden lg:block text-xs font-medium text-white/75 whitespace-nowrap">
-              {t('header.lastUpdated')}: {lastUpdated}
-            </span>
-          )}
+          <Box sx={{ display: isSettingsPage ? 'none' : 'flex', alignItems: 'center' }}>
+            {lastUpdated && (
+              <span className="hidden lg:block text-xs font-medium text-white/75 whitespace-nowrap">
+                {t('header.lastUpdated')}: {lastUpdated}
+              </span>
+            )}
+          </Box>
 
           {/* Mobil İçin Zaman Aralığı Menüsü */}
-          <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+          <Box sx={{ display: isSettingsPage ? 'none' : { xs: 'block', sm: 'none' } }}>
             <IconButton 
               onClick={handleTimeClick}
               sx={{ 
@@ -148,7 +153,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
               <CalendarTodayIcon sx={{ fontSize: 14, mr: 0.5, color: 'primary.main' }} />
             }
             sx={{
-              display: { xs: 'none', sm: 'inline-flex' },
+              display: isSettingsPage ? 'none' : { xs: 'none', sm: 'inline-flex' },
               backgroundColor: '#ffffff',
               color: '#1e293b',
               fontWeight: 500,
