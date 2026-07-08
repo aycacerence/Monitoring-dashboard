@@ -427,60 +427,47 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
       {...rest}
     >
       <Box
-        className="widget-drag-handle drag-handle"
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          px: isEditMode ? 1.5 : 0,
-          py: isEditMode ? 0.5 : 0,
-          cursor: isEditMode ? 'grab' : 'default',
-          userSelect: 'none',
-          flexShrink: 0,
-          height: isEditMode ? 32 : 4,
-          bgcolor: isEditMode ? 'action.hover' : 'transparent',
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-          borderBottom: isEditMode ? '1px solid' : 'none',
-          borderColor: 'divider',
-          overflow: 'hidden',
-          transition: 'height 0.2s ease, background-color 0.2s ease',
-          '&:active': { cursor: isEditMode ? 'grabbing' : 'default' },
-        }}
-      >
-        {isEditMode && (
-          <>
-            <DragIndicatorIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-            <IconButton
-              size="small"
-              onMouseDown={(event) => event.stopPropagation()}
-              onClick={() => onRemove?.(instanceId)}
-              sx={{ p: 0.3, opacity: 0.6, '&:hover': { opacity: 1 } }}
-            >
-              <CloseIcon sx={{ fontSize: 14 }} />
-            </IconButton>
-          </>
-        )}
-      </Box>
-      <Box
         sx={{
           flex: 1,
           minHeight: 0,
-          mb: isEditMode ? '8px' : 0,
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           bgcolor: 'background.paper',
           borderRadius: 2,
-          border: '1px solid',
-          borderColor: 'divider',
-          boxShadow: 1,
+          border: isEditMode ? '1px solid' : 'none',
+          borderColor: isEditMode ? 'primary.light' : 'transparent',
+          boxShadow: isEditMode ? 2 : 1,
           position: 'relative',
           zIndex: 1,
           cursor: isEditMode ? 'grab' : 'default',
-          '&:active': { cursor: isEditMode ? 'grabbing' : 'default' }
+          transition: 'all 0.2s',
+          '&:active': { cursor: isEditMode ? 'grabbing' : 'default' },
+          '&:hover .remove-btn': { opacity: 1 },
         }}
       >
+        {isEditMode && (
+          <IconButton
+            className="remove-btn"
+            size="small"
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={() => onRemove?.(instanceId)}
+            sx={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              zIndex: 10,
+              bgcolor: 'background.paper',
+              boxShadow: 1,
+              p: 0.4, 
+              opacity: 0.7, 
+              transition: 'all 0.2s',
+              '&:hover': { opacity: 1, bgcolor: 'error.main', color: 'white' }
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 14 }} />
+          </IconButton>
+        )}
         {children}
       </Box>
     </div>

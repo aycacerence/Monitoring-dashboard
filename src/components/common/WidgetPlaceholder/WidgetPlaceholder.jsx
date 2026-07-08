@@ -2,6 +2,26 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  KpiPreview, LineChartPreview, BarChartPreview, PieChartPreview,
+  AlertsPreview, SystemSummaryPreview, DevicesPreview, ResourceUsagePreview,
+} from '../WidgetPreview';
+
+const PREVIEWS = {
+  'kpi-total-devices': KpiPreview,
+  'kpi-online-devices': KpiPreview,
+  'kpi-active-alarms': KpiPreview,
+  'kpi-average-cpu': KpiPreview,
+  'kpi-average-memory': KpiPreview,
+  'kpi-average-disk': KpiPreview,
+  cpuChart: LineChartPreview,
+  networkChart: BarChartPreview,
+  deviceStatusChart: PieChartPreview,
+  alertsCard: AlertsPreview,
+  systemSummary: SystemSummaryPreview,
+  devicesTable: DevicesPreview,
+  resourceUsage: ResourceUsagePreview,
+};
 
 export default function WidgetPlaceholder({ widgetId }) {
   const { t } = useTranslation();
@@ -23,6 +43,7 @@ export default function WidgetPlaceholder({ widgetId }) {
   };
 
   const style = WIDGET_STYLES[widgetId] ?? { color: '#94a3b8', label: widgetId, icon: '▦' };
+  const PreviewComponent = PREVIEWS[widgetId];
 
   return (
     <Box
@@ -30,26 +51,41 @@ export default function WidgetPlaceholder({ widgetId }) {
       sx={{
         width: '100%',
         height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 0.5,
-        bgcolor: `${style.color}08`,
+        bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 1,
-        userSelect: 'none',
+        borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column',
         overflow: 'hidden',
+        pointerEvents: 'none', // Sürüklerken etkileşimi engelle
+        opacity: 0.85,
+        boxShadow: 1,
       }}
     >
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="caption" sx={{ color: style.color, fontWeight: 700, display: 'block' }}>
+      {/* Başlık kısmı - mock preview'larda başlık sildiğimiz için buraya ekliyoruz */}
+      <Box sx={{ 
+        px: 2, py: 1, 
+        borderBottom: '1px dashed', borderColor: 'divider', 
+        bgcolor: 'action.hover',
+        display: 'flex', alignItems: 'center'
+      }}>
+        <Typography sx={{ fontSize: 13, fontWeight: 600, color: 'text.secondary' }}>
           {style.label}
         </Typography>
-        <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: 10 }}>
-          {t('sidebar.editModePreviewDisabled', 'Düzenleme modunda önizleme devre dışı')}
-        </Typography>
+      </Box>
+
+      {/* İçerik (Preview) alanı */}
+      <Box sx={{ flex: 1, overflow: 'hidden' }}>
+        {PreviewComponent ? (
+          <PreviewComponent widgetId={widgetId} />
+        ) : (
+          <Box sx={{ p: 2, textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+              {t('sidebar.editModePreviewDisabled', 'Önizleme bulunamadı')}
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );
