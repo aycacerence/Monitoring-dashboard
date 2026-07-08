@@ -18,6 +18,8 @@ import { selectRole } from '../../../features/auth/authSlice';
 import LockIcon from '@mui/icons-material/Lock';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
 import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Box, Typography } from '@mui/material';
 
 const ROW_HEIGHT_PX = 52;
 const RESERVED_PX = 150;
@@ -66,6 +68,50 @@ function DevicesSection() {
 
   if (isEditMode) return <WidgetPlaceholder widgetId="devicesTable" />;
 
+  if (role !== 'admin') {
+    return (
+      <Card hoverable className="h-full flex flex-col overflow-hidden" noPadding>
+        <div className="flex shrink-0 items-center px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+            {t("Cihaz Yönetimi", "Cihaz Yönetimi")}
+          </h2>
+        </div>
+        <Box
+          className="bg-slate-50/50 dark:bg-slate-800/20"
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+            p: 3,
+            minHeight: 200
+          }}
+        >
+          {/* Kilit ikonu */}
+          <Box
+            sx={{
+              width: 56, height: 56,
+              borderRadius: '50%',
+              bgcolor: 'action.hover',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <LockOutlinedIcon sx={{ fontSize: 28, color: 'text.disabled' }} />
+          </Box>
+
+          {/* Mesaj */}
+          <span className="text-slate-500 dark:text-slate-400 font-medium text-sm text-center px-4">
+            {t('devices.accessDenied', 'Bu içeriği görüntüleme yetkiniz bulunmamaktadır.')}
+          </span>
+        </Box>
+      </Card>
+    );
+  }
+
   const handleSearchChange = (value) => {
     dispatch(setSearchTerm(value));
   };
@@ -99,21 +145,12 @@ function DevicesSection() {
         />
         
         <div className="flex flex-1 min-h-0 overflow-hidden">
-          {role === 'admin' ? (
-            <DeviceTable 
-              devices={paginatedDevices} 
-              isLoading={isTableLoading} 
-              searchTerm={searchTerm}
-              isEditMode={isEditMode}
-            />
-          ) : (
-            <div data-testid="access-denied" className="flex-1 flex flex-col items-center justify-center h-full w-full bg-slate-50/50 dark:bg-slate-900/20">
-              <LockIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.5, mb: 2 }} />
-              <span className="text-slate-500 font-medium text-sm">
-                {t('auth.noPermission', 'Bu içeriği görüntüleme yetkiniz bulunmamaktadır.')}
-              </span>
-            </div>
-          )}
+          <DeviceTable 
+            devices={paginatedDevices} 
+            isLoading={isTableLoading} 
+            searchTerm={searchTerm}
+            isEditMode={isEditMode}
+          />
         </div>
         
         <div className="mt-auto flex shrink-0 flex-col sm:flex-row items-center justify-between px-4 pt-2 pb-2 border-t border-slate-100 gap-3 dark:border-slate-800">

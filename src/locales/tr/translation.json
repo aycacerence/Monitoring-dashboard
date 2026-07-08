@@ -55,7 +55,8 @@
     "title": "Sistem Özeti"
   },
   "devices": {
-    "title": "Cihaz Yönetimi"
+    "title": "Cihaz Yönetimi",
+    "accessDenied": "Bu içeriği görüntüleme yetkiniz bulunmamaktadır."
   },
   "resources": {
     "title": "Kaynak Kullanımı Listesi"

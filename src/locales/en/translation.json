@@ -55,7 +55,8 @@
     "title": "System Summary"
   },
   "devices": {
-    "title": "Device Management"
+    "title": "Device Management",
+    "accessDenied": "You don't have permission to view this content."
   },
   "resources": {
     "title": "Resource Usage List"
