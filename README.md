@@ -27,7 +27,7 @@ Bu sistem; React 19 ve Sanal DOM motoru kullanılarak inşa edilmiş, grid konfi
 
 ### 1. Ana İzleme Paneli (Dashboard)
 Ağ metriklerinin (CPU, Bellek, Disk, Trafik) 60 FPS akıcılıkta animasyonlu kartlar (`useCountUp` hook) ve vektörel grafiklerle takip edildiği ana ekran. Sistemin manuel tetiklemelerle asenkron olarak yenilendiği kontrol merkezidir.
-![Ana İzleme Paneli](assets/Ana%20İzleme%20Paneli%20.png?v=2)
+![Ana İzleme Paneli](assets/Ana%20İzleme%20Paneli%20.png?v=3)
 
 ### 2. Dinamik Pano Konfigürasyonu (Panel Ayarları)
 "Panel Ayarları" (Edit Mode) sekmesinde yer alan; HTML5 Drag API çakışmalarının izole edildiği, Redux state'i ve `localStorage` ile kullanıcı özelinde kaydedilebilen dinamik arayüz. 
