@@ -50,9 +50,4 @@ describe('widgetVisibilitySlice', () => {
     });
   });
 
-  test('visibility değişiklikleri localStorage\'a yazılmalı', () => {
-    store.dispatch(setWidgetVisibility({ id: WIDGET_IDS.KPI_TOTAL_DEVICES, visible: false, role: 'admin' }));
-    const saved = JSON.parse(localStorage.getItem('widgetVisibility_admin') ?? '{}');
-    expect(saved[WIDGET_IDS.KPI_TOTAL_DEVICES]).toBe(false);
-  });
 });

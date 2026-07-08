@@ -23,14 +23,14 @@ vi.mock('react-i18next', () => ({
 
 describe('Header', () => {
   test('başlık render ediliyor', () => {
-    renderWithProviders(<Header title="İzleme Paneli" />);
-    expect(screen.getByText(/izleme paneli|monitoring dashboard/i)).toBeInTheDocument();
+    renderWithProviders(<Header />);
+    expect(screen.getByText('pageTitles.dashboard')).toBeInTheDocument();
   });
 
   test('Yenile butonu tıklanabilir', () => {
     const onRefresh = vi.fn();
     renderWithProviders(<Header onRefresh={onRefresh} />);
-    fireEvent.click(screen.getByRole('button', { name: /yenile|refresh/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Verileri Yenile' }));
     expect(onRefresh).toHaveBeenCalled();
   });
 
