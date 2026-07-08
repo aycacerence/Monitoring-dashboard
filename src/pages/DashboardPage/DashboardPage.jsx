@@ -105,7 +105,6 @@ function DashboardPage() {
   useEffect(() => {
     if (setHeaderProps) {
       setHeaderProps({
-        title: "Monitoring Dashboard",
         lastUpdated: formatDateTime(lastUpdated, i18n.language),
         timeRange,
         onTimeRangeChange: setTimeRange,

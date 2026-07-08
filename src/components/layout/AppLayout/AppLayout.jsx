@@ -17,7 +17,6 @@ function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const activePanelSection = isEditMode ? 'settings' : 'panel';
   const [headerProps, setHeaderProps] = useState({
-    title: 'Monitoring Dashboard',
     timeRange: '24h',
     onTimeRangeChange: () => {},
     onRefresh: () => {},

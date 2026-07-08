@@ -13,17 +13,19 @@ import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice'
 import { useTranslation } from 'react-i18next';
 import { selectRole, setRole } from '../../../features/auth/authSlice';
 import { useState } from 'react';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 // Removed static TIME_RANGE_OPTIONS
 
 /**
  * Dashboard üst çubuğu — başlık (sol), son güncelleme + filtre + mod toggle + yenile (sağ).
  */
-function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing, onMenuClick }) {
+function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefreshing, onMenuClick }) {
   const dispatch = useDispatch();
   const mode = useSelector(selectColorMode);
   const role = useSelector(selectRole);
   const { t, i18n: i18nInstance } = useTranslation();
+  const { title, subtitle } = usePageTitle();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -74,9 +76,16 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
               <MenuIcon />
             </IconButton>
           )}
-          <h1 className="text-center whitespace-nowrap text-lg font-bold tracking-normal text-white sm:text-left sm:truncate sm:text-xl lg:text-2xl">
-            {t('header.title')}
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-center whitespace-nowrap text-lg font-bold tracking-normal text-white sm:text-left sm:truncate sm:text-xl lg:text-2xl leading-tight">
+              {title}
+            </h1>
+            {subtitle && (
+              <span className="text-xs text-white/75 font-medium sm:text-left text-center">
+                {subtitle}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Sağ: Son güncelleme + Filtre + Mod Toggle + Yenile */}
@@ -300,7 +309,6 @@ function Header({ title, lastUpdated, timeRange, onTimeRangeChange, onRefresh, i
 }
 
 Header.propTypes = {
-  title: PropTypes.string.isRequired,
   lastUpdated: PropTypes.string,
   timeRange: PropTypes.string.isRequired,
   onTimeRangeChange: PropTypes.func.isRequired,

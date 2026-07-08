@@ -1,4 +1,12 @@
 {
+  "pageTitles": {
+    "dashboard": "İzleme Paneli",
+    "settings": "Panel Ayarları"
+  },
+  "pageSubtitles": {
+    "dashboard": "Sistem genel durumu ve istatistikler",
+    "settings": "Pano kişiselleştirme"
+  },
   "header": {
     "title": "İzleme Paneli",
     "lastUpdated": "Son güncelleme",

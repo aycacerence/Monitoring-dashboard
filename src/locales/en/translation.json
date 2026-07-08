@@ -1,4 +1,12 @@
 {
+  "pageTitles": {
+    "dashboard": "Monitoring Dashboard",
+    "settings": "Dashboard Settings"
+  },
+  "pageSubtitles": {
+    "dashboard": "System overview and statistics",
+    "settings": "Customize your dashboard"
+  },
   "header": {
     "title": "Monitoring Dashboard",
     "lastUpdated": "Last update",
