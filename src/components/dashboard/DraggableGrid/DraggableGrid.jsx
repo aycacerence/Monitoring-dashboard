@@ -746,17 +746,10 @@ export default function DraggableGrid({ widgets = [] }) {
       sx={{
         flex: { xs: '0 0 auto', lg: 1 },
         width: '100%',
-        height: { xs: 'auto', lg: '100%' },
+        height: 'auto',
         minHeight: { xs: 'auto', lg: 0 },
         overflowX: 'visible',
         overflowY: 'visible',
-        border: isEditMode ? '1px solid' : 0,
-        borderColor: 'divider',
-        borderRadius: isEditMode ? 2 : 0,
-        bgcolor: isEditMode ? 'rgba(15, 23, 42, 0.025)' : 'transparent',
-        boxShadow: isEditMode ? 'inset 0 0 0 1px rgba(148, 163, 184, 0.16)' : 'none',
-        px: isEditMode ? 1.5 : 0,
-        pt: isEditMode ? 1.5 : 0,
         '& .react-grid-item.react-grid-placeholder': {
           bgcolor: 'primary.main',
           opacity: 0.08,
@@ -791,7 +784,6 @@ export default function DraggableGrid({ widgets = [] }) {
         onDrop={onDrop}
         onDragStop={handleInteractionStop}
         onResizeStop={handleInteractionStop}
-        style={{ height: isEditMode ? '100%' : undefined, minHeight: isEditMode ? undefined : '100%' }}
       >
         {renderedWidgets.map(({ id, type }, index) => (
           <GridItemWrapper
