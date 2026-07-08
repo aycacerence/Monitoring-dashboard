@@ -14,6 +14,26 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SpeedIcon from '@mui/icons-material/Speed';
 import { useState } from 'react';
+import {
+  KpiPreview, LineChartPreview, BarChartPreview, PieChartPreview,
+  AlertsPreview, SystemSummaryPreview, DevicesPreview, ResourceUsagePreview,
+} from '../../common/WidgetPreview';
+
+const WIDGET_PREVIEWS = {
+  [WIDGET_IDS.KPI_TOTAL_DEVICES]:   KpiPreview,
+  [WIDGET_IDS.KPI_ONLINE_DEVICES]:  KpiPreview,
+  [WIDGET_IDS.KPI_ACTIVE_ALARMS]:   KpiPreview,
+  [WIDGET_IDS.KPI_AVERAGE_CPU]:     KpiPreview,
+  [WIDGET_IDS.KPI_AVERAGE_MEMORY]:  KpiPreview,
+  [WIDGET_IDS.KPI_AVERAGE_DISK]:    KpiPreview,
+  [WIDGET_IDS.CPU_CHART]:           LineChartPreview,
+  [WIDGET_IDS.NETWORK_CHART]:       BarChartPreview,
+  [WIDGET_IDS.DEVICE_STATUS_CHART]: PieChartPreview,
+  [WIDGET_IDS.ALERTS_CARD]:         AlertsPreview,
+  [WIDGET_IDS.SYSTEM_SUMMARY]:      SystemSummaryPreview,
+  [WIDGET_IDS.DEVICES_TABLE]:       DevicesPreview,
+  [WIDGET_IDS.RESOURCE_USAGE]:      ResourceUsagePreview,
+};
 
 function WidgetSidebar({ open, onClose }) {
   const { t } = useTranslation();
@@ -185,6 +205,8 @@ function WidgetSidebar({ open, onClose }) {
               );
             }
 
+            const PreviewComponent = WIDGET_PREVIEWS[id];
+
             return (
               <Box
                 key={id}
@@ -204,53 +226,51 @@ function WidgetSidebar({ open, onClose }) {
                     }}
                 onDragEnd={() => window.dispatchEvent(new Event('rgl:dragend'))}
                 sx={{
-                  position: 'relative',
-                  display: 'flex',
-                  minHeight: 82,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'column',
-                  gap: 1,
+                  height: 120,
                   mb: 2,
-                  borderRadius: 2,
-                  border: '1px dashed',
-                  borderColor: 'divider',
-                  bgcolor: 'action.hover',
-                  color: 'primary.main',
+                  borderRadius: 1.5,
+                  border: '1px solid',
+                  borderColor: isAlreadyVisible ? 'divider' : 'primary.main',
+                  overflow: 'hidden',
                   cursor: isAlreadyVisible ? 'not-allowed' : 'grab',
-                  userSelect: 'none',
-                  opacity: isAlreadyVisible ? 0.38 : 1,
+                  opacity: isAlreadyVisible ? 0.4 : 1,
                   pointerEvents: isAlreadyVisible ? 'none' : 'auto',
-                  transition: 'background-color 160ms ease, border-color 160ms ease, transform 160ms ease, opacity 160ms ease',
+                  transition: 'all 0.15s ease',
+                  bgcolor: 'background.paper',
+                  position: 'relative',
+                  userSelect: 'none',
                   '&:hover': isAlreadyVisible ? {} : {
-                    bgcolor: 'background.paper',
-                    borderColor: 'primary.main',
-                    transform: 'translateY(-2px)',
-                    boxShadow: 3,
+                    borderColor: 'primary.dark',
+                    boxShadow: 2,
+                    transform: 'translateY(-1px)',
                   },
                   '&:active': {
                     cursor: 'grabbing',
                   },
                 }}
               >
-                <Icon sx={{ fontSize: 22 }} />
-                <Typography variant="caption" color="text.primary" sx={{ fontWeight: 500, textAlign: 'center' }}>
-                  {label}
-                </Typography>
-                {isAlreadyVisible && (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 6,
-                      right: 6,
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      bgcolor: 'success.main',
-                      boxShadow: '0 0 0 2px white',
-                    }}
-                  />
-                )}
+                {/* Widget başlığı — üstte küçük etiket */}
+                <Box sx={{
+                  px: 1, py: 0.4,
+                  bgcolor: 'action.hover',
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                  <Typography sx={{ fontSize: 9, fontWeight: 600, color: 'text.secondary' }}>
+                    {label}
+                  </Typography>
+                  {isAlreadyVisible && (
+                    <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'success.main' }} />
+                  )}
+                </Box>
+
+                {/* Preview alanı */}
+                <Box sx={{ height: 'calc(100% - 26px)', overflow: 'hidden' }}>
+                  {PreviewComponent && <PreviewComponent widgetId={id} />}
+                </Box>
               </Box>
             );
           })}
