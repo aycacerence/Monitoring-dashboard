@@ -27,7 +27,7 @@ Bu sistem; React 19 ve Sanal DOM motoru kullanılarak inşa edilmiş, grid konfi
 
 ### 1. Ana İzleme Paneli (Dashboard)
 Ağ metriklerinin (CPU, Bellek, Disk, Trafik) 60 FPS akıcılıkta animasyonlu kartlar (`useCountUp` hook) ve vektörel grafiklerle takip edildiği ana ekran. Sistemin manuel tetiklemelerle asenkron olarak yenilendiği kontrol merkezidir.
-![Ana İzleme Paneli](assets/Ana%20İzleme%20Paneli%20.png)
+![Ana İzleme Paneli](assets/Ana%20İzleme%20Paneli%20.png?v=2)
 
 ### 2. Dinamik Pano Konfigürasyonu (Panel Ayarları)
 "Panel Ayarları" (Edit Mode) sekmesinde yer alan; HTML5 Drag API çakışmalarının izole edildiği, Redux state'i ve `localStorage` ile kullanıcı özelinde kaydedilebilen dinamik arayüz. 
@@ -35,11 +35,11 @@ Kullanıcı bu modda:
 - İstemediği KPI veya grafikleri silebilir.
 - Panelin yerleşimini sürükle-bırak ile tamamen baştan şekillendirebilir.
 - Hatalı bir işlem yaptığında "Varsayılana Dön" butonuyla ilk baştaki orijinal yapıya dönebilir.
-![Panel Ayarları Paneli](assets/Panel%20ayarları%20paneli.png)
+![Panel Ayarları Paneli](assets/Panel%20ayarları%20paneli.png?v=2)
 
 ### 3. Tema Yönetimi ve Küreselleşme (i18n)
 `themeSlice` ile yönetilen ve Tailwind CSS/Material UI (MUI) entegrasyonu ile performans kaybı yaşanmadan tüm arayüze uygulanan "Dark Mode" mimarisi. Aynı navigasyon (Header) katmanı üzerinden `react-i18next` altyapısıyla anlık çoklu dil (Türkçe / İngilizce) geçişi sağlanmaktadır.
-![Dark Mode Desteği](assets/Dark%20mode%20desteği.png)
+![Dark Mode Desteği](assets/Dark%20mode%20desteği.png?v=2)
 
 ---
 
