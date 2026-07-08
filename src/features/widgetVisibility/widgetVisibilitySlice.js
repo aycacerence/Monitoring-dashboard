@@ -63,39 +63,44 @@ export const clearVisibility = (role) => {
 
 const getPayloadRole = (payload) => payload?.role || localStorage.getItem('userRole') || 'admin';
 
-const savedVisibility = loadVisibility(localStorage.getItem('userRole') || 'admin');
+const initialSavedVisibility = loadVisibility(localStorage.getItem('userRole') || 'admin');
 
 const widgetVisibilitySlice = createSlice({
   name: 'widgetVisibility',
-  initialState: { visibility: savedVisibility },
+  initialState: { 
+    visibility: initialSavedVisibility,
+    savedVisibility: initialSavedVisibility
+  },
   reducers: {
     toggleWidget: (state, action) => {
       const id = typeof action.payload === 'string' ? action.payload : action.payload.id;
-      const role = getPayloadRole(action.payload);
       state.visibility[id] = !state.visibility[id];
-      saveVisibility(state.visibility, role);
     },
     setWidgetVisibility: (state, action) => {
-      // { id, visible } payload
       state.visibility[action.payload.id] = action.payload.visible;
-      saveVisibility(state.visibility, getPayloadRole(action.payload));
     },
     setVisibilityConfig: (state, action) => {
-      state.visibility = action.payload || cloneDefaultVisibility();
+      const newVisibility = action.payload || cloneDefaultVisibility();
+      state.visibility = newVisibility;
+      state.savedVisibility = newVisibility;
     },
-    resetVisibility: (state, action) => {
-      const role = getPayloadRole(action.payload);
+    resetVisibility: (state) => {
       state.visibility = cloneDefaultVisibility();
-      clearVisibility(role);
     },
-    hideAllWidgets: (state, action) => {
-      const role = getPayloadRole(action.payload);
+    hideAllWidgets: (state) => {
       Object.keys(state.visibility).forEach(key => state.visibility[key] = false);
+    },
+    commitVisibility: (state, action) => {
+      const role = getPayloadRole(action.payload);
+      state.savedVisibility = { ...state.visibility };
       saveVisibility(state.visibility, role);
+    },
+    revertVisibility: (state) => {
+      state.visibility = { ...state.savedVisibility };
     },
   },
 });
 
-export const { toggleWidget, setWidgetVisibility, setVisibilityConfig, resetVisibility, hideAllWidgets } = widgetVisibilitySlice.actions;
+export const { toggleWidget, setWidgetVisibility, setVisibilityConfig, resetVisibility, hideAllWidgets, commitVisibility, revertVisibility } = widgetVisibilitySlice.actions;
 export const selectVisibility = (state) => state.widgetVisibility.visibility;
 export default widgetVisibilitySlice.reducer;

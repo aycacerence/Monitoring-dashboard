@@ -2,7 +2,8 @@ import { Drawer, Box, Typography, Divider, useMediaQuery, Dialog, DialogActions,
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { selectVisibility, hideAllWidgets, resetVisibility, setWidgetVisibility, WIDGET_IDS, ORIGINAL_POSITIONS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
+import { selectVisibility, hideAllWidgets, setWidgetVisibility, resetVisibility, commitVisibility, revertVisibility, WIDGET_IDS, ORIGINAL_POSITIONS } from '../../../features/widgetVisibility/widgetVisibilitySlice';
+import { setIsDirty } from '../../../features/ui/uiSlice';
 import { selectRole } from '../../../features/auth/authSlice';
 import Button from '@mui/material/Button';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -48,14 +49,14 @@ function WidgetSidebar({ open, onClose }) {
   const isDirty = useAppSelector((state) => state.ui.isDirty);
 
   const handleDefaultView = () => {
-    dispatch(resetVisibility({ role }));
-    localStorage.removeItem(`dashboardLayout_${role}`);
-    window.dispatchEvent(new CustomEvent('dashboard:reset-layout'));
-    window.dispatchEvent(new Event('resize'));
+    dispatch(resetVisibility());
+    window.dispatchEvent(new Event('dashboard:preview-default'));
+    dispatch(setIsDirty(true));
   };
 
   const handleConfirmSave = () => {
     window.dispatchEvent(new Event('save-layout'));
+    dispatch(commitVisibility({ role }));
     setSaveConfirmOpen(false);
   };
 
@@ -105,7 +106,10 @@ function WidgetSidebar({ open, onClose }) {
           <Button 
             variant="outlined" 
             size="small" 
-            onClick={() => dispatch(hideAllWidgets({ role }))}
+            onClick={() => {
+              dispatch(hideAllWidgets({ role }));
+              dispatch(setIsDirty(true));
+            }}
             sx={{
               color: 'primary.main',
               borderColor: 'primary.light',
@@ -175,7 +179,10 @@ function WidgetSidebar({ open, onClose }) {
                     variant={isAlreadyVisible ? 'contained' : 'outlined'}
                     color={isAlreadyVisible ? 'inherit' : 'primary'}
                     disabled={isAlreadyVisible}
-                    onClick={() => dispatch(setWidgetVisibility({ id, visible: true, role }))}
+                    onClick={() => {
+                      dispatch(setWidgetVisibility({ id, visible: true, role }));
+                      dispatch(setIsDirty(true));
+                    }}
                     sx={{
                       minWidth: 70,
                       bgcolor: isAlreadyVisible ? 'background.paper' : undefined,
@@ -278,7 +285,18 @@ function WidgetSidebar({ open, onClose }) {
 
         <Divider sx={{ my: 2 }} />
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
+          <Button
+            variant="outlined"
+            size="small"
+            disabled={!isDirty}
+            onClick={() => {
+              dispatch(revertVisibility());
+              window.dispatchEvent(new Event('cancel-layout'));
+            }}
+          >
+            {t('sidebar.cancel', 'İptal')}
+          </Button>
           <Button
             variant="contained"
             size="small"

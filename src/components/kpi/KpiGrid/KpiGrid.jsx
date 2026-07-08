@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import KpiCard from '../KpiCard/KpiCard';
 import KpiCardSkeleton from '../KpiCardSkeleton/KpiCardSkeleton';
@@ -52,6 +52,15 @@ function KpiGrid() {
   const [draggedKpiId, setDraggedKpiId] = useState(null);
   const [savedKpiOrder, setSavedKpiOrder] = useState(() => loadKpiOrder(role));
   const [draftKpiOrder, setDraftKpiOrder] = useState(savedKpiOrder);
+  const previousIsEditMode = React.useRef(isEditMode);
+
+  useEffect(() => {
+    if (previousIsEditMode.current && !isEditMode) {
+      setDraftKpiOrder(savedKpiOrder);
+      dispatch(setIsDirty(false));
+    }
+    previousIsEditMode.current = isEditMode;
+  }, [isEditMode, savedKpiOrder, dispatch]);
 
   useEffect(() => {
     const savedOrder = loadKpiOrder(role);
@@ -71,12 +80,19 @@ function KpiGrid() {
       dispatch(setIsDirty(false));
     };
 
+    const handlePreviewDefault = () => {
+      setDraftKpiOrder([]);
+      dispatch(setIsDirty(true));
+    };
+
     window.addEventListener('save-layout', handleSaveLayout);
     window.addEventListener('cancel-layout', handleCancelLayout);
+    window.addEventListener('dashboard:preview-default', handlePreviewDefault);
 
     return () => {
       window.removeEventListener('save-layout', handleSaveLayout);
       window.removeEventListener('cancel-layout', handleCancelLayout);
+      window.removeEventListener('dashboard:preview-default', handlePreviewDefault);
     };
   }, [dispatch, draftKpiOrder, role, savedKpiOrder]);
 

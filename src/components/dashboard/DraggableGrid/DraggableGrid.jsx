@@ -11,6 +11,7 @@ import {
   ORIGINAL_POSITIONS,
   selectVisibility,
   setWidgetVisibility,
+  revertVisibility,
 } from '../../../features/widgetVisibility/widgetVisibilitySlice';
 import { selectIsEditMode, setIsDirty } from '../../../features/ui/uiSlice';
 import { loadLayout, saveLayout } from '../../../utils/layoutStorage';
@@ -131,7 +132,7 @@ const sanitizeLayoutItems = (items = [], instances = [], breakpoint = 'lg') => {
         } else if (type.startsWith('kpi-')) {
           nextW = Math.max(item.w ?? original.w ?? 2, 2); // keep it small on md
         } else {
-          nextW = Math.max(nextW, 6);
+          nextW = Math.max(nextW, 4);
         }
       }
       
@@ -203,7 +204,7 @@ const fitItemToBreakpoint = (item, breakpoint) => {
     } else if (item.i.includes('kpi-')) {
       width = Math.max(item.w ?? 2, 2);
     } else {
-      width = Math.max(width, 6);
+      width = Math.max(width, 4);
     }
   }
   
@@ -539,16 +540,15 @@ export default function DraggableGrid({ widgets = [] }) {
   }, []);
 
   useEffect(() => {
-    const handleResetLayout = () => {
+    const handlePreviewDefault = () => {
       const defaultState = createDefaultDashboardState(availableTypes);
-      setSavedState(defaultState);
       setDraftState(defaultState);
-      dispatch(setIsDirty(false));
+      dispatch(setIsDirty(true));
       scheduleChartResize();
     };
 
-    window.addEventListener('dashboard:reset-layout', handleResetLayout);
-    return () => window.removeEventListener('dashboard:reset-layout', handleResetLayout);
+    window.addEventListener('dashboard:preview-default', handlePreviewDefault);
+    return () => window.removeEventListener('dashboard:preview-default', handlePreviewDefault);
   }, [availableTypes, dispatch]);
 
   useEffect(() => {
@@ -603,11 +603,13 @@ export default function DraggableGrid({ widgets = [] }) {
       setSavedState(draftState);
       saveLayout(draftState, role);
       dispatch(setIsDirty(false));
+      dispatch(clearDraftDefaultFlag());
       scheduleChartResize();
     };
 
     const handleCancelLayout = () => {
       setDraftState(savedState);
+      dispatch(revertVisibility());
       dispatch(setIsDirty(false));
       scheduleChartResize();
     };
@@ -620,6 +622,17 @@ export default function DraggableGrid({ widgets = [] }) {
       window.removeEventListener('cancel-layout', handleCancelLayout);
     };
   }, [dispatch, draftState, role, savedState]);
+
+  const previousIsEditMode = React.useRef(isEditMode);
+  useEffect(() => {
+    if (previousIsEditMode.current && !isEditMode) {
+      setDraftState(savedState);
+      dispatch(revertVisibility());
+      dispatch(setIsDirty(false));
+      scheduleChartResize();
+    }
+    previousIsEditMode.current = isEditMode;
+  }, [isEditMode, savedState, dispatch]);
 
   useEffect(() => {
     if (!containerRef.current) return undefined;
@@ -672,6 +685,7 @@ export default function DraggableGrid({ widgets = [] }) {
 
       return { widgets: nextWidgets, layouts: nextLayouts };
     });
+    dispatch(setIsDirty(true));
     scheduleChartResize();
   }, [dispatch, role]);
 
@@ -722,6 +736,7 @@ export default function DraggableGrid({ widgets = [] }) {
     });
 
     dispatch(setWidgetVisibility({ id: widgetType, visible: true, role }));
+    dispatch(setIsDirty(true));
     scheduleChartResize();
   }, [dispatch, role, widgetMap]);
 
