@@ -12,10 +12,7 @@ test.describe('Widget Yönetimi (Edit Mod)', () => {
   test('edit modda widget placeholder\'lar görünüyor', async ({ page }) => {
     // Gerçek ECharts yerine placeholder gösterilmeli
     const placeholders = page.locator('[data-testid="widget-placeholder"]');
-    // data-testid yoksa text ile:
-    await expect(
-      page.getByText(/düzenleme modunda önizleme devre dışı/i).first()
-    ).toBeVisible({ timeout: 5000 });
+    await expect(placeholders.first()).toBeVisible({ timeout: 5000 });
   });
 
   test('Kaydet butonu görünüyor', async ({ page }) => {
