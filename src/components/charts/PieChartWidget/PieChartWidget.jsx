@@ -5,7 +5,6 @@ import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 import { useTranslation } from 'react-i18next';
 
 function PieChartWidget({ data, height = '300px' }) {
@@ -72,10 +71,8 @@ function PieChartWidget({ data, height = '300px' }) {
     return () => observer.disconnect();
   }, [isEditMode, option]);
 
-  if (isEditMode) return <WidgetPlaceholder widgetId="deviceStatusChart" />;
-
   return (
-    <div ref={containerRef} className="relative h-full min-h-[120px] w-full" style={{ height }}>
+    <div ref={containerRef} className="relative h-full min-h-[120px] w-full" style={{ height, pointerEvents: isEditMode ? 'none' : 'auto' }}>
       <ReactECharts
         ref={chartRef}
         option={option}

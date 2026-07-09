@@ -447,6 +447,7 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
           '&:hover .remove-btn': { opacity: 1 },
         }}
       >
+        {children}
         {isEditMode && (
           <IconButton
             className="remove-btn"
@@ -457,7 +458,7 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
               position: 'absolute',
               top: 6,
               right: 6,
-              zIndex: 10,
+              zIndex: 50,
               bgcolor: 'background.paper',
               boxShadow: 1,
               p: 0.4, 
@@ -469,7 +470,6 @@ const GridItemWrapper = React.forwardRef(function GridItemWrapper(
             <CloseIcon sx={{ fontSize: 14 }} />
           </IconButton>
         )}
-        {children}
       </Box>
     </div>
   );
@@ -750,6 +750,9 @@ export default function DraggableGrid({ widgets = [] }) {
         minHeight: { xs: 'auto', lg: 0 },
         overflowX: 'visible',
         overflowY: 'visible',
+        '& .react-grid-layout': {
+          minHeight: '100%',
+        },
         '& .react-grid-item.react-grid-placeholder': {
           bgcolor: 'primary.main',
           opacity: 0.08,

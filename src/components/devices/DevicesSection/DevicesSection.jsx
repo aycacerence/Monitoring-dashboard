@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { selectRole } from '../../../features/auth/authSlice';
 import LockIcon from '@mui/icons-material/Lock';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Box, Typography } from '@mui/material';
 
@@ -66,12 +65,13 @@ function DevicesSection() {
     return () => window.removeEventListener('resize', calculateItemsPerPage);
   }, [calculateItemsPerPage, isEditMode]);
 
-  if (isEditMode) return <WidgetPlaceholder widgetId="devicesTable" />;
+
 
   if (role !== 'admin') {
     return (
-      <Card hoverable className="h-full flex flex-col overflow-hidden" noPadding>
-        <div className="flex shrink-0 items-center px-4 py-4 border-b border-slate-100 dark:border-slate-800">
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Card hoverable className="h-full flex flex-col overflow-hidden flex-1" noPadding>
+          <div className="flex shrink-0 items-center px-4 py-4 border-b border-slate-100 dark:border-slate-800">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
             {t("Cihaz Yönetimi", "Cihaz Yönetimi")}
           </h2>
@@ -109,6 +109,7 @@ function DevicesSection() {
           </span>
         </Box>
       </Card>
+      </div>
     );
   }
 

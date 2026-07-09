@@ -5,7 +5,6 @@ import { useTheme } from '@mui/material/styles';
 import { getCommonChartOptions } from '../../../utils/charts';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function LineChartWidget({ data, seriesName, color, height = '300px' }) {
   const theme = useTheme();
@@ -73,10 +72,8 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
     return () => observer.disconnect();
   }, [isEditMode, option]);
 
-  if (isEditMode) return <WidgetPlaceholder widgetId="cpuChart" />;
-
   return (
-    <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
+    <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height, pointerEvents: isEditMode ? 'none' : 'auto' }}>
       <ReactECharts
         ref={chartRef}
         option={option}

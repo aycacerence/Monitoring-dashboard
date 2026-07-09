@@ -4,15 +4,13 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function AlertsCard({ count, children }) {
   const { t } = useTranslation();
   const isEditMode = useAppSelector(selectIsEditMode);
-  if (isEditMode) return <WidgetPlaceholder widgetId="alertsCard" />;
-
   return (
-    <Card hoverable className="flex h-auto flex-col overflow-hidden lg:h-full" noPadding>
+    <div style={{ height: '100%', width: '100%', pointerEvents: isEditMode ? 'none' : 'auto', display: 'flex', flexDirection: 'column' }}>
+      <Card hoverable className="flex h-auto flex-col overflow-hidden lg:h-full flex-1" noPadding>
       <div className="flex shrink-0 items-center justify-between px-4 pt-4 mb-2">
         <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('alerts.title')}</h2>
         <div className="flex items-center justify-center bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50 font-bold text-sm h-7 px-3 rounded-full border border-transparent">
@@ -35,6 +33,7 @@ function AlertsCard({ count, children }) {
         </a>
       </div>
     </Card>
+    </div>
   );
 }
 

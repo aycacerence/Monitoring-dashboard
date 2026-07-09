@@ -4,7 +4,6 @@ import ResourceUsageCard from '../ResourceUsageCard/ResourceUsageCard';
 import ErrorState from '../../common/ErrorState/ErrorState';
 import { fetchResourceUsage } from '../../../features/dashboard/resourceUsageSlice';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 const editModeResourceUsage = [
   { id: 'cpu', label: 'CPU', percentage: 0, changePercentage: 0, changeDirection: 'neutral', icon: 'cpu' },
@@ -16,7 +15,6 @@ function ResourceUsageList() {
   const dispatch = useAppDispatch();
   const { data, status, error } = useAppSelector((state) => state.resourceUsage);
   const isEditMode = useAppSelector(selectIsEditMode);
-  if (isEditMode) return <WidgetPlaceholder widgetId="resourceUsage" />;
 
   const showLoadingState = !isEditMode && (status === 'loading' || status === 'idle');
   const showErrorState = !isEditMode && status === 'failed';
@@ -37,7 +35,8 @@ function ResourceUsageList() {
   }
 
   return (
-    <div className="grid min-h-max gap-4 transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-rows-3 lg:overflow-hidden">
+    <div style={{ pointerEvents: isEditMode ? 'none' : 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div className="grid min-h-max gap-4 transition-opacity duration-500 ease-in opacity-100 lg:h-full lg:min-h-0 lg:grid-rows-3 lg:overflow-hidden flex-1">
       {items.map((item) => (
         <ResourceUsageCard
           key={item.id}
@@ -48,6 +47,7 @@ function ResourceUsageList() {
           icon={item.icon}
         />
       ))}
+      </div>
     </div>
   );
 }

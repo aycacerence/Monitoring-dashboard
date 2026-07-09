@@ -3,15 +3,13 @@ import { useTranslation } from 'react-i18next';
 import Card from '../../common/Card';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function SystemSummaryCard({ items }) {
   const { t } = useTranslation();
   const isEditMode = useAppSelector(selectIsEditMode);
-  if (isEditMode) return <WidgetPlaceholder widgetId="systemSummary" />;
-
   return (
-    <Card hoverable className="h-auto lg:h-full flex flex-col" noPadding>
+    <div style={{ height: '100%', width: '100%', pointerEvents: isEditMode ? 'none' : 'auto', display: 'flex', flexDirection: 'column' }}>
+      <Card hoverable className="h-auto lg:h-full flex flex-col flex-1" noPadding>
       <div className="shrink-0 px-4 pt-4 mb-2">
         <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sidebar.widgets.systemSummary', 'System Summary')}</h2>
       </div>
@@ -33,6 +31,7 @@ function SystemSummaryCard({ items }) {
         ))}
       </div>
     </Card>
+    </div>
   );
 }
 

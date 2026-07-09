@@ -28,7 +28,7 @@ function KpiCard({
 
   useEffect(() => {
     const container = sparklineRef.current;
-    if (!container || isEditMode) return undefined;
+    if (!container) return undefined;
 
     const resizeChart = () => {
       chartRef.current?.getEchartsInstance?.()?.resize();
@@ -38,7 +38,7 @@ function KpiCard({
     requestAnimationFrame(resizeChart);
 
     return () => observer.disconnect();
-  }, [isEditMode]);
+  }, [sparklineData, color]);
 
   const chartOptions = {
     grid: {
@@ -90,7 +90,7 @@ function KpiCard({
   };
 
   return (
-    <Card data-testid="kpi-card" hoverable className="flex h-auto flex-col justify-between lg:h-full p-3 lg:p-2.5">
+    <Card data-testid="kpi-card" hoverable className="flex h-full flex-col justify-between p-3 lg:p-2.5">
       <div className="mb-2 flex items-start justify-between lg:mb-0.5">
         <div className="flex-1 min-w-0 pr-1.5">
           <p 
@@ -99,18 +99,10 @@ function KpiCard({
           >
             {title}
           </p>
-          {isEditMode ? (
-            <div className="mt-2 lg:mt-1">
-              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 lg:text-[10px] leading-tight line-clamp-2">
-                {t('sidebar.editModePreviewDisabled', 'Düzenleme modunda önizleme devre dışı')}
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-baseline gap-1 flex-wrap">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white lg:text-lg xl:text-xl truncate">{value}</h3>
-              {unit && <span className="text-xs font-medium text-slate-500 dark:text-slate-400 lg:text-[10px] xl:text-xs">{unit}</span>}
-            </div>
-          )}
+          <div className="flex items-baseline gap-1 flex-wrap mt-1">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white lg:text-lg xl:text-xl truncate">{value}</h3>
+            {unit && <span className="text-xs font-medium text-slate-500 dark:text-slate-400 lg:text-[10px] xl:text-xs">{unit}</span>}
+          </div>
         </div>
         <Box
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg lg:h-7 lg:w-7 xl:h-9 xl:w-9"
@@ -120,28 +112,24 @@ function KpiCard({
         </Box>
       </div>
       
-      {!isEditMode && (
-        <>
-          <div ref={sparklineRef} className="my-2 min-h-[40px] flex-1 lg:my-0.5 lg:min-h-[20px] xl:min-h-[28px]">
-            {sparklineData && sparklineData.length > 0 && (
-              <ReactECharts
-                ref={chartRef}
-                option={chartOptions}
-                style={{ height: '100%', width: '100%' }}
-                opts={{ renderer: 'svg' }}
-              />
-            )}
-          </div>
+      <div ref={sparklineRef} className="my-2 min-h-[40px] flex-1 lg:my-0.5 lg:min-h-[20px] xl:min-h-[28px]" style={{ pointerEvents: isEditMode ? 'none' : 'auto' }}>
+        {sparklineData && sparklineData.length > 0 && (
+          <ReactECharts
+            ref={chartRef}
+            option={chartOptions}
+            style={{ height: '100%', width: '100%' }}
+            opts={{ renderer: 'svg' }}
+          />
+        )}
+      </div>
 
-          <div className="mt-2 lg:mt-0.5">
-            <TrendIndicator
-              percentage={changePercentage}
-              direction={changeDirection}
-              label={changeLabel}
-            />
-          </div>
-        </>
-      )}
+      <div className="mt-2 lg:mt-0.5">
+        <TrendIndicator
+          percentage={changePercentage}
+          direction={changeDirection}
+          label={changeLabel}
+        />
+      </div>
     </Card>
   );
 }

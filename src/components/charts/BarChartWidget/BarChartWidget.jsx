@@ -6,7 +6,6 @@ import { getCommonChartOptions } from '../../../utils/charts';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../app/hooks';
 import { selectIsEditMode } from '../../../features/ui/uiSlice';
-import WidgetPlaceholder from '../../common/WidgetPlaceholder/WidgetPlaceholder';
 
 function BarChartWidget({ data, height = '300px' }) {
   const { t } = useTranslation();
@@ -79,10 +78,8 @@ function BarChartWidget({ data, height = '300px' }) {
     return () => observer.disconnect();
   }, [isEditMode, option]);
 
-  if (isEditMode) return <WidgetPlaceholder widgetId="networkChart" />;
-
   return (
-    <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height }}>
+    <div ref={containerRef} className="flex-1 min-h-[160px] relative w-full mt-2 lg:min-h-0" style={{ height, pointerEvents: isEditMode ? 'none' : 'auto' }}>
       <ReactECharts
         ref={chartRef}
         option={option}

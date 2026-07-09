@@ -9,10 +9,10 @@ test.describe('Widget Yönetimi (Edit Mod)', () => {
     await expect(page.getByText(/widget yönetimi|panel ayarları/i).first()).toBeVisible();
   });
 
-  test('edit modda widget placeholder\'lar görünüyor', async ({ page }) => {
-    // Gerçek ECharts yerine placeholder gösterilmeli
-    const placeholders = page.locator('[data-testid="widget-placeholder"]');
-    await expect(placeholders.first()).toBeVisible({ timeout: 5000 });
+  test('edit modda gerçek widgetlar görünüyor', async ({ page }) => {
+    // SVGs yerine gerçek componentler yüklenmeli
+    const widgets = page.locator('[data-testid="kpi-card"]');
+    await expect(widgets.first()).toBeVisible({ timeout: 5000 });
   });
 
   test('Kaydet butonu görünüyor', async ({ page }) => {

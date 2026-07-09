@@ -138,19 +138,16 @@ function DashboardPage() {
       { label: t('Kritik Olaylar'), value: '—', sublabel: t('Son 24 saat') },
       { label: t('Başarılı İşlemler'), value: '—', sublabel: t('Saatlik ortalama') },
     ];
-    const showKpiLoadingState = !isEditMode && (kpiStatus === 'loading' || kpiStatus === 'idle');
-    const showKpiErrorState = !isEditMode && kpiStatus === 'failed';
-    const showChartLoadingState = !isEditMode && (chartsStatus === 'loading' || chartsStatus === 'idle');
-    const showChartErrorState = !isEditMode && chartsStatus === 'failed';
-    const showAlertsLoadingState = !isEditMode && (alertsStatus === 'loading' || alertsStatus === 'idle');
-    const showAlertsErrorState = !isEditMode && alertsStatus === 'failed';
-    const showSummaryLoadingState = !isEditMode && (summaryStatus === 'loading' || summaryStatus === 'idle');
-    const showSummaryErrorState = !isEditMode && summaryStatus === 'failed';
+    const showKpiLoadingState = kpiStatus === 'loading' || kpiStatus === 'idle';
+    const showKpiErrorState = kpiStatus === 'failed';
+    const showChartLoadingState = chartsStatus === 'loading' || chartsStatus === 'idle';
+    const showChartErrorState = chartsStatus === 'failed';
+    const showAlertsLoadingState = alertsStatus === 'loading' || alertsStatus === 'idle';
+    const showAlertsErrorState = alertsStatus === 'failed';
+    const showSummaryLoadingState = summaryStatus === 'loading' || summaryStatus === 'idle';
+    const showSummaryErrorState = summaryStatus === 'failed';
 
     const getKpiWidgetContent = (kpiId, fallbackTitle) => {
-      if (isEditMode) {
-        return <WidgetPlaceholder widgetId={`kpi-${kpiId}`} />;
-      }
       if (showKpiErrorState) {
         return <ErrorState message={kpiError || "KPI verileri yüklenirken bir hata oluştu."} onRetry={() => dispatch(fetchKpis())} />;
       }
@@ -212,7 +209,7 @@ function DashboardPage() {
       {
         id: WIDGET_IDS.CPU_CHART,
         title: t('sidebar.widgets.cpuChart', 'CPU Kullanımı'),
-        children: isEditMode ? <WidgetPlaceholder widgetId={WIDGET_IDS.CPU_CHART} /> : showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.cpuUsageTitle')) : (
+        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.cpuUsageTitle')) : (
           <ChartCard title={t('charts.cpuUsageTitle')} subtitle={t('charts.cpuUsageSubtitle')} infoText={t('charts.cpuUsageInfo')}>
             <LineChartWidget data={chartsData.cpuUsage || []} seriesName={t('charts.cpuUsageSeries', 'CPU Kullanımı')} color="#8b5cf6" height="100%" />
           </ChartCard>
@@ -221,7 +218,7 @@ function DashboardPage() {
       {
         id: WIDGET_IDS.NETWORK_CHART,
         title: t('sidebar.widgets.networkChart', 'Ağ Trafiği'),
-        children: isEditMode ? <WidgetPlaceholder widgetId={WIDGET_IDS.NETWORK_CHART} /> : showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.networkTrafficTitle')) : (
+        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.networkTrafficTitle')) : (
           <ChartCard title={t('charts.networkTrafficTitle')} subtitle={t('charts.networkTrafficSubtitle')} infoText={t('charts.networkTrafficInfo')}>
             <BarChartWidget data={chartsData.networkTraffic || []} height="100%" />
           </ChartCard>
@@ -230,7 +227,7 @@ function DashboardPage() {
       {
         id: WIDGET_IDS.DEVICE_STATUS_CHART,
         title: t('sidebar.widgets.deviceStatusChart', 'Cihaz Durumları'),
-        children: isEditMode ? <WidgetPlaceholder widgetId={WIDGET_IDS.DEVICE_STATUS_CHART} /> : showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.deviceStatusTitle')) : (
+        children: showChartErrorState ? chartError() : showChartLoadingState ? chartSkeleton(t('charts.deviceStatusTitle')) : (
           <ChartCard title={t('charts.deviceStatusTitle')} subtitle={t('charts.deviceStatusSubtitle')}>
             <div className="flex h-full min-h-[240px] flex-col items-center justify-center gap-5 sm:min-h-[220px] sm:flex-row lg:min-h-0">
               <div className="flex shrink-0 justify-center sm:w-36">
