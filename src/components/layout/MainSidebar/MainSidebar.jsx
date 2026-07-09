@@ -136,7 +136,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
             <ListItemIcon sx={navIconStyle}>
               <HomeOutlinedIcon />
             </ListItemIcon>
-            {!isCollapsed && <ListItemText primary={t('mainSidebar.controlPanel', 'Kontrol Paneli')} slotProps={{ primary: { fontSize: '0.875rem' } }} />}
+            {!isCollapsed && <ListItemText primary={t('mainSidebar.controlPanel', 'Kontrol Paneli')} primaryTypographyProps={{ fontSize: '0.875rem' }} />}
             {!isCollapsed && (openAccordion.kontrolPaneli ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />)}
           </ListItemButton>
           {!isCollapsed && (
@@ -153,7 +153,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
                   <ListItemIcon sx={navIconStyle}>
                     <DashboardOutlinedIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary={t('mainSidebar.panel', 'Panel')} slotProps={{ primary: { fontSize: '0.875rem' } }} />
+                  <ListItemText primary={t('mainSidebar.panel', 'Panel')} primaryTypographyProps={{ fontSize: '0.875rem' }} />
                 </ListItemButton>
                 
                 {/* PANEL AYARLARI -> Toggles WidgetSidebar */}
@@ -171,7 +171,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
                   <ListItemIcon sx={navIconStyle}>
                     <SettingsOutlinedIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary={t('mainSidebar.panelSettings', 'Panel Ayarları')} slotProps={{ primary: { fontSize: '0.875rem' } }} />
+                  <ListItemText primary={t('mainSidebar.panelSettings', 'Panel Ayarları')} primaryTypographyProps={{ fontSize: '0.875rem' }} />
                 </ListItemButton>
               </List>
             </Collapse>
@@ -185,7 +185,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
           ].map((item, idx) => (
             <ListItemButton key={idx} sx={navItemStyle}>
               <ListItemIcon sx={navIconStyle}>{item.icon}</ListItemIcon>
-              {!isCollapsed && <ListItemText primary={item.text} slotProps={{ primary: { fontSize: '0.875rem' } }} />}
+              {!isCollapsed && <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.875rem' }} />}
               {!isCollapsed && item.expandable && (
                 <ExpandMore fontSize="small" />
               )}

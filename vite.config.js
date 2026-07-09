@@ -1,12 +1,16 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@mui/icons-material': '@mui/icons-material/esm',
+    },
+  },
   define: {
     'process.env.NODE_ENV': JSON.stringify(nodeEnv),
   },
