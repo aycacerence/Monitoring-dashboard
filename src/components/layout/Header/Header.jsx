@@ -282,6 +282,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
             onClick={onRefresh}
             aria-label="Verileri Yenile"
             sx={{
+              display: isSettingsPage ? 'none' : 'flex',
               backgroundColor: '#ffffff',
               color: '#000000',
               '&:hover': { backgroundColor: '#f1f1f1' },
