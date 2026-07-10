@@ -7,6 +7,8 @@ export function usePageTitle() {
 
   const PAGE_MAP = {
     '/settings': { title: t('pageTitles.settings'),  subtitle: t('pageSubtitles.settings')  },
+    '/pid/builder': { title: t('pageTitles.pidBuilder'), subtitle: t('pageSubtitles.pidBuilder') },
+    '/pid/monitoring': { title: t('pageTitles.pidMonitoring'), subtitle: t('pageSubtitles.pidMonitoring') },
     '/':         { title: t('pageTitles.dashboard'), subtitle: t('pageSubtitles.dashboard') },
   };
 

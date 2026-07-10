@@ -1,11 +1,15 @@
 {
   "pageTitles": {
     "dashboard": "Monitoring Dashboard",
-    "settings": "Dashboard Settings"
+    "settings": "Dashboard Settings",
+    "pidBuilder": "P&ID Builder Module",
+    "pidMonitoring": "Live Process Monitoring"
   },
   "pageSubtitles": {
     "dashboard": "System overview and statistics",
-    "settings": "Customize your dashboard"
+    "settings": "Customize your dashboard",
+    "pidBuilder": "Design flow diagrams and system architecture",
+    "pidMonitoring": "Real-time sensor and device values"
   },
   "header": {
     "title": "Monitoring Dashboard",
@@ -97,7 +101,9 @@
     "controlPanel": "Control Panel",
     "panel": "Dashboard",
     "panelSettings": "Panel Settings",
-    "analytics": "Analytics",
+    "pid": "P&ID",
+    "pidBuilder": "Builder",
+    "pidMonitoring": "Live Monitoring",
     "settings": "Settings",
     "profile": "Profile",
     "sunny": "Sunny"

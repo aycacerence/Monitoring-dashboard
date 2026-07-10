@@ -1,11 +1,15 @@
 {
   "pageTitles": {
     "dashboard": "İzleme Paneli",
-    "settings": "Panel Ayarları"
+    "settings": "Panel Ayarları",
+    "pidBuilder": "P&ID Tasarım Modülü",
+    "pidMonitoring": "Canlı Proses İzleme"
   },
   "pageSubtitles": {
     "dashboard": "Sistem genel durumu ve istatistikler",
-    "settings": "Pano kişiselleştirme"
+    "settings": "Pano kişiselleştirme",
+    "pidBuilder": "Akış diyagramı ve sistem tasarımı oluşturun",
+    "pidMonitoring": "Gerçek zamanlı sensör ve cihaz değerleri"
   },
   "header": {
     "title": "İzleme Paneli",
@@ -97,7 +101,9 @@
     "controlPanel": "Kontrol Paneli",
     "panel": "Panel",
     "panelSettings": "Panel Ayarları",
-    "analytics": "Analiz",
+    "pid": "P&ID",
+    "pidBuilder": "Tasarım",
+    "pidMonitoring": "Canlı İzleme",
     "settings": "Ayarlar",
     "profile": "Profil",
     "sunny": "Güneşli"

@@ -26,6 +26,9 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import { useTranslation } from 'react-i18next';
 
 function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onCloseWidgetSidebar }) {
@@ -38,6 +41,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
 
   const [openAccordion, setOpenAccordion] = useState({
     kontrolPaneli: true,
+    pid: false,
   });
 
   // On mobile, default to collapsed
@@ -177,9 +181,50 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
             </Collapse>
           )}
 
+          {/* P&ID Modülü */}
+          <ListItemButton onClick={() => toggleAccordion('pid')} sx={navItemStyle}>
+            <ListItemIcon sx={navIconStyle}>
+              <AccountTreeOutlinedIcon />
+            </ListItemIcon>
+            {!isCollapsed && <ListItemText primary={t('mainSidebar.pid', 'P&ID')} primaryTypographyProps={{ fontSize: '0.875rem' }} />}
+            {!isCollapsed && (openAccordion.pid ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />)}
+          </ListItemButton>
+          {!isCollapsed && (
+            <Collapse in={openAccordion.pid} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton 
+                  selected={location.pathname === '/pid/builder'} 
+                  onClick={() => {
+                    navigate('/pid/builder');
+                    if (isMobile) setIsCollapsed(true);
+                  }} 
+                  sx={subItemStyle}
+                >
+                  <ListItemIcon sx={navIconStyle}>
+                    <EditOutlinedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={t('mainSidebar.pidBuilder', 'Tasarım')} primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                </ListItemButton>
+                
+                <ListItemButton 
+                  selected={location.pathname === '/pid/monitoring'}
+                  onClick={() => {
+                    navigate('/pid/monitoring');
+                    if (isMobile) setIsCollapsed(true);
+                  }} 
+                  sx={subItemStyle}
+                >
+                  <ListItemIcon sx={navIconStyle}>
+                    <TimelineOutlinedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={t('mainSidebar.pidMonitoring', 'Canlı İzleme')} primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          )}
+
           {/* Standalone Items */}
           {[
-            { text: t('mainSidebar.analytics', 'Analiz'), icon: <InsertChartOutlinedIcon />, expandable: true },
             { text: t('mainSidebar.settings', 'Ayarlar'), icon: <SettingsOutlinedIcon />, expandable: true },
             { text: t('mainSidebar.profile', 'Profil'), icon: <PersonOutlineOutlinedIcon />, expandable: false },
           ].map((item, idx) => (
