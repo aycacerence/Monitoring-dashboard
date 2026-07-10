@@ -51,6 +51,11 @@ function AppLayout() {
     window.dispatchEvent(new Event('resize'));
   };
 
+  const closeSidebarOnly = () => {
+    setSidebarOpen(false);
+    window.dispatchEvent(new Event('resize'));
+  };
+
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <MainSidebar 
@@ -66,7 +71,7 @@ function AppLayout() {
         <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
           <WidgetSidebar
             open={sidebarOpen}
-            onClose={requestViewMode}
+            onClose={closeSidebarOnly}
           />
           <Box
             key={role}

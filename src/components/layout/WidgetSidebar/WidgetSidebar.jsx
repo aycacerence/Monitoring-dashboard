@@ -105,7 +105,7 @@ function WidgetSidebar({ open, onClose }) {
         '& .MuiDrawer-paper': {
           width: 280,
           boxSizing: 'border-box',
-          position: 'static',
+          position: isMobile ? undefined : 'static',
           height: '100%',
         },
       }}

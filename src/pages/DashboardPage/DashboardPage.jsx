@@ -291,7 +291,7 @@ function DashboardPage() {
     <>
       <SplashScreen isVisible={isVisible} />
 
-      <PageContainer data-testid="dashboard-page" key={role} className="flex flex-1 h-full min-h-0 flex-col overflow-y-auto lg:overflow-hidden p-4">
+      <PageContainer data-testid="dashboard-page" key={role} className={`flex flex-1 h-full min-h-0 flex-col overflow-y-auto ${isEditMode ? 'overflow-x-auto' : 'lg:overflow-hidden'} p-4`}>
         <DraggableGrid widgets={dashboardWidgets} />
       </PageContainer>
     </>

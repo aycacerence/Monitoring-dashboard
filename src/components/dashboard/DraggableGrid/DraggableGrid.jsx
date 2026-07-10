@@ -747,6 +747,7 @@ export default function DraggableGrid({ widgets = [] }) {
       sx={{
         flex: { xs: '0 0 auto', lg: 1 },
         width: '100%',
+        minWidth: isEditMode ? { xs: 800, sm: 1000 } : 'auto',
         height: { xs: 'auto', lg: '100%' },
         minHeight: { xs: 'auto', lg: 0 },
         overflowX: 'visible',
