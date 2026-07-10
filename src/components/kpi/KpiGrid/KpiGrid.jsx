@@ -29,7 +29,9 @@ const loadKpiOrder = (role) => {
 const saveKpiOrder = (order, role) => {
   try {
     localStorage.setItem(getKpiOrderKey(role), JSON.stringify(order));
-  } catch {}
+  } catch (error) {
+    throw new Error('Kaydetme başarısız oldu.');
+  }
 };
 
 const sortKpisByOrder = (items, order) => {
@@ -69,10 +71,16 @@ function KpiGrid() {
   }, [role]);
 
   useEffect(() => {
-    const handleSaveLayout = () => {
-      saveKpiOrder(draftKpiOrder, role);
-      setSavedKpiOrder(draftKpiOrder);
-      dispatch(setIsDirty(false));
+    const handleSaveLayout = (e) => {
+      try {
+        saveKpiOrder(draftKpiOrder, role);
+        setSavedKpiOrder(draftKpiOrder);
+        dispatch(setIsDirty(false));
+      } catch (err) {
+        if (e && e.detail && typeof e.detail.reportError === 'function') {
+          e.detail.reportError(err);
+        }
+      }
     };
 
     const handleCancelLayout = () => {

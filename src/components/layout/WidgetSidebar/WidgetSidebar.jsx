@@ -15,6 +15,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SpeedIcon from '@mui/icons-material/Speed';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import {
   KpiPreview, LineChartPreview, BarChartPreview, PieChartPreview,
   AlertsPreview, SystemSummaryPreview, DevicesPreview, ResourceUsagePreview,
@@ -55,9 +56,24 @@ function WidgetSidebar({ open, onClose }) {
   };
 
   const handleConfirmSave = () => {
-    window.dispatchEvent(new Event('save-layout'));
-    dispatch(commitVisibility({ role }));
-    setSaveConfirmOpen(false);
+    let hasError = false;
+    
+    window.dispatchEvent(new CustomEvent('save-layout', {
+      detail: {
+        reportError: () => {
+          hasError = true;
+        }
+      }
+    }));
+    
+    if (hasError) {
+      toast.error(t('sidebar.saveError', 'Kaydetme başarısız oldu.'));
+      setSaveConfirmOpen(false); // Sadece dialogu kapatıyoruz, isDirty true kalmaya devam edecek
+    } else {
+      dispatch(commitVisibility({ role }));
+      setSaveConfirmOpen(false);
+      toast.success(t('sidebar.saveSuccess', 'Başarıyla kaydedildi.'));
+    }
   };
 
   const widgets = [
@@ -246,11 +262,6 @@ function WidgetSidebar({ open, onClose }) {
                   bgcolor: 'background.paper',
                   position: 'relative',
                   userSelect: 'none',
-                  '&:hover': isAlreadyVisible ? {} : {
-                    borderColor: 'primary.dark',
-                    boxShadow: 2,
-                    transform: 'translateY(-1px)',
-                  },
                   '&:active': {
                     cursor: 'grabbing',
                   },

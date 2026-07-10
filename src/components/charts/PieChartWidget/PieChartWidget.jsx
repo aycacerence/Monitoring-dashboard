@@ -28,7 +28,7 @@ function PieChartWidget({ data, height = '300px' }) {
 
     return {
       tooltip: commonOptions.tooltip,
-      animation: commonOptions.animation,
+      animation: !isEditMode,
       animationDuration: commonOptions.animationDuration,
       animationEasing: commonOptions.animationEasing,
       animationDelay: commonOptions.animationDelay,

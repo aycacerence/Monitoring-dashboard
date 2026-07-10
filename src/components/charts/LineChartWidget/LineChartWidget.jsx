@@ -21,6 +21,7 @@ function LineChartWidget({ data, seriesName, color, height = '300px' }) {
 
     return {
       ...base,
+      animation: !isEditMode,
       grid: {
         top: '15%',
         bottom: '10%',

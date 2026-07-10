@@ -4,6 +4,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { selectColorMode } from './features/theme/themeSlice';
 import { getTheme } from './theme/theme';
 import AppRouter from './router/AppRouter';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const mode = useSelector(selectColorMode);
@@ -23,6 +24,7 @@ function App() {
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
+      <Toaster position="top-center" />
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
         <AppRouter />
       </div>

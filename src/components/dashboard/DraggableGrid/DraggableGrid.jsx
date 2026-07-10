@@ -357,24 +357,23 @@ const getLayoutRows = (items = []) =>
 
 const getAvailableGridHeight = (container, isEditMode) => {
   if (!container) return 0;
-  const containerHeight = container.clientHeight || 0;
   const rect = container.getBoundingClientRect();
   const viewportHeight = window.innerHeight || 0;
   const viewportSpace = rect?.top ? viewportHeight - rect.top : 0;
 
+  if (isEditMode) {
+    // In edit mode, depend only on viewport space to avoid infinite resize loops
+    return Math.max(viewportSpace, 500); 
+  }
+
+  const containerHeight = container.clientHeight || 0;
   return Math.max(containerHeight, viewportSpace, 0);
 };
 
 const calculateRowHeight = (container, layouts, isEditMode) => {
   if (isEditMode) {
-    const availableHeight = getAvailableGridHeight(container, isEditMode);
-    const verticalMargins = Math.max(EDIT_BOARD_ROWS - 1, 0) * GRID_MARGIN[1];
-    const nextRowHeight = Math.floor((availableHeight - verticalMargins) / EDIT_BOARD_ROWS);
-
-    return Math.max(
-      MIN_EDIT_ROW_HEIGHT,
-      Math.min(MAX_EDIT_ROW_HEIGHT, Number.isFinite(nextRowHeight) ? nextRowHeight : MAX_EDIT_ROW_HEIGHT),
-    );
+    // Use a fixed comfortable row height in edit mode so widgets never get squished
+    return MAX_EDIT_ROW_HEIGHT;
   }
 
   const availableHeight = getAvailableGridHeight(container, isEditMode);
@@ -526,7 +525,6 @@ export default function DraggableGrid({ widgets = [] }) {
     const handleDragEnd = () => {
       droppingWidgetTypeRef.current = null;
       setActiveDropType(null);
-      setDroppingItem({ i: DROPPING_ITEM_ID, w: 4, h: 4 });
     };
 
     window.addEventListener('rgl:dragstart', handleDragStart);
@@ -599,12 +597,16 @@ export default function DraggableGrid({ widgets = [] }) {
   }, [dispatch, savedState, draftState]);
 
   useEffect(() => {
-    const handleSaveLayout = () => {
-      setSavedState(draftState);
-      saveLayout(draftState, role);
-      dispatch(setIsDirty(false));
-      dispatch(clearDraftDefaultFlag());
-      scheduleChartResize();
+    const handleSaveLayout = (e) => {
+      try {
+        saveLayout(draftState, role);
+        setSavedState(draftState);
+        dispatch(setIsDirty(false));
+      } catch (err) {
+        if (e && e.detail && typeof e.detail.reportError === 'function') {
+          e.detail.reportError(err);
+        }
+      }
     };
 
     const handleCancelLayout = () => {
@@ -694,7 +696,6 @@ export default function DraggableGrid({ widgets = [] }) {
     const widgetType = droppingWidgetTypeRef.current || eventWidgetType;
     droppingWidgetTypeRef.current = null;
     setActiveDropType(null);
-    setDroppingItem({ i: DROPPING_ITEM_ID, w: 4, h: 4 });
     if (!widgetType || !ORIGINAL_POSITIONS[widgetType] || !widgetMap[widgetType]) return;
 
     setDraftState((currentState) => {

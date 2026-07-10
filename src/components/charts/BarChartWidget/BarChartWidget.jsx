@@ -24,6 +24,7 @@ function BarChartWidget({ data, height = '300px' }) {
 
     return {
       ...base,
+      animation: !isEditMode,
       legend: {
         data: [t('charts.incoming', 'Gelen'), t('charts.outgoing', 'Giden')],
         top: 0,
