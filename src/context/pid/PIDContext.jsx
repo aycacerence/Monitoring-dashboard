@@ -11,9 +11,20 @@ export const usePID = () => {
   return context;
 };
 
+const loadSavedFlow = () => {
+  try {
+    const saved = localStorage.getItem('pid_saved_flow');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.error('Local storage okuma hatası', e);
+  }
+  return { nodes: [], edges: [] };
+};
+
 export const PIDProvider = ({ children }) => {
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+  const initialData = loadSavedFlow();
+  const [nodes, setNodes] = useState(initialData.nodes);
+  const [edges, setEdges] = useState(initialData.edges);
   const [selectedNode, setSelectedNode] = useState(null);
 
   const [past, setPast] = useState([]);
@@ -113,11 +124,11 @@ export const PIDProvider = ({ children }) => {
 
   const saveFlow = useCallback(() => {
     const flow = { nodes, edges };
-    localStorage.setItem('pid_builder_flow', JSON.stringify(flow));
+    localStorage.setItem('pid_saved_flow', JSON.stringify(flow));
   }, [nodes, edges]);
 
   const restoreFlow = useCallback(() => {
-    const savedFlow = localStorage.getItem('pid_builder_flow');
+    const savedFlow = localStorage.getItem('pid_saved_flow');
     if (savedFlow) {
       try {
         const parsedFlow = JSON.parse(savedFlow);
@@ -134,6 +145,7 @@ export const PIDProvider = ({ children }) => {
     setNodes([]);
     setEdges([]);
     setSelectedNode(null);
+    localStorage.removeItem('pid_saved_flow');
   }, [pushHistory]);
 
   const value = {
