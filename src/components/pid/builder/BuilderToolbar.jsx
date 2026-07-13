@@ -4,14 +4,10 @@ import toast from 'react-hot-toast';
 import {
   AppBar,
   Toolbar,
-  ToggleButton,
-  ToggleButtonGroup,
   Button,
   Box,
 } from '@mui/material';
 import {
-  Mouse,
-  Timeline,
   Delete,
   Undo,
   Redo,
@@ -19,10 +15,11 @@ import {
   Save,
 } from '@mui/icons-material';
 
-const BuilderToolbar = ({ onModeChange }) => {
-  const [mode, setMode] = useState('selection');
+const BuilderToolbar = () => {
 
   const {
+    selectedNode,
+    deleteNode,
     undo,
     redo,
     saveFlow,
@@ -31,38 +28,26 @@ const BuilderToolbar = ({ onModeChange }) => {
     future = [],
   } = usePID();
 
-  const handleModeChange = (event, newMode) => {
-    if (newMode !== null) {
-      setMode(newMode);
-      if (onModeChange) {
-        onModeChange(newMode);
-      }
+  const handleDelete = () => {
+    if (selectedNode) {
+      deleteNode(selectedNode.id);
     }
   };
 
   return (
     <>
       <AppBar className="border-b border-gray-200 z-10" color="inherit" elevation={1} position="static">
-        <Toolbar className="justify-between min-h-[64px] px-4">
-          <ToggleButtonGroup
-            className="bg-white"
-            exclusive
-            onChange={handleModeChange}
-            size="small"
-            value={mode}
-          >
-            <ToggleButton value="selection">
-              <Mouse fontSize="small" className="mr-1" /> Seçim
-            </ToggleButton>
-            <ToggleButton value="connection">
-              <Timeline fontSize="small" className="mr-1" /> Bağlantı
-            </ToggleButton>
-            <ToggleButton value="deletion">
-              <Delete fontSize="small" className="mr-1" /> Sil
-            </ToggleButton>
-          </ToggleButtonGroup>
-
+        <Toolbar className="justify-end min-h-[64px] px-4">
           <Box className="flex items-center gap-3">
+            <Button
+              startIcon={<Delete />}
+              disabled={!selectedNode}
+              onClick={handleDelete}
+              color="inherit"
+            >
+              Sil
+            </Button>
+
             <Button
               startIcon={<Undo />}
               disabled={!past || past.length === 0}
