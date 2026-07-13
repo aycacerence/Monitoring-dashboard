@@ -94,7 +94,7 @@ export const PIDProvider = ({ children }) => {
 
   const onConnect = useCallback((connection) => {
     pushHistory();
-    setEdges((eds) => addEdge(connection, eds));
+    setEdges((eds) => addEdge({ ...connection, type: 'flowEdge', data: { flowType: 'flow_mixed' } }, eds));
   }, [pushHistory]);
 
   const handleSetSelectedNode = useCallback((node) => {

@@ -7,7 +7,7 @@ const GenericDeviceNode = ({ data, selected }) => {
     <div className="relative flex flex-col items-center justify-center">
       <Handle type="target" position={Position.Left} />
       
-      <div className={selected ? 'ring-2 ring-blue-500 rounded-md p-1' : 'p-1'}>
+      <div className={selected ? 'ring-2 ring-blue-500 rounded-lg' : ''}>
         <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-10 h-10 object-contain" />
       </div>
       
