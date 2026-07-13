@@ -13,7 +13,8 @@ export const usePID = () => {
 
 const loadSavedFlow = () => {
   try {
-    const saved = localStorage.getItem('pid_saved_flow');
+    const role = localStorage.getItem('userRole') || 'admin';
+    const saved = localStorage.getItem(`pid_saved_flow_${role}`);
     if (saved) return JSON.parse(saved);
   } catch (e) {
     console.error('Local storage okuma hatası', e);
@@ -25,7 +26,9 @@ export const PIDProvider = ({ children }) => {
   const initialData = loadSavedFlow();
   const [nodes, setNodes] = useState(initialData.nodes);
   const [edges, setEdges] = useState(initialData.edges);
-  const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedNodeId, setSelectedNodeId] = useState(null);
+
+  const selectedNode = nodes.find(n => n.id === selectedNodeId) || null;
 
   const [past, setPast] = useState([]);
   const [future, setFuture] = useState([]);
@@ -98,10 +101,10 @@ export const PIDProvider = ({ children }) => {
     pushHistory();
     setNodes((nds) => nds.filter((n) => n.id !== nodeId));
     setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
-    if (selectedNode?.id === nodeId) {
-      setSelectedNode(null);
+    if (selectedNodeId === nodeId) {
+      setSelectedNodeId(null);
     }
-  }, [pushHistory, selectedNode]);
+  }, [pushHistory, selectedNodeId]);
 
   const onConnect = useCallback((connection) => {
     pushHistory();
@@ -110,7 +113,7 @@ export const PIDProvider = ({ children }) => {
 
   const handleSetSelectedNode = useCallback((node) => {
     pushHistory();
-    setSelectedNode(node);
+    setSelectedNodeId(node ? node.id : null);
   }, [pushHistory]);
 
   // React Flow'un kendi sürükleme/seçme eventleri için (Geçmişe atmak istenirse burası genişletilebilir)
@@ -123,12 +126,14 @@ export const PIDProvider = ({ children }) => {
   }, []);
 
   const saveFlow = useCallback(() => {
+    const role = localStorage.getItem('userRole') || 'admin';
     const flow = { nodes, edges };
-    localStorage.setItem('pid_saved_flow', JSON.stringify(flow));
+    localStorage.setItem(`pid_saved_flow_${role}`, JSON.stringify(flow));
   }, [nodes, edges]);
 
   const restoreFlow = useCallback(() => {
-    const savedFlow = localStorage.getItem('pid_saved_flow');
+    const role = localStorage.getItem('userRole') || 'admin';
+    const savedFlow = localStorage.getItem(`pid_saved_flow_${role}`);
     if (savedFlow) {
       try {
         const parsedFlow = JSON.parse(savedFlow);
@@ -141,11 +146,12 @@ export const PIDProvider = ({ children }) => {
   }, []);
 
   const clearFlow = useCallback(() => {
+    const role = localStorage.getItem('userRole') || 'admin';
     pushHistory();
     setNodes([]);
     setEdges([]);
-    setSelectedNode(null);
-    localStorage.removeItem('pid_saved_flow');
+    setSelectedNodeId(null);
+    localStorage.removeItem(`pid_saved_flow_${role}`);
   }, [pushHistory]);
 
   const value = {

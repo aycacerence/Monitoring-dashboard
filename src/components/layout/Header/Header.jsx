@@ -52,7 +52,11 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
     // Dil secimini role gore guncelle
     const newRoleLang = localStorage.getItem(`i18nLang_${newRole}`) || 'tr';
     if (newRoleLang !== i18nInstance.language) {
-      i18nInstance.changeLanguage(newRoleLang);
+      i18nInstance.changeLanguage(newRoleLang).then(() => {
+        window.location.reload();
+      });
+    } else {
+      window.location.reload();
     }
     
     handleClose();
