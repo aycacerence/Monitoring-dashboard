@@ -1,15 +1,58 @@
-import React from 'react';
-import PageContainer from '../../components/layout/PageContainer';
+import React, { useState } from 'react';
+import { ReactFlowProvider } from 'reactflow';
+import { PIDProvider } from '../../context/pid/PIDContext';
 
-export default function PIDBuilder() {
+import { useMediaQuery, Drawer, IconButton } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+
+import BuilderToolbar from '../../components/pid/builder/BuilderToolbar';
+import DevicePalette from '../../components/pid/builder/DevicePalette';
+import BuilderCanvas from '../../components/pid/builder/BuilderCanvas';
+import PropertyPanel from '../../components/pid/builder/PropertyPanel';
+
+const PIDBuilder = () => {
+  const isMobile = useMediaQuery('(max-width:768px)');
+  const [mobilePaletteOpen, setMobilePaletteOpen] = useState(false);
+
   return (
-    <PageContainer>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">PID Builder (Yapım Aşamasında)</h1>
-        <p className="text-slate-500 dark:text-slate-400">
-          Bu sayfada sürükle-bırak yöntemiyle P&ID diyagramları oluşturulacak.
-        </p>
-      </div>
-    </PageContainer>
+    <PIDProvider>
+      <ReactFlowProvider>
+        <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden relative">
+          
+          <div className="relative z-20">
+            {isMobile && (
+              <div className="absolute left-2 top-2 z-50">
+                <IconButton onClick={() => setMobilePaletteOpen(true)} className="bg-white shadow-sm">
+                  <MenuIcon />
+                </IconButton>
+              </div>
+            )}
+            <BuilderToolbar />
+          </div>
+
+          <div className="flex flex-1 overflow-hidden relative">
+            {isMobile ? (
+              <Drawer
+                anchor="left"
+                variant="temporary"
+                open={mobilePaletteOpen}
+                onClose={() => setMobilePaletteOpen(false)}
+              >
+                <DevicePalette />
+              </Drawer>
+            ) : (
+              <DevicePalette />
+            )}
+            
+            <BuilderCanvas />
+            
+            <PropertyPanel variant={isMobile ? 'temporary' : 'persistent'} />
+          </div>
+
+        </div>
+      </ReactFlowProvider>
+    </PIDProvider>
   );
-}
+};
+
+export default PIDBuilder;

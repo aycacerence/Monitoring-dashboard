@@ -64,7 +64,7 @@ export const PIDProvider = ({ children }) => {
     pushHistory();
     const newNode = {
       id: `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: device.type || 'default',
+      type: 'device',
       position,
       data: { ...device }
     };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { deviceCategories } from '../../../data/pid/deviceCatalog';
-import iconMap from '../../../data/pid/iconMap';
+import { iconMap } from '../../../data/pid/iconMap';
 
 const DevicePalette = () => {
   return (

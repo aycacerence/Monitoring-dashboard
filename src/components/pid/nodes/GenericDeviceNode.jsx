@@ -1,25 +1,22 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { Paper } from '@mui/material';
-import iconMap from '../../../data/pid/iconMap';
+import { iconMap } from '../../../data/pid/iconMap';
 
 const GenericDeviceNode = ({ data, selected }) => {
   return (
-    <Paper
-      elevation={selected ? 4 : 1}
-      className={`p-2 rounded-lg border-2 flex flex-col items-center w-20 ${
-        selected ? 'border-blue-500' : 'border-gray-300'
-      }`}
-    >
+    <div className="relative flex flex-col items-center justify-center">
       <Handle type="target" position={Position.Left} />
       
-      <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-8 h-8" />
+      <div className={selected ? 'ring-2 ring-blue-500 rounded-md p-1' : 'p-1'}>
+        <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-10 h-10 object-contain" />
+      </div>
       
-      <span className="text-xs font-semibold">{data.code}</span>
-      <span className="text-[10px] text-gray-500">{data.label}</span>
+      <span className="text-[10px] text-gray-700 font-medium text-center mt-1">
+        {data.label || data.code}
+      </span>
       
       <Handle type="source" position={Position.Right} />
-    </Paper>
+    </div>
   );
 };
 

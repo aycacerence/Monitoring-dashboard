@@ -2,7 +2,7 @@ import React from 'react';
 import ReactFlow, { Background, Controls, MiniMap, useReactFlow, ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-import { usePID } from '../../../context/PIDContext';
+import { usePID } from '../../../context/pid/PIDContext';
 import { builderNodeTypes, edgeTypes } from '../registry';
 
 const BuilderCanvasInner = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { Paper } from '@mui/material';
-import iconMap from '../../../data/pid/iconMap';
+import { iconMap } from '../../../data/pid/iconMap';
 
 const MonitoringDeviceNode = ({ data, selected }) => {
   const getStatusClasses = (status) => {

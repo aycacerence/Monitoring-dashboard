@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePID } from '../../../context/PIDContext';
+import { usePID } from '../../../context/pid/PIDContext';
 import {
   Drawer,
   IconButton,
@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const PropertyPanel = () => {
+const PropertyPanel = ({ variant = 'persistent' }) => {
   const { selectedNode, updateNodeData, setSelectedNode } = usePID();
 
   if (selectedNode === null || !selectedNode) {
@@ -23,8 +23,9 @@ const PropertyPanel = () => {
   return (
     <Drawer
       anchor="right"
-      variant="persistent"
+      variant={variant}
       open={!!selectedNode}
+      onClose={() => setSelectedNode(null)}
       PaperProps={{
         className: 'w-80 flex flex-col border-l border-gray-200 bg-white',
       }}

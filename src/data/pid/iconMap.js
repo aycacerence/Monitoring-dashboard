@@ -1,72 +1,57 @@
-// Güneş
-import sun from '../../assets/pid_ui_icons/sun.png';
-import ahu from '../../assets/pid_ui_icons/ahu.png';
-
-// Kolektörler
-import sw_col from '../../assets/pid_ui_icons/sw_col.png';
-import pln from '../../assets/pid_ui_icons/pln.png';
-
-// Ekipmanlar
-import pump from '../../assets/pid_ui_icons/pump.png';
-import valve from '../../assets/pid_ui_icons/valve.png';
-import tank from '../../assets/pid_ui_icons/tank.png';
-import heat_exchanger from '../../assets/pid_ui_icons/heat_exchanger.png';
-import motor from '../../assets/pid_ui_icons/motor.png';
-import meter from '../../assets/pid_ui_icons/meter.png';
-
-// Entegrasyon Noktaları
-import grid from '../../assets/pid_ui_icons/grid.png';
-import inverter from '../../assets/pid_ui_icons/inverter.png';
-import battery from '../../assets/pid_ui_icons/battery.png';
-
-// Sensörler
-import t_out from '../../assets/pid_ui_icons/t_out.png';
-import p_out from '../../assets/pid_ui_icons/p_out.png';
-import f_out from '../../assets/pid_ui_icons/f_out.png';
-import s_lvl from '../../assets/pid_ui_icons/s_lvl.png';
-import rh_out from '../../assets/pid_ui_icons/rh_out.png';
-import dp_inst from '../../assets/pid_ui_icons/dp_inst.png';
-
-// Diğer
-import plc from '../../assets/pid_ui_icons/plc.png';
-import hmi from '../../assets/pid_ui_icons/hmi.png';
-import panel from '../../assets/pid_ui_icons/panel.png';
-import vfd from '../../assets/pid_ui_icons/vfd.png';
-import alarm from '../../assets/pid_ui_icons/alarm.png';
-
-// Boru ve Akış
-import flow_mixed from '../../assets/pid_ui_icons/flow_mixed.png';
-import duct_hot from '../../assets/pid_ui_icons/duct_hot.png';
-import duct_cold from '../../assets/pid_ui_icons/duct_cold.png';
-import duct_exhaust from '../../assets/pid_ui_icons/duct_exhaust.png';
+import sun from '../../../assets/pid_ui_icons/sun.png';
+import ahu from '../../../assets/pid_ui_icons/ahu.png';
+import collector from '../../../assets/pid_ui_icons/collector.png';
+import plenum from '../../../assets/pid_ui_icons/plenum.png';
+import pump from '../../../assets/pid_ui_icons/pump.png';
+import valve_control from '../../../assets/pid_ui_icons/valve_control.png';
+import process from '../../../assets/pid_ui_icons/process.png';
+import generic from '../../../assets/pid_ui_icons/generic.png';
+import heat_exchanger from '../../../assets/pid_ui_icons/heat_exchanger.png';
+import motor from '../../../assets/pid_ui_icons/motor.png';
+import meter from '../../../assets/pid_ui_icons/meter.png';
+import ups from '../../../assets/pid_ui_icons/ups.png';
+import thermo_inst from '../../../assets/pid_ui_icons/thermo_inst.png';
+import press_inst from '../../../assets/pid_ui_icons/press_inst.png';
+import flow_inst from '../../../assets/pid_ui_icons/flow_inst.png';
+import switch_inst from '../../../assets/pid_ui_icons/switch_inst.png';
+import rh_inst from '../../../assets/pid_ui_icons/rh_inst.png';
+import dp_inst from '../../../assets/pid_ui_icons/dp_inst.png';
+import plc from '../../../assets/pid_ui_icons/plc.png';
+import hmi from '../../../assets/pid_ui_icons/hmi.png';
+import panel from '../../../assets/pid_ui_icons/panel.png';
+import vfd from '../../../assets/pid_ui_icons/vfd.png';
+import alarm from '../../../assets/pid_ui_icons/alarm.png';
+import duct_cold from '../../../assets/pid_ui_icons/duct_cold.png';
+import duct_exhaust from '../../../assets/pid_ui_icons/duct_exhaust.png';
+import duct_hot from '../../../assets/pid_ui_icons/duct_hot.png';
+import duct_mixed from '../../../assets/pid_ui_icons/duct_mixed.png';
 
 export const iconMap = {
   sun,
   ahu,
-  sw_col,
-  pln,
+  collector,
+  plenum,
   pump,
-  valve,
-  tank,
+  valve_control,
+  process,
+  generic,
   heat_exchanger,
   motor,
   meter,
-  grid,
-  inverter,
-  battery,
-  t_out,
-  p_out,
-  f_out,
-  s_lvl,
-  rh_out,
+  ups,
+  thermo_inst,
+  press_inst,
+  flow_inst,
+  switch_inst,
+  rh_inst,
   dp_inst,
   plc,
   hmi,
   panel,
   vfd,
   alarm,
-  flow_mixed,
-  duct_hot,
   duct_cold,
-  duct_exhaust
+  duct_exhaust,
+  duct_hot,
+  duct_mixed
 };
