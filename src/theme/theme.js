@@ -20,6 +20,13 @@ export const getTheme = (mode) =>
       warning: { main: '#f59e0b' },
       error:   { main: '#ef4444' },
       info:    { main: '#6366f1' },
+      flow: {
+        mixed: '#2563eb',
+        hot: '#ea580c',
+        cold: '#dc2626',
+        exhaust: '#9333ea',
+        default: '#9ca3af'
+      },
       background:
         mode === 'light'
           ? { default: '#f4f6f8', paper: '#ffffff' }

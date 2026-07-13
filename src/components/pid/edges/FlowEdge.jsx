@@ -1,5 +1,6 @@
 import React from 'react';
 import { getSmoothStepPath, BaseEdge } from 'reactflow';
+import { useTheme } from '@mui/material/styles';
 import './flowEdge.css';
 
 const FlowEdge = ({
@@ -14,6 +15,7 @@ const FlowEdge = ({
   data,
   markerEnd,
 }) => {
+  const theme = useTheme();
   const [path] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -25,16 +27,11 @@ const FlowEdge = ({
 
   const getFlowColor = (flowType) => {
     switch (flowType) {
-      case 'flow_mixed':
-        return '#2563eb'; // Mavi
-      case 'duct_hot':
-        return '#ea580c'; // Turuncu
-      case 'duct_cold':
-        return '#dc2626'; // Kırmızı
-      case 'duct_exhaust':
-        return '#9333ea'; // Mor
-      default:
-        return '#9ca3af'; // Gri
+      case 'flow_mixed': return theme.palette.flow.mixed;
+      case 'duct_hot': return theme.palette.flow.hot;
+      case 'duct_cold': return theme.palette.flow.cold;
+      case 'duct_exhaust': return theme.palette.flow.exhaust;
+      default: return theme.palette.flow.default;
     }
   };
 
