@@ -16,7 +16,8 @@ const BuilderCanvasInner = () => {
     setSelectedNode
   } = usePID();
 
-  const { project } = useReactFlow();
+  // project yerine ekran koordinatlarını kanvas koordinatlarına milimetrik çeviren fonksiyonu alıyoruz
+  const { screenToFlowPosition } = useReactFlow();
 
   const onDragOver = (e) => {
     e.preventDefault();
@@ -29,7 +30,13 @@ const BuilderCanvasInner = () => {
     if (!type) return;
     
     const device = JSON.parse(type);
-    const position = project({ x: e.clientX, y: e.clientY - 50 });
+    
+    // screenToFlowPosition farenin bıraktığı anki gerçek ekran koordinatlarını (e.clientX, e.clientY) alır.
+    // -40 offset'i ise ikonun (genişliği 80px varsayarsak) tam farenin ucunun ortasına oturmasını sağlar.
+    const position = screenToFlowPosition({
+      x: e.clientX - 40,
+      y: e.clientY - 40,
+    });
     
     addNode(device, position);
   };
