@@ -29,6 +29,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
   const { title, subtitle } = usePageTitle();
   const { pathname } = useLocation();
   const isSettingsPage = pathname === '/settings';
+  const hideTimeAndRefresh = isSettingsPage || pathname === '/pid/builder';
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -95,7 +96,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-2 sm:flex-initial sm:justify-end sm:shrink-0">
 
           {/* Son güncelleme tarihi */}
-          <Box sx={{ display: isSettingsPage ? 'none' : 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: hideTimeAndRefresh ? 'none' : 'flex', alignItems: 'center' }}>
             {lastUpdated && (
               <span className="hidden lg:block text-xs font-medium text-white/75 whitespace-nowrap">
                 {t('header.lastUpdated')}: {lastUpdated}
@@ -104,7 +105,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
           </Box>
 
           {/* Mobil İçin Zaman Aralığı Menüsü */}
-          <Box sx={{ display: isSettingsPage ? 'none' : { xs: 'block', sm: 'none' } }}>
+          <Box sx={{ display: hideTimeAndRefresh ? 'none' : { xs: 'block', sm: 'none' } }}>
             <IconButton 
               onClick={handleTimeClick}
               sx={{ 
@@ -151,7 +152,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
               <CalendarTodayIcon sx={{ fontSize: 14, mr: 0.5, color: 'primary.main' }} />
             }
             sx={{
-              display: isSettingsPage ? 'none' : { xs: 'none', sm: 'inline-flex' },
+              display: hideTimeAndRefresh ? 'none' : { xs: 'none', sm: 'inline-flex' },
               backgroundColor: '#ffffff',
               color: '#1e293b',
               fontWeight: 500,
@@ -282,7 +283,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
             onClick={onRefresh}
             aria-label="Verileri Yenile"
             sx={{
-              display: isSettingsPage ? 'none' : 'flex',
+              display: hideTimeAndRefresh ? 'none' : 'flex',
               backgroundColor: '#ffffff',
               color: '#000000',
               '&:hover': { backgroundColor: '#f1f1f1' },
