@@ -19,7 +19,9 @@ const BuilderToolbar = () => {
 
   const {
     selectedNode,
+    selectedEdge,
     deleteNode,
+    deleteEdge,
     undo,
     redo,
     saveFlow,
@@ -31,6 +33,8 @@ const BuilderToolbar = () => {
   const handleDelete = () => {
     if (selectedNode) {
       deleteNode(selectedNode.id);
+    } else if (selectedEdge) {
+      deleteEdge(selectedEdge.id);
     }
   };
 
@@ -41,7 +45,7 @@ const BuilderToolbar = () => {
           <Box className="flex items-center gap-3">
             <Button
               startIcon={<Delete />}
-              disabled={!selectedNode}
+              disabled={!selectedNode && !selectedEdge}
               onClick={handleDelete}
               color="inherit"
             >

@@ -27,8 +27,10 @@ export const PIDProvider = ({ children }) => {
   const [nodes, setNodes] = useState(initialData.nodes);
   const [edges, setEdges] = useState(initialData.edges);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [selectedEdgeId, setSelectedEdgeId] = useState(null);
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || null;
+  const selectedEdge = edges.find(e => e.id === selectedEdgeId) || null;
 
   const [past, setPast] = useState([]);
   const [future, setFuture] = useState([]);
@@ -106,6 +108,14 @@ export const PIDProvider = ({ children }) => {
     }
   }, [pushHistory, selectedNodeId]);
 
+  const deleteEdge = useCallback((edgeId) => {
+    pushHistory();
+    setEdges((eds) => eds.filter((e) => e.id !== edgeId));
+    if (selectedEdgeId === edgeId) {
+      setSelectedEdgeId(null);
+    }
+  }, [pushHistory, selectedEdgeId]);
+
   const onConnect = useCallback((connection) => {
     pushHistory();
     setEdges((eds) => addEdge({ ...connection, type: 'flowEdge', data: { flowType: 'flow_mixed' } }, eds));
@@ -114,6 +124,16 @@ export const PIDProvider = ({ children }) => {
   const handleSetSelectedNode = useCallback((node) => {
     pushHistory();
     setSelectedNodeId(node ? node.id : null);
+  }, [pushHistory]);
+
+  const handleSetSelectedEdge = useCallback((edge) => {
+    pushHistory();
+    setSelectedEdgeId(edge ? edge.id : null);
+  }, [pushHistory]);
+
+  const updateEdgeData = useCallback((id, newData) => {
+    pushHistory();
+    setEdges((eds) => eds.map((edge) => edge.id === id ? { ...edge, data: { ...edge.data, ...newData } } : edge));
   }, [pushHistory]);
 
   // React Flow'un kendi sürükleme/seçme eventleri için (Geçmişe atmak istenirse burası genişletilebilir)
@@ -151,6 +171,7 @@ export const PIDProvider = ({ children }) => {
     setNodes([]);
     setEdges([]);
     setSelectedNodeId(null);
+    setSelectedEdgeId(null);
     localStorage.removeItem(`pid_saved_flow_${role}`);
   }, [pushHistory]);
 
@@ -158,10 +179,14 @@ export const PIDProvider = ({ children }) => {
     nodes,
     edges,
     selectedNode,
+    selectedEdge,
     setSelectedNode: handleSetSelectedNode,
+    setSelectedEdge: handleSetSelectedEdge,
     addNode,
     updateNodeData,
+    updateEdgeData,
     deleteNode,
+    deleteEdge,
     onConnect,
     onNodesChange,
     onEdgesChange,

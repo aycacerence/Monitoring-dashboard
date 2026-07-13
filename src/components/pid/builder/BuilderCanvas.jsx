@@ -13,7 +13,8 @@ const BuilderCanvasInner = () => {
     onEdgesChange,
     onConnect,
     addNode,
-    setSelectedNode
+    setSelectedNode,
+    setSelectedEdge
   } = usePID();
 
   // project yerine ekran koordinatlarını kanvas koordinatlarına milimetrik çeviren fonksiyonu alıyoruz
@@ -42,11 +43,18 @@ const BuilderCanvasInner = () => {
   };
 
   const onNodeClick = (e, node) => {
+    setSelectedEdge(null);
     setSelectedNode(node);
+  };
+
+  const onEdgeClick = (e, edge) => {
+    setSelectedNode(null);
+    setSelectedEdge(edge);
   };
 
   const onPaneClick = () => {
     setSelectedNode(null);
+    setSelectedEdge(null);
   };
 
   return (
@@ -60,6 +68,7 @@ const BuilderCanvasInner = () => {
         onDrop={onDrop}
         onDragOver={onDragOver}
         onNodeClick={onNodeClick}
+        onEdgeClick={onEdgeClick}
         onPaneClick={onPaneClick}
         nodeTypes={builderNodeTypes}
         edgeTypes={edgeTypes}
