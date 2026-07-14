@@ -1,8 +1,11 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { iconMap } from '../../../data/pid/iconMap';
+import { useTranslation } from 'react-i18next';
 
 const GenericDeviceNode = ({ data, selected }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="relative flex flex-col items-center justify-center">
       <Handle type="target" position={Position.Left} />
@@ -12,7 +15,7 @@ const GenericDeviceNode = ({ data, selected }) => {
       </div>
       
       <span className="text-[10px] text-gray-700 dark:text-slate-200 font-medium text-center mt-1 uppercase">
-        {data.label || data.code}
+        {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
       </span>
       
       <Handle type="source" position={Position.Right} />
