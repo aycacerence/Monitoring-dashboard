@@ -39,7 +39,8 @@ const DevicePalette = () => {
         bgcolor: 'background.paper', 
         display: 'flex', 
         flexDirection: 'column', 
-        pb: 3 
+        pb: 3,
+        userSelect: 'none'
       }}
     >
       {deviceCategories.map((category, index) => (
