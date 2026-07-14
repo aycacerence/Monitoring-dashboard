@@ -1,8 +1,17 @@
 import React from 'react';
 import { deviceCategories } from '../../../data/pid/deviceCatalog';
 import { iconMap } from '../../../data/pid/iconMap';
+import { usePID } from '../../../context/pid/PIDContext';
 
 const DevicePalette = () => {
+  const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData } = usePID();
+
+  const flows = [
+    { type: 'flow_mixed', label: 'FLOW_MIXED', color: '#3b82f6' },
+    { type: 'duct_hot', label: 'DUCT_HOT', color: '#f97316' },
+    { type: 'duct_cold', label: 'DUCT_COLD', color: '#ef4444' },
+    { type: 'duct_exhaust', label: 'DUCT_EXHAUST', color: '#64748b' }
+  ];
   return (
     <div className="w-64 h-full flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white flex flex-col pb-6">
       {deviceCategories.map((category, index) => (
@@ -31,6 +40,34 @@ const DevicePalette = () => {
           </div>
         </div>
       ))}
+      
+      {/* Boru ve Akış Kategorisi */}
+      <div className="mt-2 mb-6">
+        <h3 className="text-[11px] font-bold text-gray-700 tracking-wider uppercase px-4 mt-5 mb-3">
+          Boru ve Akış
+        </h3>
+        <div className="mx-2 border border-gray-200 rounded-lg p-2 bg-white grid grid-cols-2 gap-y-3 gap-x-1 shadow-sm">
+          {flows.map((f) => (
+            <div 
+              key={f.type}
+              onClick={() => {
+                setActiveFlowType(f.type);
+                if (selectedEdge) {
+                  updateEdgeData(selectedEdge.id, { flowType: f.type });
+                }
+              }}
+              className={`flex items-center space-x-1 cursor-pointer p-1.5 rounded transition-colors ${activeFlowType === f.type ? 'bg-blue-50 ring-1 ring-blue-400' : 'hover:bg-gray-50'}`}
+            >
+              <div className="flex items-center flex-shrink-0" style={{ color: f.color }}>
+                <svg width="20" height="10" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 6H20M20 6L15 1M20 6L15 11" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="text-[9px] font-bold text-gray-700 leading-none whitespace-nowrap">{f.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

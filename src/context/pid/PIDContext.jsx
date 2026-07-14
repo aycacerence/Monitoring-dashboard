@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { addEdge, applyNodeChanges, applyEdgeChanges } from 'reactflow';
+import { addEdge, applyNodeChanges, applyEdgeChanges, MarkerType } from 'reactflow';
 
 const PIDContext = createContext();
 
@@ -28,6 +28,7 @@ export const PIDProvider = ({ children }) => {
   const [edges, setEdges] = useState(initialData.edges);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
+  const [activeFlowType, setActiveFlowType] = useState('flow_mixed');
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || null;
   const selectedEdge = edges.find(e => e.id === selectedEdgeId) || null;
@@ -116,10 +117,25 @@ export const PIDProvider = ({ children }) => {
     }
   }, [pushHistory, selectedEdgeId]);
 
+  const getFlowColor = (flowType) => {
+    switch (flowType) {
+      case 'flow_mixed': return '#3b82f6';
+      case 'duct_hot': return '#f97316';
+      case 'duct_cold': return '#ef4444';
+      case 'duct_exhaust': return '#64748b';
+      default: return '#3b82f6';
+    }
+  };
+
   const onConnect = useCallback((connection) => {
     pushHistory();
-    setEdges((eds) => addEdge({ ...connection, type: 'flowEdge', data: { flowType: 'flow_mixed' } }, eds));
-  }, [pushHistory]);
+    setEdges((eds) => addEdge({ 
+      ...connection, 
+      type: 'flowEdge', 
+      data: { flowType: activeFlowType },
+      markerEnd: `arrow-${activeFlowType}`
+    }, eds));
+  }, [pushHistory, activeFlowType]);
 
   const handleSetSelectedNode = useCallback((node) => {
     pushHistory();
@@ -133,7 +149,16 @@ export const PIDProvider = ({ children }) => {
 
   const updateEdgeData = useCallback((id, newData) => {
     pushHistory();
-    setEdges((eds) => eds.map((edge) => edge.id === id ? { ...edge, data: { ...edge.data, ...newData } } : edge));
+    setEdges((eds) => eds.map((edge) => {
+      if (edge.id === id) {
+        const updatedEdge = { ...edge, data: { ...edge.data, ...newData } };
+        if (newData.flowType) {
+          updatedEdge.markerEnd = `arrow-${newData.flowType}`;
+        }
+        return updatedEdge;
+      }
+      return edge;
+    }));
   }, [pushHistory]);
 
   // React Flow'un kendi sürükleme/seçme eventleri için (Geçmişe atmak istenirse burası genişletilebilir)
@@ -180,6 +205,8 @@ export const PIDProvider = ({ children }) => {
     edges,
     selectedNode,
     selectedEdge,
+    activeFlowType,
+    setActiveFlowType,
     setSelectedNode: handleSetSelectedNode,
     setSelectedEdge: handleSetSelectedEdge,
     addNode,

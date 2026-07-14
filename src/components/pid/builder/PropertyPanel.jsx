@@ -22,11 +22,11 @@ import { useSelector } from 'react-redux';
 import { selectRole } from '../../../features/auth/authSlice';
 
 const PropertyPanel = ({ variant }) => {
-  const { selectedNode, updateNodeData, setSelectedNode, selectedEdge, updateEdgeData, setSelectedEdge } = usePID();
+  const { selectedNode, updateNodeData, setSelectedNode } = usePID();
   const role = useSelector(selectRole);
   const isAdmin = role === 'admin';
 
-  if (!selectedNode && !selectedEdge) return null;
+  if (!selectedNode) return null;
 
   const handleDataChange = (field, value) => {
     updateNodeData(selectedNode.id, { [field]: value });
@@ -44,7 +44,7 @@ const PropertyPanel = ({ variant }) => {
     <Drawer
       anchor="right"
       variant="persistent"
-      open={!!selectedNode || !!selectedEdge}
+      open={!!selectedNode}
       sx={{
         width: 320,
         flexShrink: 0,
@@ -64,16 +64,14 @@ const PropertyPanel = ({ variant }) => {
           <Typography className="text-gray-500 font-bold uppercase tracking-wider text-sm">
             Özellikler
           </Typography>
-          <IconButton onClick={() => { setSelectedNode(null); setSelectedEdge(null); }} size="small">
+          <IconButton onClick={() => setSelectedNode(null)} size="small">
             <CloseIcon fontSize="small" />
           </IconButton>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {selectedNode && (
-            <>
-              {/* Başlık Profili */}
-              <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+          {/* Başlık Profili */}
+          <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
             <div className="w-10 h-10 flex-shrink-0 bg-white rounded border border-gray-200 flex items-center justify-center p-1">
               <img
                 src={iconMap[selectedNode.data?.iconKey]}
@@ -236,33 +234,6 @@ const PropertyPanel = ({ variant }) => {
               />
             </div>
           </div>
-            </>
-          )}
-
-          {selectedEdge && (
-            <>
-              <div>
-                <Typography className="text-xs font-bold text-gray-800 uppercase mb-3">
-                  Boru Özellikleri
-                </Typography>
-                <FormControl size="small" fullWidth>
-                  <InputLabel shrink>Akış Tipi</InputLabel>
-                  <Select
-                    value={selectedEdge.data?.flowType || 'default'}
-                    onChange={(e) => updateEdgeData(selectedEdge.id, { flowType: e.target.value })}
-                    label="Akış Tipi"
-                    notched
-                  >
-                    <MenuItem value="default">Varsayılan (Default)</MenuItem>
-                    <MenuItem value="flow_mixed">Karışık/Su (Flow Mixed)</MenuItem>
-                    <MenuItem value="duct_hot">Sıcak Hat (Duct Hot)</MenuItem>
-                    <MenuItem value="duct_cold">Soğuk Hat (Duct Cold)</MenuItem>
-                    <MenuItem value="duct_exhaust">Egzoz/Atık (Duct Exhaust)</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
-            </>
-          )}
         </div>
       </Box>
     </Drawer>

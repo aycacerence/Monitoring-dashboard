@@ -14,6 +14,7 @@ const FlowEdge = ({
   style = {},
   data,
   markerEnd,
+  selected,
 }) => {
   const theme = useTheme();
   const [path] = getSmoothStepPath({
@@ -45,9 +46,9 @@ const FlowEdge = ({
       style={{
         ...style,
         stroke: color,
-        strokeWidth: 2,
-        strokeDasharray: '5,5',
-        animation: 'dashdraw 0.5s linear infinite',
+        strokeWidth: selected ? 2.75 : 2,
+        filter: selected ? `drop-shadow(0px 0px 4px ${color})` : 'none',
+        transition: 'all 0.2s ease',
       }}
     />
   );
