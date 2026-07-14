@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePID } from '../../../context/pid/PIDContext';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import {
   AppBar,
@@ -17,6 +18,7 @@ import {
 } from '@mui/icons-material';
 
 const BuilderToolbar = () => {
+  const { t } = useTranslation();
 
   const {
     selectedNode,
@@ -54,7 +56,7 @@ const BuilderToolbar = () => {
               onClick={handleDelete}
               color="inherit"
             >
-              Sil
+              {t('pidBuilder.toolbar.delete')}
             </Button>
 
             <Button
@@ -63,7 +65,7 @@ const BuilderToolbar = () => {
               onClick={undo}
               color="inherit"
             >
-              Geri Al
+              {t('pidBuilder.toolbar.undo')}
             </Button>
 
             <Button
@@ -72,7 +74,7 @@ const BuilderToolbar = () => {
               onClick={redo}
               color="inherit"
             >
-              Yinele
+              {t('pidBuilder.toolbar.redo')}
             </Button>
 
             <div className="h-6 w-px bg-gray-300 mx-1"></div>
@@ -84,7 +86,7 @@ const BuilderToolbar = () => {
               color="error"
               variant="outlined"
             >
-              Temizle
+              {t('pidBuilder.toolbar.clear')}
             </Button>
 
             <Button
@@ -92,12 +94,12 @@ const BuilderToolbar = () => {
               disabled={!isDirty}
               onClick={() => {
                 restoreFlow();
-                toast.success('Son kaydedilen duruma geri dönüldü');
+                toast.success(t('pidBuilder.toolbar.restoreSuccess'));
               }}
               color="warning"
               variant="outlined"
             >
-              Değişiklikleri Geri Al
+              {t('pidBuilder.toolbar.restore')}
             </Button>
 
             <Button
@@ -105,12 +107,12 @@ const BuilderToolbar = () => {
               disabled={!isDirty}
               onClick={() => {
                 saveFlow();
-                toast.success('Diyagram başarıyla kaydedildi');
+                toast.success(t('pidBuilder.toolbar.saveSuccess'));
               }}
               color="primary"
               variant="contained"
             >
-              Kaydet
+              {t('pidBuilder.toolbar.save')}
             </Button>
           </Box>
         </Toolbar>

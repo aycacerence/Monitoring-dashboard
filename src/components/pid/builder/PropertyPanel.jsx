@@ -23,8 +23,10 @@ import SaveIcon from '@mui/icons-material/Save';
 import { iconMap } from '../../../data/pid/iconMap';
 import { useSelector } from 'react-redux';
 import { selectRole } from '../../../features/auth/authSlice';
+import { useTranslation } from 'react-i18next';
 
 const PropertyPanel = ({ variant }) => {
+  const { t } = useTranslation();
   const { selectedNode, updateNodeData, setSelectedNode, saveFlow } = usePID();
   const role = useSelector(selectRole);
   const isAdmin = role === 'admin';
@@ -98,11 +100,11 @@ const PropertyPanel = ({ variant }) => {
         {/* Üst Bar */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <Typography className="text-gray-500 font-bold uppercase tracking-wider text-sm">
-            Özellikler
+            {t('pidBuilder.propertyPanel.properties')}
           </Typography>
-          <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1">
             {!isEditing ? (
-              <IconButton onClick={() => setIsEditing(true)} size="small" color="primary" title="Düzenle">
+              <IconButton onClick={() => setIsEditing(true)} size="small" color="primary" title={t('pidBuilder.propertyPanel.edit')}>
                 <EditIcon fontSize="small" />
               </IconButton>
             ) : (
@@ -110,11 +112,11 @@ const PropertyPanel = ({ variant }) => {
                 onClick={() => {
                   setIsEditing(false);
                   saveFlow();
-                  toast.success('Özellikler başarıyla güncellendi');
+                  toast.success(t('pidBuilder.propertyPanel.updateSuccess'));
                 }} 
                 size="small" 
                 color="success" 
-                title="Kaydet"
+                title={t('pidBuilder.propertyPanel.save')}
               >
                 <SaveIcon fontSize="small" />
               </IconButton>
@@ -137,22 +139,22 @@ const PropertyPanel = ({ variant }) => {
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-gray-800 text-sm">
-                {selectedNode.data?.label || selectedNode.data?.code || 'Cihaz'}
+                {selectedNode.data?.label || selectedNode.data?.code || t('pidBuilder.propertyPanel.device')}
               </span>
               <div className="flex items-center space-x-3 mt-1.5">
                 <div className="flex items-center">
                   <span className={`w-2 h-2 rounded-full ${getDurumColor(durum)} mr-1.5`}></span>
-                  <span className="text-[11px] text-gray-600 font-medium">{durum}</span>
+                  <span className="text-[11px] text-gray-600 font-medium">{t(`pidBuilder.propertyPanel.status.${durum}`, { defaultValue: durum })}</span>
                 </div>
                 {canliVeri === 'gelecek' ? (
                   <div className="flex items-center">
                     <span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></span>
-                    <span className="text-[11px] text-blue-600 font-medium">Canlı Veri</span>
+                    <span className="text-[11px] text-blue-600 font-medium">{t('pidBuilder.propertyPanel.liveData')}</span>
                   </div>
                 ) : (
                   <div className="flex items-center">
                     <span className="w-2 h-2 rounded-full bg-gray-400 mr-1.5"></span>
-                    <span className="text-[11px] text-gray-500 font-medium">Statik</span>
+                    <span className="text-[11px] text-gray-500 font-medium">{t('pidBuilder.propertyPanel.static')}</span>
                   </div>
                 )}
               </div>
@@ -162,11 +164,11 @@ const PropertyPanel = ({ variant }) => {
           {/* Genel Bilgiler */}
           <div>
             <Typography className="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-4">
-              Genel Bilgiler
+              {t('pidBuilder.propertyPanel.generalInfo')}
             </Typography>
             <div className="flex flex-col gap-5 pt-2">
               <TextField
-                label="Cihaz Adı"
+                label={t('pidBuilder.propertyPanel.deviceName')}
                 size="small"
                 fullWidth
                 disabled={!isEditing}
@@ -175,7 +177,7 @@ const PropertyPanel = ({ variant }) => {
                 InputLabelProps={{ shrink: true }}
               />
               <TextField
-                label="Cihaz Tipi"
+                label={t('pidBuilder.propertyPanel.deviceType')}
                 size="small"
                 fullWidth
                 disabled={!isEditing}
@@ -185,7 +187,7 @@ const PropertyPanel = ({ variant }) => {
                 sx={{ backgroundColor: !isEditing ? '#f9fafb' : 'inherit' }}
               />
               <TextField
-                label="Açıklama"
+                label={t('pidBuilder.propertyPanel.description')}
                 size="small"
                 fullWidth
                 multiline
@@ -196,17 +198,17 @@ const PropertyPanel = ({ variant }) => {
                 InputLabelProps={{ shrink: true }}
               />
               <FormControl size="small" fullWidth>
-                <InputLabel shrink>Durum</InputLabel>
+                <InputLabel shrink>{t('Durum', { defaultValue: 'Durum' })}</InputLabel>
                 <Select
                   value={selectedNode.data?.durum || 'Aktif'}
                   onChange={(e) => handleDataChange('durum', e.target.value)}
-                  label="Durum"
+                  label={t('Durum', { defaultValue: 'Durum' })}
                   disabled={!isEditing}
                   notched
                 >
-                  <MenuItem value="Aktif">Aktif</MenuItem>
-                  <MenuItem value="Pasif">Pasif</MenuItem>
-                  <MenuItem value="Bakımda">Bakımda</MenuItem>
+                  <MenuItem value="Aktif">{t('pidBuilder.propertyPanel.status.Aktif')}</MenuItem>
+                  <MenuItem value="Pasif">{t('pidBuilder.propertyPanel.status.Pasif')}</MenuItem>
+                  <MenuItem value="Bakımda">{t('pidBuilder.propertyPanel.status.Bakımda')}</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -217,7 +219,7 @@ const PropertyPanel = ({ variant }) => {
           {/* Canlı Veri Bölümü */}
           <div>
             <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
-              Canlı Veri Durumu
+              {t('pidBuilder.propertyPanel.liveDataStatus')}
             </Typography>
             <FormControl component="fieldset" className="w-full pt-2">
               <RadioGroup
@@ -229,13 +231,13 @@ const PropertyPanel = ({ variant }) => {
                   value="gelecek"
                   disabled={!isEditing}
                   control={<Radio size="small" />}
-                  label={<span className="text-sm">Gelecek</span>}
+                  label={<span className="text-sm">{t('pidBuilder.propertyPanel.willArrive')}</span>}
                 />
                 <FormControlLabel
                   value="gelmeyecek"
                   disabled={!isEditing}
                   control={<Radio size="small" />}
-                  label={<span className="text-sm">Gelmeyecek</span>}
+                  label={<span className="text-sm">{t('pidBuilder.propertyPanel.wontArrive')}</span>}
                 />
               </RadioGroup>
             </FormControl>
@@ -247,13 +249,14 @@ const PropertyPanel = ({ variant }) => {
           {selectedNode.data?.defaultData && Object.keys(selectedNode.data.defaultData).length > 0 && (
             <div>
               <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
-                Teknik Değerler
+                {t('pidBuilder.propertyPanel.technicalValues')}
               </Typography>
               <div className="flex flex-col gap-5 pt-2">
                 {Object.entries(selectedNode.data.defaultData).map(([key, val]) => {
                   if (key === 'birim' || key === 'durum') return null;
                   
-                  const label = key.charAt(0).toUpperCase() + key.slice(1);
+                  const fallbackLabel = key.charAt(0).toUpperCase() + key.slice(1);
+                  const label = t(`pidBuilder.techKeys.${key}`, { defaultValue: fallbackLabel });
                   const unit = getUnit(key, selectedNode.data?.code);
                   
                   return (
@@ -292,11 +295,11 @@ const PropertyPanel = ({ variant }) => {
           {/* Çalışma Bilgileri */}
           <div>
             <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
-              Çalışma Bilgileri
+              {t('pidBuilder.propertyPanel.operationalInfo')}
             </Typography>
             <div className="flex flex-col gap-5 pt-2">
               <TextField
-                label="Çalışma Süresi"
+                label={t('pidBuilder.propertyPanel.operatingTime')}
                 size="small"
                 fullWidth
                 disabled={!isAdmin || !isEditing}
@@ -307,7 +310,7 @@ const PropertyPanel = ({ variant }) => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <span className="text-[11px] font-bold text-gray-500 bg-gray-100 h-full flex items-center px-4 py-4 rounded border border-gray-300">
-                        saat
+                        {t('pidBuilder.propertyPanel.hours')}
                       </span>
                     </InputAdornment>
                   )
@@ -318,7 +321,7 @@ const PropertyPanel = ({ variant }) => {
                 }}
               />
               <TextField
-                label="Son Bakım Tarihi"
+                label={t('pidBuilder.propertyPanel.lastMaintenanceDate')}
                 size="small"
                 fullWidth
                 disabled={!isAdmin || !isEditing}

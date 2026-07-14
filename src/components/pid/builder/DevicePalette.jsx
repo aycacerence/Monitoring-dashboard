@@ -2,8 +2,22 @@ import React from 'react';
 import { deviceCategories } from '../../../data/pid/deviceCatalog';
 import { iconMap } from '../../../data/pid/iconMap';
 import { usePID } from '../../../context/pid/PIDContext';
+import { useTranslation } from 'react-i18next';
+
+const getCategoryTranslation = (category, t) => {
+  const map = {
+    'HVAC & EKİPMANLAR': t('pidBuilder.categories.hvac'),
+    'VANA & DAMPER': t('pidBuilder.categories.valves'),
+    'SENSÖRLER': t('pidBuilder.categories.sensors'),
+    'GÜNEŞ & ÇEVRE': t('pidBuilder.categories.environment'),
+    'ELEKTRİK & KONTROL': t('pidBuilder.categories.electrical'),
+    'DİĞER': t('pidBuilder.categories.other')
+  };
+  return map[category] || category;
+};
 
 const DevicePalette = () => {
+  const { t } = useTranslation();
   const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData } = usePID();
 
   const flows = [
@@ -17,7 +31,7 @@ const DevicePalette = () => {
       {deviceCategories.map((category, index) => (
         <div key={index}>
           <h3 className="text-[11px] font-bold text-gray-700 tracking-wider uppercase px-4 mt-5 mb-3">
-            {category.category}
+            {getCategoryTranslation(category.category, t)}
           </h3>
           <div className="grid grid-cols-2 gap-3 px-4">
             {category.items.map((device, devIndex) => (
@@ -33,7 +47,7 @@ const DevicePalette = () => {
                   className="w-8 h-8 object-contain mb-2 pointer-events-none"
                 />
                 <span className="text-[10px] text-center text-gray-800 font-medium leading-tight uppercase">
-                  {device.label}
+                  {t(`pidBuilder.devices.${device.label}`, { defaultValue: device.label })}
                 </span>
               </div>
             ))}
@@ -44,7 +58,7 @@ const DevicePalette = () => {
       {/* Boru ve Akış Kategorisi */}
       <div className="mt-2 mb-6">
         <h3 className="text-[11px] font-bold text-gray-700 tracking-wider uppercase px-4 mt-5 mb-3">
-          Boru ve Akış
+          {t('pidBuilder.palette.pipesAndFlows')}
         </h3>
         <div className="mx-2 border border-gray-200 rounded-lg p-2 bg-white flex flex-col gap-2 shadow-sm">
           {flows.map((f) => (
@@ -61,7 +75,7 @@ const DevicePalette = () => {
               <div className="flex items-center justify-center flex-shrink-0 w-12 h-8 bg-gray-50 rounded border border-gray-100">
                 <img src={iconMap[f.type]} alt={f.label} className="w-10 h-6 object-contain pointer-events-none" />
               </div>
-              <span className="text-[10px] font-bold text-gray-700 leading-none uppercase">{f.label}</span>
+              <span className="text-[10px] font-bold text-gray-700 leading-none uppercase">{t(`pidBuilder.flows.${f.label}`, { defaultValue: f.label })}</span>
             </div>
           ))}
         </div>
