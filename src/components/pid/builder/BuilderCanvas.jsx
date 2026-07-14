@@ -222,7 +222,6 @@ const BuilderCanvasInner = () => {
         nodeTypes={builderNodeTypes}
         edgeTypes={edgeTypes}
         fitView
-        colorMode={mode}
       >
         <Background variant="dots" gap={16} size={1} color={mode === 'dark' ? '#475569' : '#cbd5e1'} />
         <Controls />

@@ -22,6 +22,27 @@ import {
   Menu as MenuIcon,
 } from '@mui/icons-material';
 
+const ResponsiveButton = ({ icon: Icon, label, ...props }) => (
+  <Tooltip title={label}>
+    <span>
+      <Button
+        sx={{ 
+          minWidth: { xs: '40px', md: 'auto' },
+          px: { xs: 1, md: 2 },
+          whiteSpace: 'nowrap',
+          ...props.sx 
+        }}
+        {...props}
+      >
+        <Icon sx={{ mr: { xs: 0, md: 1 } }} />
+        <Box component="span" sx={{ display: { xs: 'none', md: 'block' } }}>
+          {label}
+        </Box>
+      </Button>
+    </span>
+  </Tooltip>
+);
+
 const BuilderToolbar = ({ onMenuClick }) => {
   const { t } = useTranslation();
 
@@ -117,41 +138,32 @@ const BuilderToolbar = ({ onMenuClick }) => {
             )}
           </Box>
           <Box className="flex items-center gap-1 sm:gap-3 overflow-x-auto no-scrollbar" sx={{ width: '100%', justifyContent: 'flex-end' }}>
-            <Button
-              startIcon={<Delete />}
+            <ResponsiveButton
+              icon={Delete}
+              label={t('pidBuilder.toolbar.delete')}
               disabled={selectedItemCount === 0 && !selectedNode && !selectedEdge}
               onClick={handleDelete}
               color="inherit"
-              sx={{ 
-                '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
-              }}
-            >
-              {t('pidBuilder.toolbar.delete')}
-            </Button>
+              sx={{ '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } }}
+            />
 
-            <Button
-              startIcon={<Undo />}
+            <ResponsiveButton
+              icon={Undo}
+              label={t('pidBuilder.toolbar.undo')}
               disabled={!past || past.length === 0}
               onClick={undo}
               color="inherit"
-              sx={{ 
-                '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
-              }}
-            >
-              {t('pidBuilder.toolbar.undo')}
-            </Button>
+              sx={{ '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } }}
+            />
 
-            <Button
-              startIcon={<Redo />}
+            <ResponsiveButton
+              icon={Redo}
+              label={t('pidBuilder.toolbar.redo')}
               disabled={!future || future.length === 0}
               onClick={redo}
               color="inherit"
-              sx={{ 
-                '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
-              }}
-            >
-              {t('pidBuilder.toolbar.redo')}
-            </Button>
+              sx={{ '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } }}
+            />
 
             <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
 
@@ -172,19 +184,18 @@ const BuilderToolbar = ({ onMenuClick }) => {
 
             <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
 
-            <Button
-              startIcon={<DeleteOutline />}
+            <ResponsiveButton
+              icon={DeleteOutline}
+              label={t('pidBuilder.toolbar.clear')}
               disabled={nodes.length === 0 && edges.length === 0}
               onClick={clearFlow}
               color="error"
               variant="outlined"
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              {t('pidBuilder.toolbar.clear')}
-            </Button>
+            />
 
-            <Button
-              startIcon={<Restore />}
+            <ResponsiveButton
+              icon={Restore}
+              label={t('pidBuilder.toolbar.restore')}
               disabled={!isDirty}
               onClick={() => {
                 restoreFlow();
@@ -192,13 +203,11 @@ const BuilderToolbar = ({ onMenuClick }) => {
               }}
               color="warning"
               variant="outlined"
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              {t('pidBuilder.toolbar.restore')}
-            </Button>
+            />
 
-            <Button
-              startIcon={<Save />}
+            <ResponsiveButton
+              icon={Save}
+              label={t('pidBuilder.toolbar.save')}
               disabled={!isDirty}
               onClick={() => {
                 saveFlow();
@@ -206,10 +215,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
               }}
               color="primary"
               variant="contained"
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              {t('pidBuilder.toolbar.save')}
-            </Button>
+            />
           </Box>
         </Toolbar>
       </AppBar>
