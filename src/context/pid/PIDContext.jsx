@@ -245,7 +245,8 @@ export const PIDProvider = ({ children }) => {
     saveFlow,
     restoreFlow,
     clearFlow,
-    isDirty
+    isDirty,
+    setNodes
   };
 
   return <PIDContext.Provider value={value}>{children}</PIDContext.Provider>;

@@ -284,6 +284,13 @@ body {
   border-radius: 4px 0 0 4px;
 }
 
+.react-flow__helper-line {
+  stroke: #3b82f6; /* Modern mavi kılavuz çizgisi */
+  stroke-width: 1px;
+  stroke-dasharray: 4 4;
+  pointer-events: none;
+}
+
 /* Custom Webkit Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
