@@ -3,6 +3,7 @@ import { deviceCategories } from '../../../data/pid/deviceCatalog';
 import { iconMap } from '../../../data/pid/iconMap';
 import { usePID } from '../../../context/pid/PIDContext';
 import { useTranslation } from 'react-i18next';
+import { Box, Typography } from '@mui/material';
 
 const getCategoryTranslation = (category, t) => {
   const map = {
@@ -27,42 +28,117 @@ const DevicePalette = () => {
     { type: 'duct_exhaust', label: 'duct_exhaust', color: '#64748b' }
   ];
   return (
-    <div className="w-64 h-full flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white flex flex-col pb-6">
+    <Box 
+      sx={{ 
+        width: 256, 
+        height: '100%', 
+        flexShrink: 0, 
+        overflowY: 'auto', 
+        borderRight: 1, 
+        borderColor: 'divider', 
+        bgcolor: 'background.paper', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        pb: 3 
+      }}
+    >
       {deviceCategories.map((category, index) => (
-        <div key={index}>
-          <h3 className="text-[11px] font-bold text-gray-700 tracking-wider uppercase px-4 mt-5 mb-3">
+        <Box key={index}>
+          <Typography 
+            variant="overline" 
+            sx={{ 
+              fontSize: '11px', 
+              fontWeight: 'bold', 
+              color: 'text.secondary', 
+              px: 2, 
+              mt: 2.5, 
+              mb: 1.5, 
+              display: 'block', 
+              lineHeight: 1 
+            }}
+          >
             {getCategoryTranslation(category.category, t)}
-          </h3>
-          <div className="grid grid-cols-2 gap-3 px-4">
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, px: 2 }}>
             {category.items.map((device, devIndex) => (
-              <div
+              <Box
                 key={devIndex}
                 draggable="true"
                 onDragStart={(e) => e.dataTransfer.setData('application/reactflow', JSON.stringify(device))}
-                className="cursor-grab bg-white p-2 rounded-lg flex flex-col items-center justify-center border border-gray-200 hover:border-blue-500 hover:shadow-sm transition-all"
+                sx={{
+                  cursor: 'grab',
+                  bgcolor: 'background.default',
+                  p: 1,
+                  borderRadius: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: 1,
+                  borderColor: 'divider',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    boxShadow: 1
+                  }
+                }}
               >
                 <img
                   src={iconMap[device.iconKey]}
                   alt={device.label}
                   className="w-8 h-8 object-contain mb-2 pointer-events-none"
                 />
-                <span className="text-[10px] text-center text-gray-800 font-medium leading-tight uppercase">
+                <Typography 
+                  sx={{ 
+                    fontSize: '10px', 
+                    textAlign: 'center', 
+                    color: 'text.primary', 
+                    fontWeight: 500, 
+                    lineHeight: 1.2, 
+                    textTransform: 'uppercase' 
+                  }}
+                >
                   {t(`pidBuilder.devices.${device.label}`, { defaultValue: device.label })}
-                </span>
-              </div>
+                </Typography>
+              </Box>
             ))}
-          </div>
-        </div>
+          </Box>
+        </Box>
       ))}
       
       {/* Boru ve Akış Kategorisi */}
-      <div className="mt-2 mb-6">
-        <h3 className="text-[11px] font-bold text-gray-700 tracking-wider uppercase px-4 mt-5 mb-3">
+      <Box sx={{ mt: 1, mb: 3 }}>
+        <Typography 
+          variant="overline" 
+          sx={{ 
+            fontSize: '11px', 
+            fontWeight: 'bold', 
+            color: 'text.secondary', 
+            px: 2, 
+            mt: 2.5, 
+            mb: 1.5, 
+            display: 'block', 
+            lineHeight: 1 
+          }}
+        >
           {t('pidBuilder.palette.pipesAndFlows')}
-        </h3>
-        <div className="mx-2 border border-gray-200 rounded-lg p-2 bg-white flex flex-col gap-2 shadow-sm">
+        </Typography>
+        <Box 
+          sx={{ 
+            mx: 1, 
+            border: 1, 
+            borderColor: 'divider', 
+            borderRadius: 2, 
+            p: 1, 
+            bgcolor: 'background.default', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 1, 
+            boxShadow: 1 
+          }}
+        >
           {flows.map((f) => (
-            <div 
+            <Box 
               key={f.type}
               onClick={() => {
                 setActiveFlowType(f.type);
@@ -70,17 +146,44 @@ const DevicePalette = () => {
                   updateEdgeData(selectedEdge.id, { flowType: f.type });
                 }
               }}
-              className={`flex items-center space-x-3 cursor-pointer p-2 rounded transition-colors ${activeFlowType === f.type ? 'bg-blue-50 ring-1 ring-blue-400' : 'hover:bg-gray-50'}`}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                cursor: 'pointer',
+                p: 1,
+                borderRadius: 1,
+                transition: 'all 0.2s',
+                bgcolor: activeFlowType === f.type ? 'action.selected' : 'transparent',
+                border: 1,
+                borderColor: activeFlowType === f.type ? 'primary.main' : 'transparent',
+                '&:hover': { bgcolor: 'action.hover' }
+              }}
             >
-              <div className="flex items-center justify-center flex-shrink-0 w-12 h-8 bg-gray-50 rounded border border-gray-100">
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  flexShrink: 0, 
+                  width: 48, 
+                  height: 32, 
+                  bgcolor: 'background.paper', 
+                  borderRadius: 1, 
+                  border: 1, 
+                  borderColor: 'divider' 
+                }}
+              >
                 <img src={iconMap[f.type]} alt={f.label} className="w-10 h-6 object-contain pointer-events-none" />
-              </div>
-              <span className="text-[10px] font-bold text-gray-700 leading-none uppercase">{t(`pidBuilder.flows.${f.label}`, { defaultValue: f.label })}</span>
-            </div>
+              </Box>
+              <Typography sx={{ fontSize: '10px', fontWeight: 'bold', color: 'text.secondary', lineHeight: 1, textTransform: 'uppercase' }}>
+                {t(`pidBuilder.flows.${f.label}`, { defaultValue: f.label })}
+              </Typography>
+            </Box>
           ))}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

@@ -47,7 +47,17 @@ const BuilderToolbar = () => {
 
   return (
     <>
-      <AppBar className="border-b border-gray-200 z-10" color="inherit" elevation={1} position="static">
+      <AppBar 
+        sx={{ 
+          bgcolor: 'background.paper', 
+          color: 'text.primary',
+          borderBottom: 1, 
+          borderColor: 'divider',
+          zIndex: 10
+        }} 
+        elevation={0} 
+        position="static"
+      >
         <Toolbar className="justify-end min-h-[64px] px-4">
           <Box className="flex items-center gap-3">
             <Button
@@ -77,7 +87,7 @@ const BuilderToolbar = () => {
               {t('pidBuilder.toolbar.redo')}
             </Button>
 
-            <div className="h-6 w-px bg-gray-300 mx-1"></div>
+            <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
 
             <Button
               startIcon={<DeleteOutline />}
@@ -85,6 +95,7 @@ const BuilderToolbar = () => {
               onClick={clearFlow}
               color="error"
               variant="outlined"
+              sx={{ whiteSpace: 'nowrap' }}
             >
               {t('pidBuilder.toolbar.clear')}
             </Button>
@@ -98,6 +109,7 @@ const BuilderToolbar = () => {
               }}
               color="warning"
               variant="outlined"
+              sx={{ whiteSpace: 'nowrap' }}
             >
               {t('pidBuilder.toolbar.restore')}
             </Button>
@@ -111,6 +123,7 @@ const BuilderToolbar = () => {
               }}
               color="primary"
               variant="contained"
+              sx={{ whiteSpace: 'nowrap' }}
             >
               {t('pidBuilder.toolbar.save')}
             </Button>

@@ -91,18 +91,29 @@ const PropertyPanel = ({ variant }) => {
           position: 'absolute',
           right: 0,
           height: '100%',
-          borderLeft: '1px solid #e5e7eb',
+          borderLeft: '1px solid',
+          borderColor: 'divider',
           boxSizing: 'border-box'
         }
       }}
     >
-      <Box className="flex flex-col h-full bg-white uppercase" sx={{ '& input, & textarea, & .MuiSelect-select': { textTransform: 'uppercase' } }}>
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          height: '100%', 
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          textTransform: 'uppercase',
+          '& input, & textarea, & .MuiSelect-select': { textTransform: 'uppercase' } 
+        }}
+      >
         {/* Üst Bar */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <Typography className="text-gray-500 font-bold uppercase tracking-wider text-sm">
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <Typography sx={{ color: 'text.secondary', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.875rem' }}>
             {t('pidBuilder.propertyPanel.properties')}
           </Typography>
-            <div className="flex items-center gap-1">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             {!isEditing ? (
               <IconButton onClick={() => setIsEditing(true)} size="small" color="primary" title={t('pidBuilder.propertyPanel.edit')}>
                 <EditIcon fontSize="small" />
@@ -124,49 +135,55 @@ const PropertyPanel = ({ variant }) => {
             <IconButton onClick={() => setSelectedNode(null)} size="small">
               <CloseIcon fontSize="small" />
             </IconButton>
-          </div>
-        </div>
+            </Box>
+        </Box>
 
-        <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
+        <Box sx={{ flex: 1, overflowY: 'auto', p: 2.5, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Başlık Profili */}
-          <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100 shadow-sm">
-            <div className="w-12 h-12 flex-shrink-0 bg-white rounded border border-gray-200 flex items-center justify-center p-1.5">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, bgcolor: 'background.default', p: 1.5, borderRadius: 2, border: 1, borderColor: 'divider', boxShadow: 1 }}>
+            <Box sx={{ width: 48, height: 48, flexShrink: 0, bgcolor: 'background.paper', borderRadius: 1, border: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0.75 }}>
               <img
                 src={iconMap[selectedNode.data?.iconKey]}
                 alt={selectedNode.data?.label || 'icon'}
-                className="w-full h-full object-contain"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-gray-800 text-sm">
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography sx={{ fontWeight: 'bold', color: 'text.primary', fontSize: '0.875rem' }}>
                 {selectedNode.data?.label || selectedNode.data?.code || t('pidBuilder.propertyPanel.device')}
-              </span>
-              <div className="flex items-center space-x-3 mt-1.5">
-                <div className="flex items-center">
-                  <span className={`w-2 h-2 rounded-full ${getDurumColor(durum)} mr-1.5`}></span>
-                  <span className="text-[11px] text-gray-600 font-medium">{t(`pidBuilder.propertyPanel.status.${durum}`, { defaultValue: durum })}</span>
-                </div>
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: getDurumColor(durum), mr: 1.5 }}></Box>
+                  <Typography sx={{ fontSize: '11px', color: 'text.secondary', fontWeight: 500 }}>
+                    {t(`pidBuilder.propertyPanel.status.${durum}`, { defaultValue: durum })}
+                  </Typography>
+                </Box>
                 {canliVeri === 'gelecek' ? (
-                  <div className="flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></span>
-                    <span className="text-[11px] text-blue-600 font-medium">{t('pidBuilder.propertyPanel.liveData')}</span>
-                  </div>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'info.main', mr: 1.5 }}></Box>
+                    <Typography sx={{ fontSize: '11px', color: 'info.main', fontWeight: 500 }}>
+                      {t('pidBuilder.propertyPanel.liveData')}
+                    </Typography>
+                  </Box>
                 ) : (
-                  <div className="flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-gray-400 mr-1.5"></span>
-                    <span className="text-[11px] text-gray-500 font-medium">{t('pidBuilder.propertyPanel.static')}</span>
-                  </div>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'text.disabled', mr: 0.75 }} />
+                    <Typography sx={{ fontSize: '11px', color: 'text.secondary', fontWeight: 500 }}>
+                      {t('pidBuilder.propertyPanel.static')}
+                    </Typography>
+                  </Box>
                 )}
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
+          </Box>
 
           {/* Genel Bilgiler */}
-          <div>
-            <Typography className="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-4">
+          <Box>
+            <Typography variant="overline" sx={{ fontSize: '9px', fontWeight: 'bold', color: 'text.secondary', letterSpacing: 1, mb: 2, display: 'block' }}>
               {t('pidBuilder.propertyPanel.generalInfo')}
             </Typography>
-            <div className="flex flex-col gap-5 pt-2">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 0.5 }}>
               <TextField
                 label={t('pidBuilder.propertyPanel.deviceName')}
                 size="small"
@@ -184,7 +201,7 @@ const PropertyPanel = ({ variant }) => {
                 value={selectedNode.data?.type || selectedNode.type || ''}
                 onChange={(e) => handleDataChange('type', e.target.value)}
                 InputLabelProps={{ shrink: true }}
-                sx={{ backgroundColor: !isEditing ? '#f9fafb' : 'inherit' }}
+                sx={{ backgroundColor: !isEditing ? 'action.hover' : 'inherit' }}
               />
               <TextField
                 label={t('pidBuilder.propertyPanel.description')}
@@ -211,17 +228,17 @@ const PropertyPanel = ({ variant }) => {
                   <MenuItem value="Bakımda">{t('pidBuilder.propertyPanel.status.Bakımda')}</MenuItem>
                 </Select>
               </FormControl>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           <Divider />
 
           {/* Canlı Veri Bölümü */}
-          <div>
-            <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
+          <Box>
+            <Typography variant="overline" sx={{ fontSize: '11px', fontWeight: 'bold', color: 'text.secondary', letterSpacing: 1, mb: 2, display: 'block' }}>
               {t('pidBuilder.propertyPanel.liveDataStatus')}
             </Typography>
-            <FormControl component="fieldset" className="w-full pt-2">
+            <FormControl component="fieldset" sx={{ width: '100%', pt: 0.5 }}>
               <RadioGroup
                 row
                 value={selectedNode.data?.canliVeri || 'gelecek'}
@@ -231,27 +248,27 @@ const PropertyPanel = ({ variant }) => {
                   value="gelecek"
                   disabled={!isEditing}
                   control={<Radio size="small" />}
-                  label={<span className="text-sm">{t('pidBuilder.propertyPanel.willArrive')}</span>}
+                  label={<Typography sx={{ fontSize: '0.875rem' }}>{t('pidBuilder.propertyPanel.willArrive')}</Typography>}
                 />
                 <FormControlLabel
                   value="gelmeyecek"
                   disabled={!isEditing}
                   control={<Radio size="small" />}
-                  label={<span className="text-sm">{t('pidBuilder.propertyPanel.wontArrive')}</span>}
+                  label={<Typography sx={{ fontSize: '0.875rem' }}>{t('pidBuilder.propertyPanel.wontArrive')}</Typography>}
                 />
               </RadioGroup>
             </FormControl>
-          </div>
+          </Box>
 
           <Divider />
 
           {/* Teknik Değerler */}
           {selectedNode.data?.defaultData && Object.keys(selectedNode.data.defaultData).length > 0 && (
-            <div>
-              <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
+            <Box>
+              <Typography variant="overline" sx={{ fontSize: '11px', fontWeight: 'bold', color: 'text.secondary', letterSpacing: 1, mb: 2, display: 'block' }}>
                 {t('pidBuilder.propertyPanel.technicalValues')}
               </Typography>
-              <div className="flex flex-col gap-5 pt-2">
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 0.5 }}>
                 {Object.entries(selectedNode.data.defaultData).map(([key, val]) => {
                   if (key === 'birim' || key === 'durum') return null;
                   
@@ -272,9 +289,9 @@ const PropertyPanel = ({ variant }) => {
                       InputProps={{
                         endAdornment: unit ? (
                           <InputAdornment position="end">
-                            <span className="text-[11px] font-bold text-gray-500 bg-gray-100 h-full flex items-center px-4 py-4 rounded border border-gray-300">
+                            <Box sx={{ fontSize: '11px', fontWeight: 'bold', color: 'text.secondary', bgcolor: 'background.default', height: '100%', display: 'flex', alignItems: 'center', px: 2, borderRadius: 1, border: 1, borderColor: 'divider' }}>
                               {unit}
-                            </span>
+                            </Box>
                           </InputAdornment>
                         ) : null
                       }}
@@ -286,18 +303,18 @@ const PropertyPanel = ({ variant }) => {
                     />
                   );
                 })}
-              </div>
-            </div>
+              </Box>
+            </Box>
           )}
 
           <Divider />
 
           {/* Çalışma Bilgileri */}
-          <div>
-            <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
+          <Box>
+            <Typography variant="overline" sx={{ fontSize: '11px', fontWeight: 'bold', color: 'text.secondary', letterSpacing: 1, mb: 2, display: 'block' }}>
               {t('pidBuilder.propertyPanel.operationalInfo')}
             </Typography>
-            <div className="flex flex-col gap-5 pt-2">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 0.5 }}>
               <TextField
                 label={t('pidBuilder.propertyPanel.operatingTime')}
                 size="small"
@@ -309,14 +326,14 @@ const PropertyPanel = ({ variant }) => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <span className="text-[11px] font-bold text-gray-500 bg-gray-100 h-full flex items-center px-4 py-4 rounded border border-gray-300">
+                      <Box sx={{ fontSize: '11px', fontWeight: 'bold', color: 'text.secondary', bgcolor: 'background.default', height: '100%', display: 'flex', alignItems: 'center', px: 2, py: 2, borderRadius: 1, border: 1, borderColor: 'divider' }}>
                         {t('pidBuilder.propertyPanel.hours')}
-                      </span>
+                      </Box>
                     </InputAdornment>
                   )
                 }}
                 sx={{ 
-                  backgroundColor: !isAdmin ? '#f9fafb' : 'inherit',
+                  backgroundColor: !isAdmin ? 'action.hover' : 'inherit',
                   '& .MuiOutlinedInput-root': { paddingRight: '4px' }
                 }}
               />
@@ -329,11 +346,11 @@ const PropertyPanel = ({ variant }) => {
                 value={selectedNode.data?.sonBakimTarihi || '2025-03-12'}
                 onChange={(e) => handleDataChange('sonBakimTarihi', e.target.value)}
                 InputLabelProps={{ shrink: true }}
-                sx={{ backgroundColor: !isAdmin ? '#f9fafb' : 'inherit' }}
+                sx={{ backgroundColor: !isAdmin ? 'action.hover' : 'inherit' }}
               />
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </Drawer>
   );

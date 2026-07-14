@@ -4,6 +4,8 @@ import 'reactflow/dist/style.css';
 
 import { usePID } from '../../../context/pid/PIDContext';
 import { builderNodeTypes, edgeTypes } from '../registry';
+import { useSelector } from 'react-redux';
+import { selectColorMode } from '../../../features/theme/themeSlice';
 
 const BuilderCanvasInner = () => {
   const {
@@ -17,6 +19,8 @@ const BuilderCanvasInner = () => {
     setSelectedEdge,
     setActiveFlowType
   } = usePID();
+
+  const mode = useSelector(selectColorMode);
 
   // project yerine ekran koordinatlarını kanvas koordinatlarına milimetrik çeviren fonksiyonu alıyoruz
   const { screenToFlowPosition } = useReactFlow();
@@ -62,7 +66,7 @@ const BuilderCanvasInner = () => {
   };
 
   return (
-    <div className="flex-1 h-full relative">
+    <div className="flex-1 h-full relative bg-slate-50 dark:bg-slate-950">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -77,8 +81,9 @@ const BuilderCanvasInner = () => {
         nodeTypes={builderNodeTypes}
         edgeTypes={edgeTypes}
         fitView
+        colorMode={mode}
       >
-        <Background variant="dots" gap={16} size={1} />
+        <Background variant="dots" gap={16} size={1} color={mode === 'dark' ? '#475569' : '#cbd5e1'} />
         <Controls />
         <MiniMap />
         
