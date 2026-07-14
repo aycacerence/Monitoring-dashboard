@@ -65,6 +65,9 @@ const BuilderToolbar = () => {
               disabled={!selectedNode && !selectedEdge}
               onClick={handleDelete}
               color="inherit"
+              sx={{ 
+                '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
+              }}
             >
               {t('pidBuilder.toolbar.delete')}
             </Button>
@@ -74,6 +77,9 @@ const BuilderToolbar = () => {
               disabled={!past || past.length === 0}
               onClick={undo}
               color="inherit"
+              sx={{ 
+                '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
+              }}
             >
               {t('pidBuilder.toolbar.undo')}
             </Button>
@@ -83,6 +89,9 @@ const BuilderToolbar = () => {
               disabled={!future || future.length === 0}
               onClick={redo}
               color="inherit"
+              sx={{ 
+                '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
+              }}
             >
               {t('pidBuilder.toolbar.redo')}
             </Button>
