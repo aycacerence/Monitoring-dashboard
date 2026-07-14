@@ -109,12 +109,4 @@ const BuilderCanvasInner = () => {
   );
 };
 
-const BuilderCanvas = () => {
-  return (
-    <ReactFlowProvider>
-      <BuilderCanvasInner />
-    </ReactFlowProvider>
-  );
-};
-
-export default BuilderCanvas;
+export default BuilderCanvasInner;

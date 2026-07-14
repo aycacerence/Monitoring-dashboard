@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { usePID } from '../../../context/pid/PIDContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
+import { useReactFlow, useOnSelectionChange } from 'reactflow';
 import {
   AppBar,
   Toolbar,
   Button,
   Box,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Delete,
@@ -15,6 +18,7 @@ import {
   DeleteOutline,
   Save,
   Restore,
+  ZoomOutMap,
 } from '@mui/icons-material';
 
 const BuilderToolbar = () => {
@@ -36,6 +40,39 @@ const BuilderToolbar = () => {
     nodes = [],
     edges = [],
   } = usePID();
+
+  const { fitView, getNodes, getEdges } = useReactFlow();
+  const [selectedItemCount, setSelectedItemCount] = useState(0);
+
+  useOnSelectionChange({
+    onChange: ({ nodes, edges }) => {
+      setSelectedItemCount(nodes.length + edges.length);
+    },
+  });
+
+  const handleZoomToSelection = () => {
+    const allNodes = getNodes();
+    const allEdges = getEdges();
+    
+    const selectedNodes = allNodes.filter(node => node.selected);
+    const selectedEdges = allEdges.filter(edge => edge.selected);
+
+    const nodesToFit = new Set(selectedNodes);
+
+    // Seçili boruların (edge) bağlı olduğu cihazları (node) da zoom alanına dahil et
+    selectedEdges.forEach(edge => {
+      const sourceNode = allNodes.find(n => n.id === edge.source);
+      const targetNode = allNodes.find(n => n.id === edge.target);
+      if (sourceNode) nodesToFit.add(sourceNode);
+      if (targetNode) nodesToFit.add(targetNode);
+    });
+
+    const finalNodes = Array.from(nodesToFit);
+
+    if (finalNodes.length > 0) {
+      fitView({ nodes: finalNodes, duration: 800, padding: 0.1, maxZoom: 2 });
+    }
+  };
 
   const handleDelete = () => {
     if (selectedNode) {
@@ -95,6 +132,23 @@ const BuilderToolbar = () => {
             >
               {t('pidBuilder.toolbar.redo')}
             </Button>
+
+            <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
+
+            <Tooltip title="Seçili Alana Yakınlaş (Shift + Sürükle)">
+              <span>
+                <IconButton
+                  color="inherit"
+                  onClick={handleZoomToSelection}
+                  disabled={selectedItemCount === 0}
+                  sx={{ 
+                    '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
+                  }}
+                >
+                  <ZoomOutMap />
+                </IconButton>
+              </span>
+            </Tooltip>
 
             <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
 
