@@ -7,10 +7,10 @@ const DevicePalette = () => {
   const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData } = usePID();
 
   const flows = [
-    { type: 'flow_mixed', label: 'FLOW_MIXED', color: '#3b82f6' },
-    { type: 'duct_hot', label: 'DUCT_HOT', color: '#f97316' },
-    { type: 'duct_cold', label: 'DUCT_COLD', color: '#ef4444' },
-    { type: 'duct_exhaust', label: 'DUCT_EXHAUST', color: '#64748b' }
+    { type: 'duct_mixed', label: 'duct_mixed', color: '#3b82f6' },
+    { type: 'duct_hot', label: 'duct_hot', color: '#f97316' },
+    { type: 'duct_cold', label: 'duct_cold', color: '#ef4444' },
+    { type: 'duct_exhaust', label: 'duct_exhaust', color: '#64748b' }
   ];
   return (
     <div className="w-64 h-full flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white flex flex-col pb-6">
@@ -32,7 +32,7 @@ const DevicePalette = () => {
                   alt={device.label}
                   className="w-8 h-8 object-contain mb-2 pointer-events-none"
                 />
-                <span className="text-[10px] text-center text-gray-800 font-medium leading-tight">
+                <span className="text-[10px] text-center text-gray-800 font-medium leading-tight uppercase">
                   {device.label}
                 </span>
               </div>
@@ -58,12 +58,10 @@ const DevicePalette = () => {
               }}
               className={`flex items-center space-x-1 cursor-pointer p-1.5 rounded transition-colors ${activeFlowType === f.type ? 'bg-blue-50 ring-1 ring-blue-400' : 'hover:bg-gray-50'}`}
             >
-              <div className="flex items-center flex-shrink-0" style={{ color: f.color }}>
-                <svg width="20" height="10" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 6H20M20 6L15 1M20 6L15 11" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+              <div className="flex items-center flex-shrink-0">
+                <img src={iconMap[f.type]} alt={f.label} className="w-8 h-4 object-contain pointer-events-none" />
               </div>
-              <span className="text-[9px] font-bold text-gray-700 leading-none whitespace-nowrap">{f.label}</span>
+              <span className="text-[9px] font-bold text-gray-700 leading-none whitespace-nowrap uppercase">{f.label}</span>
             </div>
           ))}
         </div>

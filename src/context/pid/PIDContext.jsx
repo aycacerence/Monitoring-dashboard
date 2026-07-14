@@ -33,7 +33,7 @@ export const PIDProvider = ({ children }) => {
   const isDirty = JSON.stringify({ nodes, edges }) !== savedState;
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
-  const [activeFlowType, setActiveFlowType] = useState('flow_mixed');
+  const [activeFlowType, setActiveFlowType] = useState('duct_mixed');
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || null;
   const selectedEdge = edges.find(e => e.id === selectedEdgeId) || null;
@@ -124,7 +124,7 @@ export const PIDProvider = ({ children }) => {
 
   const getFlowColor = (flowType) => {
     switch (flowType) {
-      case 'flow_mixed': return '#3b82f6';
+      case 'duct_mixed': return '#3b82f6';
       case 'duct_hot': return '#f97316';
       case 'duct_cold': return '#ef4444';
       case 'duct_exhaust': return '#64748b';

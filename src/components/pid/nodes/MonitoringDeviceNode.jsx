@@ -26,8 +26,8 @@ const MonitoringDeviceNode = ({ data, selected }) => {
       
       <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-8 h-8" />
       
-      <span className="text-xs font-semibold">{data.code}</span>
-      <span className="text-[10px] text-gray-500">{data.label}</span>
+      <span className="text-xs font-semibold uppercase">{data.code}</span>
+      <span className="text-[10px] text-gray-500 uppercase">{data.label}</span>
       
       <span className="text-[10px] px-1.5 py-0.5 rounded bg-white border mt-1">
         {data.liveValue !== undefined && data.liveValue !== null && data.liveValue !== '' ? data.liveValue : '--'} {data.unit || ''}

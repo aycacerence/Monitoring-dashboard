@@ -28,7 +28,7 @@ const FlowEdge = ({
 
   const getFlowColor = (flowType) => {
     switch (flowType) {
-      case 'flow_mixed': return theme.palette.flow.mixed;
+      case 'duct_mixed': return theme.palette.flow.mixed;
       case 'duct_hot': return theme.palette.flow.hot;
       case 'duct_cold': return theme.palette.flow.cold;
       case 'duct_exhaust': return theme.palette.flow.exhaust;

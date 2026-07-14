@@ -85,7 +85,7 @@ const BuilderCanvasInner = () => {
         {/* Özel ok işaretleri (Custom Markers) - Handle'ların altında kalmasını önlemek için refX="15" kaydırması */}
         <svg style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }}>
           <defs>
-            <marker id="arrow-flow_mixed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" overflow="visible">
+            <marker id="arrow-duct_mixed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" overflow="visible">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
             </marker>
             <marker id="arrow-duct_hot" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" overflow="visible">

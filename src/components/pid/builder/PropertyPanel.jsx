@@ -94,7 +94,7 @@ const PropertyPanel = ({ variant }) => {
         }
       }}
     >
-      <Box className="flex flex-col h-full bg-white">
+      <Box className="flex flex-col h-full bg-white uppercase" sx={{ '& input, & textarea, & .MuiSelect-select': { textTransform: 'uppercase' } }}>
         {/* Üst Bar */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <Typography className="text-gray-500 font-bold uppercase tracking-wider text-sm">
