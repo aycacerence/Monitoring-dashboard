@@ -13,6 +13,7 @@ import {
   Redo,
   DeleteOutline,
   Save,
+  Restore,
 } from '@mui/icons-material';
 
 const BuilderToolbar = () => {
@@ -26,6 +27,7 @@ const BuilderToolbar = () => {
     redo,
     saveFlow,
     clearFlow,
+    restoreFlow,
     past = [],
     future = [],
     isDirty,
@@ -83,6 +85,19 @@ const BuilderToolbar = () => {
               variant="outlined"
             >
               Temizle
+            </Button>
+
+            <Button
+              startIcon={<Restore />}
+              disabled={!isDirty}
+              onClick={() => {
+                restoreFlow();
+                toast.success('Son kaydedilen duruma geri dönüldü');
+              }}
+              color="warning"
+              variant="outlined"
+            >
+              Değişiklikleri Geri Al
             </Button>
 
             <Button

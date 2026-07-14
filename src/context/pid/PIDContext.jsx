@@ -199,15 +199,16 @@ export const PIDProvider = ({ children }) => {
       setEdges([]);
       setSavedState(JSON.stringify({ nodes: [], edges: [] }));
     }
+    // Reset selection and history
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+    setPast([]);
+    setFuture([]);
   }, [role]);
 
   // Rol değiştiğinde o role ait diyagramı yükle
   useEffect(() => {
     restoreFlow();
-    setSelectedNodeId(null);
-    setSelectedEdgeId(null);
-    setPast([]);
-    setFuture([]);
   }, [role, restoreFlow]);
 
   const clearFlow = useCallback(() => {
