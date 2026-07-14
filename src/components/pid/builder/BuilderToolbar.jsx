@@ -39,6 +39,7 @@ const BuilderToolbar = () => {
     isDirty,
     nodes = [],
     edges = [],
+    deleteMultiple,
   } = usePID();
 
   const { fitView, getNodes, getEdges } = useReactFlow();
@@ -75,10 +76,18 @@ const BuilderToolbar = () => {
   };
 
   const handleDelete = () => {
-    if (selectedNode) {
-      deleteNode(selectedNode.id);
+    const allNodes = getNodes();
+    const allEdges = getEdges();
+    
+    const nodesToRemove = allNodes.filter(n => n.selected);
+    const edgesToRemove = allEdges.filter(e => e.selected);
+    
+    if (nodesToRemove.length > 0 || edgesToRemove.length > 0) {
+      deleteMultiple(nodesToRemove, edgesToRemove);
+    } else if (selectedNode) {
+      deleteMultiple([selectedNode], []);
     } else if (selectedEdge) {
-      deleteEdge(selectedEdge.id);
+      deleteMultiple([], [selectedEdge]);
     }
   };
 
@@ -94,12 +103,15 @@ const BuilderToolbar = () => {
         }} 
         elevation={0} 
         position="static"
+        onPointerDown={(e) => e.stopPropagation()}
+        onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+        onClick={(e) => e.stopPropagation()}
       >
         <Toolbar className="justify-end min-h-[64px] px-4">
           <Box className="flex items-center gap-3">
             <Button
               startIcon={<Delete />}
-              disabled={!selectedNode && !selectedEdge}
+              disabled={selectedItemCount === 0 && !selectedNode && !selectedEdge}
               onClick={handleDelete}
               color="inherit"
               sx={{ 

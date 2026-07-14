@@ -122,6 +122,24 @@ export const PIDProvider = ({ children }) => {
     }
   }, [pushHistory, selectedEdgeId]);
 
+  const deleteMultiple = useCallback((nodesToRemove, edgesToRemove) => {
+    if (nodesToRemove.length === 0 && edgesToRemove.length === 0) return;
+    pushHistory();
+    
+    const nodeIds = new Set(nodesToRemove.map(n => n.id));
+    const edgeIds = new Set(edgesToRemove.map(e => e.id));
+
+    setNodes((nds) => nds.filter((n) => !nodeIds.has(n.id)));
+    setEdges((eds) => eds.filter((e) => !edgeIds.has(e.id) && !nodeIds.has(e.source) && !nodeIds.has(e.target)));
+
+    if (selectedNodeId && nodeIds.has(selectedNodeId)) {
+      setSelectedNodeId(null);
+    }
+    if (selectedEdgeId && edgeIds.has(selectedEdgeId)) {
+      setSelectedEdgeId(null);
+    }
+  }, [pushHistory, selectedNodeId, selectedEdgeId]);
+
   const getFlowColor = (flowType) => {
     switch (flowType) {
       case 'duct_mixed': return '#3b82f6';
@@ -235,6 +253,7 @@ export const PIDProvider = ({ children }) => {
     updateEdgeData,
     deleteNode,
     deleteEdge,
+    deleteMultiple,
     onConnect,
     onNodesChange,
     onEdgesChange,

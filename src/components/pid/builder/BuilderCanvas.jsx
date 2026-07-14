@@ -1,11 +1,47 @@
 import React, { useState, useCallback } from 'react';
 import ReactFlow, { Background, Controls, MiniMap, useReactFlow, ReactFlowProvider, useStore } from 'reactflow';
+import { useTheme } from '@mui/material/styles';
 import 'reactflow/dist/style.css';
 
 import { usePID } from '../../../context/pid/PIDContext';
 import { builderNodeTypes, edgeTypes } from '../registry';
 import { useSelector } from 'react-redux';
 import { selectColorMode } from '../../../features/theme/themeSlice';
+import { iconMap } from '../../../data/pid/iconMap';
+
+const CustomMiniMapNode = ({ id, x, y, width, height, color, selected }) => {
+  const { getNode } = useReactFlow();
+  const node = getNode(id);
+  const iconKey = node?.data?.iconKey;
+
+  if (iconKey && iconMap[iconKey]) {
+    return (
+      <image 
+        x={x} 
+        y={y} 
+        width={width} 
+        height={height} 
+        href={iconMap[iconKey]} 
+        preserveAspectRatio="xMidYMid meet"
+        opacity={selected ? 1 : 0.7}
+      />
+    );
+  }
+
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill={color || '#cbd5e1'}
+      rx={2}
+      ry={2}
+      stroke={selected ? '#3b82f6' : 'none'}
+      strokeWidth={selected ? 2 : 0}
+    />
+  );
+};
 
 // Hizalama toleransı (kaç piksel kala kılavuz çizgi çıksın ve yapışsın?)
 const SNAP_DISTANCE = 15; 
@@ -66,6 +102,7 @@ const BuilderCanvasInner = () => {
     setNodes
   } = usePID();
 
+  const theme = useTheme();
   const mode = useSelector(selectColorMode);
   
   // project yerine ekran koordinatlarını kanvas koordinatlarına milimetrik çeviren fonksiyonu alıyoruz
@@ -189,7 +226,13 @@ const BuilderCanvasInner = () => {
       >
         <Background variant="dots" gap={16} size={1} color={mode === 'dark' ? '#475569' : '#cbd5e1'} />
         <Controls />
-        <MiniMap />
+        <MiniMap 
+          nodeColor={(node) => theme.palette.mode === 'dark' ? '#334155' : '#cbd5e1'}
+          nodeComponent={CustomMiniMapNode}
+          maskColor={theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(248, 250, 252, 0.7)'}
+          pannable
+          zoomable
+        />
         
         {/* Özel Kılavuz Çizgileri Katmanı */}
         <svg style={{ position: 'absolute', width: '100%', height: '100%', pointerEvents: 'none', zIndex: 10 }}>
