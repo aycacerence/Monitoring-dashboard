@@ -21,10 +21,10 @@ export const getTheme = (mode) =>
       error:   { main: '#ef4444' },
       info:    { main: '#6366f1' },
       flow: {
-        mixed: '#2563eb',
-        hot: '#ea580c',
-        cold: '#dc2626',
-        exhaust: '#9333ea',
+        mixed: '#3b82f6',
+        hot: '#ef4444',
+        cold: '#3b82f6',
+        exhaust: '#64748b',
         default: '#9ca3af'
       },
       background:

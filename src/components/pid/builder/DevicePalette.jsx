@@ -46,7 +46,7 @@ const DevicePalette = () => {
         <h3 className="text-[11px] font-bold text-gray-700 tracking-wider uppercase px-4 mt-5 mb-3">
           Boru ve Akış
         </h3>
-        <div className="mx-2 border border-gray-200 rounded-lg p-2 bg-white grid grid-cols-2 gap-y-3 gap-x-1 shadow-sm">
+        <div className="mx-2 border border-gray-200 rounded-lg p-2 bg-white flex flex-col gap-2 shadow-sm">
           {flows.map((f) => (
             <div 
               key={f.type}
@@ -56,12 +56,12 @@ const DevicePalette = () => {
                   updateEdgeData(selectedEdge.id, { flowType: f.type });
                 }
               }}
-              className={`flex items-center space-x-1 cursor-pointer p-1.5 rounded transition-colors ${activeFlowType === f.type ? 'bg-blue-50 ring-1 ring-blue-400' : 'hover:bg-gray-50'}`}
+              className={`flex items-center space-x-3 cursor-pointer p-2 rounded transition-colors ${activeFlowType === f.type ? 'bg-blue-50 ring-1 ring-blue-400' : 'hover:bg-gray-50'}`}
             >
-              <div className="flex items-center flex-shrink-0">
-                <img src={iconMap[f.type]} alt={f.label} className="w-8 h-4 object-contain pointer-events-none" />
+              <div className="flex items-center justify-center flex-shrink-0 w-12 h-8 bg-gray-50 rounded border border-gray-100">
+                <img src={iconMap[f.type]} alt={f.label} className="w-10 h-6 object-contain pointer-events-none" />
               </div>
-              <span className="text-[9px] font-bold text-gray-700 leading-none whitespace-nowrap uppercase">{f.label}</span>
+              <span className="text-[10px] font-bold text-gray-700 leading-none uppercase">{f.label}</span>
             </div>
           ))}
         </div>
