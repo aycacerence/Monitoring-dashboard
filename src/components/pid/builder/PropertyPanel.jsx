@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePID } from '../../../context/pid/PIDContext';
+import toast from 'react-hot-toast';
 import {
   Drawer,
   IconButton,
@@ -17,14 +18,22 @@ import {
   InputAdornment
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import { iconMap } from '../../../data/pid/iconMap';
 import { useSelector } from 'react-redux';
 import { selectRole } from '../../../features/auth/authSlice';
 
 const PropertyPanel = ({ variant }) => {
-  const { selectedNode, updateNodeData, setSelectedNode } = usePID();
+  const { selectedNode, updateNodeData, setSelectedNode, saveFlow } = usePID();
   const role = useSelector(selectRole);
   const isAdmin = role === 'admin';
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    setIsEditing(false);
+  }, [selectedNode?.id]);
 
   if (!selectedNode) return null;
 
@@ -91,9 +100,29 @@ const PropertyPanel = ({ variant }) => {
           <Typography className="text-gray-500 font-bold uppercase tracking-wider text-sm">
             Özellikler
           </Typography>
-          <IconButton onClick={() => setSelectedNode(null)} size="small">
-            <CloseIcon fontSize="small" />
-          </IconButton>
+          <div className="flex items-center gap-1">
+            {!isEditing ? (
+              <IconButton onClick={() => setIsEditing(true)} size="small" color="primary" title="Düzenle">
+                <EditIcon fontSize="small" />
+              </IconButton>
+            ) : (
+              <IconButton 
+                onClick={() => {
+                  setIsEditing(false);
+                  saveFlow();
+                  toast.success('Özellikler başarıyla güncellendi');
+                }} 
+                size="small" 
+                color="success" 
+                title="Kaydet"
+              >
+                <SaveIcon fontSize="small" />
+              </IconButton>
+            )}
+            <IconButton onClick={() => setSelectedNode(null)} size="small">
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
@@ -140,6 +169,7 @@ const PropertyPanel = ({ variant }) => {
                 label="Cihaz Adı"
                 size="small"
                 fullWidth
+                disabled={!isEditing}
                 value={selectedNode.data?.label || ''}
                 onChange={(e) => handleDataChange('label', e.target.value)}
                 InputLabelProps={{ shrink: true }}
@@ -148,10 +178,11 @@ const PropertyPanel = ({ variant }) => {
                 label="Cihaz Tipi"
                 size="small"
                 fullWidth
-                InputProps={{ readOnly: true }}
+                disabled={!isEditing}
                 value={selectedNode.data?.type || selectedNode.type || ''}
+                onChange={(e) => handleDataChange('type', e.target.value)}
                 InputLabelProps={{ shrink: true }}
-                sx={{ backgroundColor: '#f9fafb' }}
+                sx={{ backgroundColor: !isEditing ? '#f9fafb' : 'inherit' }}
               />
               <TextField
                 label="Açıklama"
@@ -159,6 +190,7 @@ const PropertyPanel = ({ variant }) => {
                 fullWidth
                 multiline
                 rows={2}
+                disabled={!isEditing}
                 value={selectedNode.data?.aciklama || ''}
                 onChange={(e) => handleDataChange('aciklama', e.target.value)}
                 InputLabelProps={{ shrink: true }}
@@ -169,6 +201,7 @@ const PropertyPanel = ({ variant }) => {
                   value={selectedNode.data?.durum || 'Aktif'}
                   onChange={(e) => handleDataChange('durum', e.target.value)}
                   label="Durum"
+                  disabled={!isEditing}
                   notched
                 >
                   <MenuItem value="Aktif">Aktif</MenuItem>
@@ -194,11 +227,13 @@ const PropertyPanel = ({ variant }) => {
               >
                 <FormControlLabel
                   value="gelecek"
+                  disabled={!isEditing}
                   control={<Radio size="small" />}
                   label={<span className="text-sm">Gelecek</span>}
                 />
                 <FormControlLabel
                   value="gelmeyecek"
+                  disabled={!isEditing}
                   control={<Radio size="small" />}
                   label={<span className="text-sm">Gelmeyecek</span>}
                 />
@@ -227,6 +262,7 @@ const PropertyPanel = ({ variant }) => {
                       label={label}
                       size="small"
                       fullWidth
+                      disabled={!isEditing}
                       value={val}
                       onChange={(e) => handleDefaultDataChange(key, e.target.value)}
                       InputLabelProps={{ shrink: true }}
@@ -263,7 +299,7 @@ const PropertyPanel = ({ variant }) => {
                 label="Çalışma Süresi"
                 size="small"
                 fullWidth
-                disabled={!isAdmin}
+                disabled={!isAdmin || !isEditing}
                 value={selectedNode.data?.calismaSuresi || '1256'}
                 onChange={(e) => handleDataChange('calismaSuresi', e.target.value)}
                 InputLabelProps={{ shrink: true }}
@@ -285,7 +321,7 @@ const PropertyPanel = ({ variant }) => {
                 label="Son Bakım Tarihi"
                 size="small"
                 fullWidth
-                disabled={!isAdmin}
+                disabled={!isAdmin || !isEditing}
                 type="date"
                 value={selectedNode.data?.sonBakimTarihi || '2025-03-12'}
                 onChange={(e) => handleDataChange('sonBakimTarihi', e.target.value)}

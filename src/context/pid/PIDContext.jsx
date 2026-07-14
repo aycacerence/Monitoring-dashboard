@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { addEdge, applyNodeChanges, applyEdgeChanges, MarkerType } from 'reactflow';
+import { useSelector } from 'react-redux';
+import { selectRole } from '../../features/auth/authSlice';
 
 const PIDContext = createContext();
 
@@ -11,9 +13,8 @@ export const usePID = () => {
   return context;
 };
 
-const loadSavedFlow = () => {
+const loadSavedFlow = (role) => {
   try {
-    const role = localStorage.getItem('userRole') || 'admin';
     const saved = localStorage.getItem(`pid_saved_flow_${role}`);
     if (saved) return JSON.parse(saved);
   } catch (e) {
@@ -23,7 +24,8 @@ const loadSavedFlow = () => {
 };
 
 export const PIDProvider = ({ children }) => {
-  const initialData = loadSavedFlow();
+  const role = useSelector(selectRole) || 'admin';
+  const initialData = loadSavedFlow(role);
   const [nodes, setNodes] = useState(initialData.nodes);
   const [edges, setEdges] = useState(initialData.edges);
   const [savedState, setSavedState] = useState(JSON.stringify(initialData));
@@ -174,15 +176,13 @@ export const PIDProvider = ({ children }) => {
   }, []);
 
   const saveFlow = useCallback(() => {
-    const role = localStorage.getItem('userRole') || 'admin';
     const flow = { nodes, edges };
     const flowStr = JSON.stringify(flow);
     localStorage.setItem(`pid_saved_flow_${role}`, flowStr);
     setSavedState(flowStr);
-  }, [nodes, edges]);
+  }, [nodes, edges, role]);
 
   const restoreFlow = useCallback(() => {
-    const role = localStorage.getItem('userRole') || 'admin';
     const savedFlow = localStorage.getItem(`pid_saved_flow_${role}`);
     if (savedFlow) {
       try {
@@ -193,11 +193,24 @@ export const PIDProvider = ({ children }) => {
       } catch (error) {
         console.error('Akış geri yüklenirken hata oluştu:', error);
       }
+    } else {
+      // If there's no saved flow for this role, clear the canvas
+      setNodes([]);
+      setEdges([]);
+      setSavedState(JSON.stringify({ nodes: [], edges: [] }));
     }
-  }, []);
+  }, [role]);
+
+  // Rol değiştiğinde o role ait diyagramı yükle
+  useEffect(() => {
+    restoreFlow();
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+    setPast([]);
+    setFuture([]);
+  }, [role, restoreFlow]);
 
   const clearFlow = useCallback(() => {
-    const role = localStorage.getItem('userRole') || 'admin';
     pushHistory();
     setNodes([]);
     setEdges([]);
@@ -205,7 +218,7 @@ export const PIDProvider = ({ children }) => {
     setSelectedEdgeId(null);
     localStorage.removeItem(`pid_saved_flow_${role}`);
     setSavedState(JSON.stringify({ nodes: [], edges: [] }));
-  }, [pushHistory]);
+  }, [pushHistory, role]);
 
   const value = {
     nodes,
