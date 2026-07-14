@@ -40,6 +40,33 @@ const PropertyPanel = ({ variant }) => {
     handleDataChange('defaultData', updatedDefaultData);
   };
 
+  const durum = selectedNode.data?.durum || 'Aktif';
+  const getDurumColor = (d) => {
+    switch (d) {
+      case 'Aktif': return 'bg-green-500';
+      case 'Pasif': return 'bg-red-500';
+      case 'Bakımda': return 'bg-orange-500';
+      default: return 'bg-green-500';
+    }
+  };
+  const canliVeri = selectedNode.data?.canliVeri || 'gelecek';
+
+  const unitMap = {
+    debi: 'm³/h', basinc: 'bar', farkBasinc: 'bar',
+    guc: 'kW', girisGucu: 'kW', cikisGucu: 'kW', nominalGuc: 'kW',
+    verim: '%', akim: 'A', gerilim: 'V', voltaj: 'V', frekans: 'Hz',
+    sicaklik: '°C', girisSicakligi: '°C', cikisSicakligi: '°C',
+    akiskanSicakligi: '°C', setSicaklik: '°C', isinim: 'W/m²',
+    fanHizi: 'RPM', devir: 'RPM', kapasite: 'L',
+    seviye: '%', sarjDurumu: '%', aciklikOrani: '%', nem: '%',
+    toplamTuketim: 'kWh', anlikGuc: 'kW', cpuKullanimi: '%', parlaklik: '%'
+  };
+
+  const getUnit = (key, deviceCode) => {
+    if (key === 'kapasite' && deviceCode === 'BATTERY') return 'Ah';
+    return selectedNode.data?.defaultData?.birim || unitMap[key] || '';
+  };
+
   return (
     <Drawer
       anchor="right"
@@ -69,10 +96,10 @@ const PropertyPanel = ({ variant }) => {
           </IconButton>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
           {/* Başlık Profili */}
-          <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
-            <div className="w-10 h-10 flex-shrink-0 bg-white rounded border border-gray-200 flex items-center justify-center p-1">
+          <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100 shadow-sm">
+            <div className="w-12 h-12 flex-shrink-0 bg-white rounded border border-gray-200 flex items-center justify-center p-1.5">
               <img
                 src={iconMap[selectedNode.data?.iconKey]}
                 alt={selectedNode.data?.label || 'icon'}
@@ -80,22 +107,35 @@ const PropertyPanel = ({ variant }) => {
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-gray-800">
+              <span className="font-bold text-gray-800 text-sm">
                 {selectedNode.data?.label || selectedNode.data?.code || 'Cihaz'}
               </span>
-              <div className="flex items-center mt-1">
-                <span className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span>
-                <span className="text-xs text-gray-500 font-medium">Aktif</span>
+              <div className="flex items-center space-x-3 mt-1.5">
+                <div className="flex items-center">
+                  <span className={`w-2 h-2 rounded-full ${getDurumColor(durum)} mr-1.5`}></span>
+                  <span className="text-[11px] text-gray-600 font-medium">{durum}</span>
+                </div>
+                {canliVeri === 'gelecek' ? (
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></span>
+                    <span className="text-[11px] text-blue-600 font-medium">Canlı Veri</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-gray-400 mr-1.5"></span>
+                    <span className="text-[11px] text-gray-500 font-medium">Statik</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* Genel Bilgiler */}
           <div>
-            <Typography className="text-xs font-bold text-gray-800 uppercase mb-3">
+            <Typography className="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-4">
               Genel Bilgiler
             </Typography>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-5 pt-2">
               <TextField
                 label="Cihaz Adı"
                 size="small"
@@ -143,10 +183,10 @@ const PropertyPanel = ({ variant }) => {
 
           {/* Canlı Veri Bölümü */}
           <div>
-            <Typography className="text-xs font-bold text-gray-800 uppercase mb-2">
-              Canlı Veri
+            <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
+              Canlı Veri Durumu
             </Typography>
-            <FormControl component="fieldset">
+            <FormControl component="fieldset" className="w-full pt-2">
               <RadioGroup
                 row
                 value={selectedNode.data?.canliVeri || 'gelecek'}
@@ -171,14 +211,16 @@ const PropertyPanel = ({ variant }) => {
           {/* Teknik Değerler */}
           {selectedNode.data?.defaultData && Object.keys(selectedNode.data.defaultData).length > 0 && (
             <div>
-              <Typography className="text-xs font-bold text-gray-800 uppercase mb-3">
+              <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
                 Teknik Değerler
               </Typography>
-              <div className="space-y-3">
+              <div className="flex flex-col gap-5 pt-2">
                 {Object.entries(selectedNode.data.defaultData).map(([key, val]) => {
-                  // If the key is 'birim', skip rendering it as a separate field
-                  // Or if there is a specific format you want, we handle it generally here
+                  if (key === 'birim' || key === 'durum') return null;
+                  
                   const label = key.charAt(0).toUpperCase() + key.slice(1);
+                  const unit = getUnit(key, selectedNode.data?.code);
+                  
                   return (
                     <TextField
                       key={key}
@@ -189,9 +231,18 @@ const PropertyPanel = ({ variant }) => {
                       onChange={(e) => handleDefaultDataChange(key, e.target.value)}
                       InputLabelProps={{ shrink: true }}
                       InputProps={{
-                        endAdornment: selectedNode.data.defaultData.birim && key !== 'birim' && key !== 'durum' ? (
-                          <InputAdornment position="end">{selectedNode.data.defaultData.birim}</InputAdornment>
+                        endAdornment: unit ? (
+                          <InputAdornment position="end">
+                            <span className="text-[11px] font-bold text-gray-500 bg-gray-100 h-full flex items-center px-4 py-4 rounded border border-gray-300">
+                              {unit}
+                            </span>
+                          </InputAdornment>
                         ) : null
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          paddingRight: unit ? '4px' : '14px'
+                        }
                       }}
                     />
                   );
@@ -204,10 +255,10 @@ const PropertyPanel = ({ variant }) => {
 
           {/* Çalışma Bilgileri */}
           <div>
-            <Typography className="text-xs font-bold text-gray-800 uppercase mb-3">
+            <Typography className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
               Çalışma Bilgileri
             </Typography>
-            <div className="space-y-3">
+            <div className="flex flex-col gap-5 pt-2">
               <TextField
                 label="Çalışma Süresi"
                 size="small"
@@ -217,9 +268,18 @@ const PropertyPanel = ({ variant }) => {
                 onChange={(e) => handleDataChange('calismaSuresi', e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 InputProps={{
-                  endAdornment: <InputAdornment position="end">saat</InputAdornment>
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <span className="text-[11px] font-bold text-gray-500 bg-gray-100 h-full flex items-center px-4 py-4 rounded border border-gray-300">
+                        saat
+                      </span>
+                    </InputAdornment>
+                  )
                 }}
-                sx={{ backgroundColor: !isAdmin ? '#f9fafb' : 'inherit' }}
+                sx={{ 
+                  backgroundColor: !isAdmin ? '#f9fafb' : 'inherit',
+                  '& .MuiOutlinedInput-root': { paddingRight: '4px' }
+                }}
               />
               <TextField
                 label="Son Bakım Tarihi"

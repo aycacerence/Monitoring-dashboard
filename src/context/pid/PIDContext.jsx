@@ -26,6 +26,9 @@ export const PIDProvider = ({ children }) => {
   const initialData = loadSavedFlow();
   const [nodes, setNodes] = useState(initialData.nodes);
   const [edges, setEdges] = useState(initialData.edges);
+  const [savedState, setSavedState] = useState(JSON.stringify(initialData));
+  
+  const isDirty = JSON.stringify({ nodes, edges }) !== savedState;
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [activeFlowType, setActiveFlowType] = useState('flow_mixed');
@@ -173,7 +176,9 @@ export const PIDProvider = ({ children }) => {
   const saveFlow = useCallback(() => {
     const role = localStorage.getItem('userRole') || 'admin';
     const flow = { nodes, edges };
-    localStorage.setItem(`pid_saved_flow_${role}`, JSON.stringify(flow));
+    const flowStr = JSON.stringify(flow);
+    localStorage.setItem(`pid_saved_flow_${role}`, flowStr);
+    setSavedState(flowStr);
   }, [nodes, edges]);
 
   const restoreFlow = useCallback(() => {
@@ -184,6 +189,7 @@ export const PIDProvider = ({ children }) => {
         const parsedFlow = JSON.parse(savedFlow);
         if (parsedFlow.nodes) setNodes(parsedFlow.nodes);
         if (parsedFlow.edges) setEdges(parsedFlow.edges);
+        setSavedState(savedFlow);
       } catch (error) {
         console.error('Akış geri yüklenirken hata oluştu:', error);
       }
@@ -198,6 +204,7 @@ export const PIDProvider = ({ children }) => {
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
     localStorage.removeItem(`pid_saved_flow_${role}`);
+    setSavedState(JSON.stringify({ nodes: [], edges: [] }));
   }, [pushHistory]);
 
   const value = {
@@ -223,7 +230,8 @@ export const PIDProvider = ({ children }) => {
     future,
     saveFlow,
     restoreFlow,
-    clearFlow
+    clearFlow,
+    isDirty
   };
 
   return <PIDContext.Provider value={value}>{children}</PIDContext.Provider>;

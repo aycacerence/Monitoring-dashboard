@@ -28,6 +28,9 @@ const BuilderToolbar = () => {
     clearFlow,
     past = [],
     future = [],
+    isDirty,
+    nodes = [],
+    edges = [],
   } = usePID();
 
   const handleDelete = () => {
@@ -74,6 +77,7 @@ const BuilderToolbar = () => {
 
             <Button
               startIcon={<DeleteOutline />}
+              disabled={nodes.length === 0 && edges.length === 0}
               onClick={clearFlow}
               color="error"
               variant="outlined"
@@ -83,6 +87,7 @@ const BuilderToolbar = () => {
 
             <Button
               startIcon={<Save />}
+              disabled={!isDirty}
               onClick={() => {
                 saveFlow();
                 toast.success('Diyagram başarıyla kaydedildi');
