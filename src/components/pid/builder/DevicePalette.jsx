@@ -4,6 +4,8 @@ import { iconMap } from '../../../data/pid/iconMap';
 import { usePID } from '../../../context/pid/PIDContext';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
+import { useReactFlow } from 'reactflow';
+import toast from 'react-hot-toast';
 
 const getCategoryTranslation = (category, t) => {
   const map = {
@@ -19,7 +21,22 @@ const getCategoryTranslation = (category, t) => {
 
 const DevicePalette = () => {
   const { t } = useTranslation();
-  const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData } = usePID();
+  const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData, addNode } = usePID();
+  const { screenToFlowPosition, project } = useReactFlow();
+
+  const handleDeviceClick = (device) => {
+    let position;
+    if (screenToFlowPosition) {
+       position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    } else if (project) {
+       position = project({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    } else {
+       position = { x: 100, y: 100 };
+    }
+    
+    addNode(device, position);
+    toast.success(`${t(`pidBuilder.devices.${device.label}`, { defaultValue: device.label })} eklendi!`);
+  };
 
   const flows = [
     { type: 'duct_mixed', label: 'duct_mixed', color: '#3b82f6' },
@@ -66,6 +83,7 @@ const DevicePalette = () => {
                 key={devIndex}
                 draggable="true"
                 onDragStart={(e) => e.dataTransfer.setData('application/reactflow', JSON.stringify(device))}
+                onClick={() => handleDeviceClick(device)}
                 sx={{
                   cursor: 'grab',
                   bgcolor: 'background.default',

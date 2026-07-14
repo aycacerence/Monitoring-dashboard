@@ -20,14 +20,7 @@ const PIDBuilder = () => {
         <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden relative">
           
           <div className="relative z-20">
-            {isMobile && (
-              <div className="absolute left-2 top-2 z-50">
-                <IconButton onClick={() => setMobilePaletteOpen(true)} className="bg-white shadow-sm">
-                  <MenuIcon />
-                </IconButton>
-              </div>
-            )}
-            <BuilderToolbar />
+            <BuilderToolbar onMenuClick={isMobile ? () => setMobilePaletteOpen(true) : undefined} />
           </div>
 
           <div className="flex flex-1 overflow-hidden relative">

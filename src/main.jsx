@@ -7,6 +7,14 @@ import App from './App.jsx';
 import { store } from './app/store.js';
 import './styles/index.css';
 import './i18n/i18n.js';
+import { polyfill } from "mobile-drag-drop";
+import "mobile-drag-drop/default.css";
+
+polyfill({
+    dragImageTranslateOverride: window.scrollBehaviourDragImageTranslateOverride
+});
+
+window.addEventListener('touchmove', function() {}, {passive: false});
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

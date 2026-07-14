@@ -19,9 +19,10 @@ import {
   Save,
   Restore,
   ZoomOutMap,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 
-const BuilderToolbar = () => {
+const BuilderToolbar = ({ onMenuClick }) => {
   const { t } = useTranslation();
 
   const {
@@ -107,8 +108,15 @@ const BuilderToolbar = () => {
         onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
         onClick={(e) => e.stopPropagation()}
       >
-        <Toolbar className="justify-end min-h-[64px] px-4">
-          <Box className="flex items-center gap-3">
+        <Toolbar className="justify-between min-h-[64px] px-2 sm:px-4">
+          <Box className="flex items-center">
+            {onMenuClick && (
+              <IconButton onClick={onMenuClick} color="inherit" edge="start" sx={{ mr: 1 }}>
+                <MenuIcon />
+              </IconButton>
+            )}
+          </Box>
+          <Box className="flex items-center gap-1 sm:gap-3 overflow-x-auto no-scrollbar" sx={{ width: '100%', justifyContent: 'flex-end' }}>
             <Button
               startIcon={<Delete />}
               disabled={selectedItemCount === 0 && !selectedNode && !selectedEdge}
