@@ -196,7 +196,7 @@ export const useDummySocket = (nodes = [], autoRefresh = true) => {
 
         return newData;
       });
-    }, 1500); // Gerçekçi bir canlı yayın hissi için 1.5 saniyede bir
+    }, 1000); // Gerçekçi bir canlı yayın hissi için saniyede bir
 
     return () => clearInterval(interval);
   }, [nodes, autoRefresh]);
