@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { addEdge, applyNodeChanges, applyEdgeChanges } from 'reactflow';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectRole } from '../../features/auth/authSlice';
+import { setIsDirty as setGlobalIsDirty } from '../../features/ui/uiSlice';
 
 const PIDContext = createContext();
 
@@ -63,6 +64,12 @@ export const PIDProvider = ({ children }) => {
   const [savedStateStr, setSavedStateStr] = useState(cleanFlow([], []));
   
   const isDirty = cleanFlow(nodes, edges) !== savedStateStr;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setGlobalIsDirty(isDirty));
+    return () => dispatch(setGlobalIsDirty(false));
+  }, [isDirty, dispatch]);
   
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 import {
   Box,
   List,
@@ -46,6 +48,27 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
 
   // Default to collapsed everywhere as requested
   const [isCollapsed, setIsCollapsed] = useState(true);
+
+  const isDirty = useSelector((state) => state.ui?.isDirty || false);
+
+  const handleNavigate = (targetPath, action) => {
+    if (isDirty) {
+      // Eğer kullanıcı Dashboard'daysa ve Panel Ayarlarına (kaydetme ekranına) geçmek istiyorsa izin ver.
+      const isDashboardArea = location.pathname === '/' || location.pathname === '/settings';
+      if (isDashboardArea && targetPath === '/settings') {
+        // İzin ver
+      } 
+      // Eğer kullanıcı zaten aynı ekrandaysa (Tasarım menüsüne tekrar tıklıyorsa) izin ver.
+      else if (location.pathname === targetPath) {
+        // İzin ver
+      } 
+      else {
+        toast.error(t('pidBuilder.toolbar.unsavedWarning', 'Önce değişiklikleri kaydetmelisiniz.'));
+        return;
+      }
+    }
+    action();
+  };
 
   const toggleAccordion = (panel) => {
     setOpenAccordion((prev) => ({
@@ -148,10 +171,10 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
               <List component="div" disablePadding>
                 <ListItemButton 
                   selected={location.pathname === '/' && activePanelSection === 'panel'} 
-                  onClick={() => {
+                  onClick={() => handleNavigate('/', () => {
                     navigate('/');
                     if (onCloseWidgetSidebar) onCloseWidgetSidebar();
-                  }} 
+                  })}
                   sx={subItemStyle}
                 >
                   <ListItemIcon sx={navIconStyle}>
@@ -163,13 +186,12 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
                 {/* PANEL AYARLARI -> Toggles WidgetSidebar */}
                 <ListItemButton 
                   selected={activePanelSection === 'settings'}
-                  onClick={() => {
-                    navigate('/');
+                  onClick={() => handleNavigate('/settings', () => {
                     onOpenWidgetSidebar();
                     if (isMobile) {
                       setIsCollapsed(true);
                     }
-                  }} 
+                  })}
                   sx={subItemStyle}
                 >
                   <ListItemIcon sx={navIconStyle}>
@@ -194,10 +216,10 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
               <List component="div" disablePadding>
                 <ListItemButton 
                   selected={location.pathname === '/pid/builder'} 
-                  onClick={() => {
+                  onClick={() => handleNavigate('/pid/builder', () => {
                     navigate('/pid/builder');
                     if (isMobile) setIsCollapsed(true);
-                  }} 
+                  })}
                   sx={subItemStyle}
                 >
                   <ListItemIcon sx={navIconStyle}>
@@ -208,10 +230,10 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
                 
                 <ListItemButton 
                   selected={location.pathname === '/pid/monitoring'}
-                  onClick={() => {
+                  onClick={() => handleNavigate('/pid/monitoring', () => {
                     navigate('/pid/monitoring');
                     if (isMobile) setIsCollapsed(true);
-                  }} 
+                  })}
                   sx={subItemStyle}
                 >
                   <ListItemIcon sx={navIconStyle}>
