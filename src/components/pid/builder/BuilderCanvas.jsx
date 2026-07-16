@@ -88,6 +88,40 @@ const getHelperLines = (draggedNode, allNodes) => {
   return helperLines;
 };
 
+// AABB Çarpışma Algılama ve Çözümleme Fonksiyonu
+const resolveNodeCollision = (targetNode, allNodes) => {
+  const PADDING = 10; // Cihazlar arası zorunlu minimum boşluk
+  let { x, y } = targetNode.position;
+  let hasCollision = true;
+  let safetyLimit = 0; // Sonsuz döngüyü önlemek için
+
+  while (hasCollision && safetyLimit < 50) {
+    hasCollision = false;
+    for (const node of allNodes) {
+      if (node.id === targetNode.id) continue;
+      
+      const w1 = targetNode.width || 48; const h1 = targetNode.height || 48;
+      const w2 = node.width || 48; const h2 = node.height || 48;
+
+      // AABB Kesişim Testi
+      const isIntersecting = 
+        x < node.position.x + w2 + PADDING &&
+        x + w1 + PADDING > node.position.x &&
+        y < node.position.y + h2 + PADDING &&
+        y + h1 + PADDING > node.position.y;
+
+      if (isIntersecting) {
+        hasCollision = true;
+        // Üst üste bindiği cihazın hemen sağına it
+        x = node.position.x + w2 + PADDING; 
+        break; // Yeni koordinatla testi baştan başlat
+      }
+    }
+    safetyLimit++;
+  }
+  return { x, y };
+};
+
 const BuilderCanvasInner = () => {
   const {
     nodes,
@@ -136,10 +170,22 @@ const BuilderCanvasInner = () => {
     );
   }, [getNodes, setNodes]);
 
-  const onNodeDragStop = useCallback(() => {
+  const onNodeDragStop = useCallback((event, node) => {
     // Sürükleme bittiğinde kılavuz çizgilerini temizle
     setHelperLines({ horizontal: null, vertical: null });
-  }, []);
+    
+    // AABB Çarpışma Kontrolü (Cihazı sürükleyip bıraktıktan sonra üst üste binmesin diye)
+    const allNodes = getNodes();
+    const newPosition = resolveNodeCollision(node, allNodes);
+    
+    if (newPosition.x !== node.position.x || newPosition.y !== node.position.y) {
+      setNodes((nds) => 
+        nds.map((n) => 
+          n.id === node.id ? { ...n, position: newPosition } : n
+        )
+      );
+    }
+  }, [getNodes, setNodes]);
 
   const onDragOver = useCallback((e) => {
     e.preventDefault();
@@ -176,10 +222,16 @@ const BuilderCanvasInner = () => {
     
     // Bırakıldığı anda eğer hizalama çizgisine yakınsa tam oraya yapıştır (snap)
     const mockNode = { id: 'temp-drag', position, width: 48, height: 48 };
-    const lines = getHelperLines(mockNode, getNodes());
+    const allNodes = getNodes();
+    const lines = getHelperLines(mockNode, allNodes);
     
     if (lines.vertical) position.x = lines.snapPosition.x;
     if (lines.horizontal) position.y = lines.snapPosition.y;
+
+    // Yapışma veya düz bırakma sonrası çarpışma kontrolü
+    mockNode.position = position;
+    const safePosition = resolveNodeCollision(mockNode, allNodes);
+    position = safePosition;
 
     addNode(device, position);
     setHelperLines({ horizontal: null, vertical: null });
