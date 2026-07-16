@@ -47,6 +47,12 @@ const loadDiagramContent = (id) => {
   return { nodes: [], edges: [] };
 };
 
+const cleanFlow = (nodes, edges) => {
+  const cleanNodes = (nodes || []).map(({ width, height, selected, dragging, positionAbsolute, ...rest }) => rest);
+  const cleanEdges = (edges || []).map(({ selected, ...rest }) => rest);
+  return JSON.stringify({ nodes: cleanNodes, edges: cleanEdges });
+};
+
 export const PIDProvider = ({ children }) => {
   const role = useSelector(selectRole) || 'admin';
   
@@ -54,9 +60,9 @@ export const PIDProvider = ({ children }) => {
   const [activeDiagramId, setActiveDiagramId] = useState(null);
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
-  const [savedState, setSavedState] = useState(JSON.stringify({ nodes: [], edges: [] }));
+  const [savedStateStr, setSavedStateStr] = useState(cleanFlow([], []));
   
-  const isDirty = JSON.stringify({ nodes, edges }) !== savedState;
+  const isDirty = cleanFlow(nodes, edges) !== savedStateStr;
   
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
@@ -90,7 +96,7 @@ export const PIDProvider = ({ children }) => {
     const content = loadDiagramContent(activeId);
     setNodes(content.nodes || []);
     setEdges(content.edges || []);
-    setSavedState(JSON.stringify(content));
+    setSavedStateStr(cleanFlow(content.nodes, content.edges));
     setPast([]);
     setFuture([]);
     setSelectedNodeId(null);
@@ -239,7 +245,7 @@ export const PIDProvider = ({ children }) => {
     const flow = { nodes, edges };
     const flowStr = JSON.stringify(flow);
     localStorage.setItem(`pid_flow_${activeDiagramId}`, flowStr);
-    setSavedState(flowStr);
+    setSavedStateStr(cleanFlow(nodes, edges));
     
     setDiagrams(prev => {
       const updated = prev.map(d => {
@@ -269,7 +275,7 @@ export const PIDProvider = ({ children }) => {
     
     setNodes([]);
     setEdges([]);
-    setSavedState(JSON.stringify({ nodes: [], edges: [] }));
+    setSavedStateStr(cleanFlow([], []));
     setPast([]);
     setFuture([]);
     setSelectedNodeId(null);
@@ -287,7 +293,7 @@ export const PIDProvider = ({ children }) => {
     const content = loadDiagramContent(id);
     setNodes(content.nodes || []);
     setEdges(content.edges || []);
-    setSavedState(JSON.stringify(content));
+    setSavedStateStr(cleanFlow(content.nodes, content.edges));
     setPast([]);
     setFuture([]);
     setSelectedNodeId(null);
@@ -327,7 +333,7 @@ export const PIDProvider = ({ children }) => {
         
         setNodes([]);
         setEdges([]);
-        setSavedState(JSON.stringify({ nodes: [], edges: [] }));
+        setSavedStateStr(cleanFlow([], []));
         setPast([]);
         setFuture([]);
         setSelectedNodeId(null);
@@ -342,7 +348,7 @@ export const PIDProvider = ({ children }) => {
         const content = loadDiagramContent(fallbackId);
         setNodes(content.nodes || []);
         setEdges(content.edges || []);
-        setSavedState(JSON.stringify(content));
+        setSavedStateStr(cleanFlow(content.nodes, content.edges));
         setPast([]);
         setFuture([]);
         setSelectedNodeId(null);
@@ -358,7 +364,7 @@ export const PIDProvider = ({ children }) => {
     const content = loadDiagramContent(activeDiagramId);
     setNodes(content.nodes || []);
     setEdges(content.edges || []);
-    setSavedState(JSON.stringify(content));
+    setSavedStateStr(cleanFlow(content.nodes, content.edges));
     setPast([]);
     setFuture([]);
     setSelectedNodeId(null);
