@@ -116,6 +116,8 @@ const getParallelPoints = (pts, offset) => {
 
 const FlowEdge = ({
   id,
+  source,
+  target,
   sourceX,
   sourceY,
   targetX,
@@ -133,30 +135,103 @@ const FlowEdge = ({
   const [hoveredHandle, setHoveredHandle] = useState(null);
   const [draggingHandle, setDraggingHandle] = useState(null);
 
-  // Başlangıç rotası (Varsayılan Z şekli)
+  const isReversed = id.includes('reverse') || (source > target);
+  // İlk çizginin (ana hattın) dümdüz olması için offset 0. Dönüş/Ters hattın etrafından dolanması için offset 40.
+  const offset = isReversed ? 40 : 0;
+
   const getInitialPoints = useCallback(() => {
     let pts = [{ x: sourceX, y: sourceY }];
-    const midX = sourceX + (targetX - sourceX) / 2;
-    pts.push({ x: midX, y: sourceY });
-    pts.push({ x: midX, y: targetY });
+
+    const startMarginX = sourcePosition === 'left' ? -40 : sourcePosition === 'right' ? 40 : 0;
+    const startMarginY = sourcePosition === 'top' ? -40 : sourcePosition === 'bottom' ? 40 : 0;
+    const endMarginX = targetPosition === 'left' ? -40 : targetPosition === 'right' ? 40 : 0;
+    const endMarginY = targetPosition === 'top' ? -40 : targetPosition === 'bottom' ? 40 : 0;
+
+    const p1 = { x: sourceX + startMarginX, y: sourceY + startMarginY };
+    const p2 = { x: targetX + endMarginX, y: targetY + endMarginY };
+    pts.push(p1);
+
+    if (['left', 'right'].includes(sourcePosition) && ['left', 'right'].includes(targetPosition)) {
+      if (sourcePosition === targetPosition) {
+        // C Şekli
+        const farX = sourcePosition === 'left' ? Math.min(p1.x, p2.x) - (30 + offset) : Math.max(p1.x, p2.x) + (30 + offset);
+        pts.push({ x: farX, y: p1.y });
+        pts.push({ x: farX, y: p2.y });
+      } else {
+        if ((sourcePosition === 'right' && p1.x >= p2.x) || (sourcePosition === 'left' && p1.x <= p2.x)) {
+          // S Şekli (Geri dönüş)
+          const midY = (p1.y + p2.y) / 2 + offset;
+          pts.push({ x: p1.x, y: midY });
+          pts.push({ x: p2.x, y: midY });
+        } else {
+          // Normal Z (İleri)
+          if (Math.abs(p1.y - p2.y) < 30) {
+            // Yükseklikleri neredeyse aynı (Düz çizgi). Orta kısma Y offset veriyoruz (Eğer 0 ise dümdüz çizer)
+            pts.push({ x: p1.x, y: p1.y + offset });
+            pts.push({ x: p2.x, y: p1.y + offset });
+          } else {
+            // Yükseklikleri farklı
+            const midX = (p1.x + p2.x) / 2 + offset;
+            pts.push({ x: midX, y: p1.y });
+            pts.push({ x: midX, y: p2.y });
+          }
+        }
+      }
+    } else if (['top', 'bottom'].includes(sourcePosition) && ['top', 'bottom'].includes(targetPosition)) {
+      if (sourcePosition === targetPosition) {
+        // C Şekli
+        const farY = sourcePosition === 'top' ? Math.min(p1.y, p2.y) - (30 + offset) : Math.max(p1.y, p2.y) + (30 + offset);
+        pts.push({ x: p1.x, y: farY });
+        pts.push({ x: p2.x, y: farY });
+      } else {
+        if ((sourcePosition === 'bottom' && p1.y >= p2.y) || (sourcePosition === 'top' && p1.y <= p2.y)) {
+          // S Şekli
+          const midX = (p1.x + p2.x) / 2 + offset;
+          pts.push({ x: midX, y: p1.y });
+          pts.push({ x: midX, y: p2.y });
+        } else {
+          // Normal Z
+          if (Math.abs(p1.x - p2.x) < 30) {
+            pts.push({ x: p1.x + offset, y: p1.y });
+            pts.push({ x: p1.x + offset, y: p2.y });
+          } else {
+            const midY = (p1.y + p2.y) / 2 + offset;
+            pts.push({ x: p1.x, y: midY });
+            pts.push({ x: p2.x, y: midY });
+          }
+        }
+      }
+    } else {
+      if (['left', 'right'].includes(sourcePosition)) {
+        pts.push({ x: p2.x, y: p1.y });
+      } else {
+        pts.push({ x: p1.x, y: p2.y });
+      }
+    }
+
+    pts.push(p2);
     pts.push({ x: targetX, y: targetY });
+
     return cleanPoints(pts);
-  }, [sourceX, sourceY, targetX, targetY]);
+  }, [sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, offset]);
 
   const activePoints = data?.points ? JSON.parse(JSON.stringify(data.points)) : getInitialPoints();
   
   // Düğüm taşınırsa uç noktaları düğüme tekrar dik açıyla kilitle
   if (data?.points && activePoints.length >= 2) {
-      const oldS = activePoints[0];
       activePoints[0] = { x: sourceX, y: sourceY };
-      if (Math.abs(oldS.y - activePoints[1].y) < 1) activePoints[1].y = sourceY;
-      if (Math.abs(oldS.x - activePoints[1].x) < 1) activePoints[1].x = sourceX;
+      const startMarginX = sourcePosition === 'left' ? -40 : sourcePosition === 'right' ? 40 : 0;
+      const startMarginY = sourcePosition === 'top' ? -40 : sourcePosition === 'bottom' ? 40 : 0;
       
-      const oldT = activePoints[activePoints.length - 1];
+      // İlk segment kırılma noktasını her zaman 40px marjinde tut
+      activePoints[1] = { x: sourceX + startMarginX, y: sourceY + startMarginY };
+      
       activePoints[activePoints.length - 1] = { x: targetX, y: targetY };
-      const ptB = activePoints[activePoints.length - 2];
-      if (Math.abs(oldT.y - ptB.y) < 1) ptB.y = targetY;
-      if (Math.abs(oldT.x - ptB.x) < 1) ptB.x = targetX;
+      const endMarginX = targetPosition === 'left' ? -40 : targetPosition === 'right' ? 40 : 0;
+      const endMarginY = targetPosition === 'top' ? -40 : targetPosition === 'bottom' ? 40 : 0;
+      
+      // Son segment kırılma noktasını her zaman 40px marjinde tut
+      activePoints[activePoints.length - 2] = { x: targetX + endMarginX, y: targetY + endMarginY };
   }
 
   // Çift tıklama ile boruyu sıfırla
