@@ -341,3 +341,23 @@ html.dark .react-flow__minimap-node {
   fill: #475569;
   stroke: none;
 }
+
+/* --- GÖRSEL HİLE: Boruları Cihazların Arkasına Atma --- */
+/* Cihazların (Nodes) olduğu katmanı her zaman en üste taşı */
+.react-flow__nodes {
+  z-index: 10 !important;
+}
+
+/* Boruların (Edges) olduğu katmanı cihazların altında tut */
+.react-flow__edges {
+  z-index: 0 !important;
+}
+
+/* Boruların cihazların arkasından görünmesini engellemek için katı arka planlar */
+.react-flow__node {
+  background-color: #ffffff; /* Aydınlık Mod arkaplanı */
+}
+
+html.dark .react-flow__node {
+  background-color: #1a1d27; /* Karanlık Mod arkaplanı */
+}
