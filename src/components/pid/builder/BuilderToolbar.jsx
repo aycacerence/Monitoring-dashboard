@@ -4,14 +4,6 @@ import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { useReactFlow, useOnSelectionChange } from 'reactflow';
 import {
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import {
   Delete,
   Undo,
   Redo,
@@ -20,7 +12,25 @@ import {
   Restore,
   ZoomOutMap,
   Menu as MenuIcon,
+  Add as AddIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Box,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+} from '@mui/material';
 
 const ResponsiveButton = ({ icon: Icon, label, ...props }) => (
   <Tooltip title={label}>
@@ -62,10 +72,86 @@ const BuilderToolbar = ({ onMenuClick }) => {
     nodes = [],
     edges = [],
     deleteMultiple,
+    diagrams,
+    activeDiagramId,
+    createNewDiagram,
+    switchDiagram,
+    renameDiagram,
+    deleteDiagram,
   } = usePID();
 
   const { fitView, getNodes, getEdges } = useReactFlow();
   const [selectedItemCount, setSelectedItemCount] = useState(0);
+  
+  // Çoklu Diyagram State
+  const [newDiagramOpen, setNewDiagramOpen] = useState(false);
+  const [newDiagramName, setNewDiagramName] = useState('');
+
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+  const [renameDiagramName, setRenameDiagramName] = useState('');
+  
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
+  const handleCreateNew = () => {
+    if (isDirty) {
+      toast.error(t('pidBuilder.toolbar.unsavedWarning'));
+      return;
+    }
+    setNewDiagramName('');
+    setNewDiagramOpen(true);
+  };
+
+  const handleConfirmNew = () => {
+    if (!newDiagramName.trim()) {
+      toast.error(t('pidBuilder.toolbar.invalidName'));
+      return;
+    }
+    createNewDiagram(newDiagramName.trim());
+    setNewDiagramOpen(false);
+    toast.success(t('pidBuilder.toolbar.diagramCreated'));
+  };
+
+  const handleSwitch = (event) => {
+    const targetId = event.target.value;
+    if (targetId === activeDiagramId) return;
+
+    if (isDirty) {
+      toast.error(t('pidBuilder.toolbar.unsavedWarning'));
+      return;
+    }
+    const success = switchDiagram(targetId);
+    if (success) {
+      toast.success(t('pidBuilder.toolbar.diagramLoaded'));
+    }
+  };
+
+  const handleOpenRename = () => {
+    const activeDiag = diagrams.find(d => d.id === activeDiagramId);
+    if (activeDiag) {
+      let displayName = activeDiag.name;
+      if (displayName === 'Varsayılan Diyagram' || displayName === 'İlk Diyagram' || displayName === 'default_diagram') {
+        displayName = t('pidBuilder.toolbar.defaultDiagram');
+      }
+      setRenameDiagramName(displayName);
+      setRenameDialogOpen(true);
+    }
+  };
+
+  const handleConfirmRename = () => {
+    if (!renameDiagramName.trim()) {
+      toast.error(t('pidBuilder.toolbar.invalidName'));
+      return;
+    }
+    renameDiagram(activeDiagramId, renameDiagramName.trim());
+    setRenameDialogOpen(false);
+    toast.success(t('pidBuilder.toolbar.renameSuccess'));
+  };
+
+  const handleConfirmDelete = () => {
+    deleteDiagram(activeDiagramId);
+    setDeleteConfirmOpen(false);
+    toast.success(t('pidBuilder.toolbar.deleteSuccess'));
+  };
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
@@ -130,11 +216,66 @@ const BuilderToolbar = ({ onMenuClick }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <Toolbar className="justify-between min-h-[64px] px-2 sm:px-4">
-          <Box className="flex items-center">
+          <Box className="flex items-center gap-2">
             {onMenuClick && (
               <IconButton onClick={onMenuClick} color="inherit" edge="start" sx={{ mr: 1 }}>
                 <MenuIcon />
               </IconButton>
+            )}
+            
+            {/* Çoklu Diyagram Kontrolleri */}
+            <Tooltip title={t('pidBuilder.toolbar.newDiagramTooltip')}>
+              <Button 
+                variant="outlined" 
+                color="primary" 
+                onClick={handleCreateNew}
+                startIcon={<AddIcon />}
+                sx={{ whiteSpace: 'nowrap', display: { xs: 'none', sm: 'flex' }, height: 36 }}
+              >
+                {t('pidBuilder.toolbar.newDiagram')}
+              </Button>
+            </Tooltip>
+            
+            <Tooltip title={t('pidBuilder.toolbar.newDiagram')} placement="bottom">
+              <IconButton 
+                color="primary" 
+                onClick={handleCreateNew}
+                sx={{ display: { xs: 'flex', sm: 'none' } }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+
+            {diagrams && diagrams.length > 0 && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <FormControl size="small" sx={{ minWidth: { xs: 120, sm: 180 } }}>
+                  <Select
+                    value={activeDiagramId || ''}
+                    onChange={handleSwitch}
+                    sx={{ height: 36, bgcolor: 'background.default' }}
+                  >
+                    {diagrams.map(d => {
+                      let displayName = d.name;
+                      if (displayName === 'Varsayılan Diyagram' || displayName === 'İlk Diyagram' || displayName === 'default_diagram') {
+                        displayName = t('pidBuilder.toolbar.defaultDiagram');
+                      }
+                      return <MenuItem key={d.id} value={d.id}>{displayName}</MenuItem>;
+                    })}
+                  </Select>
+                </FormControl>
+                
+                <Tooltip title={t('pidBuilder.toolbar.renameDiagram')}>
+                  <IconButton size="small" onClick={handleOpenRename}>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title={t('pidBuilder.toolbar.deleteDiagram')}>
+                  <IconButton size="small" color="error" onClick={() => setDeleteConfirmOpen(true)}>
+                    <DeleteOutline fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             )}
           </Box>
           <Box className="flex items-center gap-1 sm:gap-3 overflow-x-auto no-scrollbar" sx={{ width: '100%', justifyContent: 'flex-end' }}>
@@ -219,6 +360,205 @@ const BuilderToolbar = ({ onMenuClick }) => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Yeni Diyagram Pop-up (Kurumsal Tasarım) */}
+      <Dialog 
+        open={newDiagramOpen} 
+        onClose={() => setNewDiagramOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            minWidth: { xs: 300, sm: 450 },
+            bgcolor: 'background.paper',
+            backgroundImage: 'none',
+            boxShadow: 24,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          px: 3,
+          py: 2,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          color: 'text.primary'
+        }}>
+          <Box sx={{ 
+            bgcolor: 'primary.main', 
+            color: 'primary.contrastText',
+            borderRadius: 1,
+            p: 0.5,
+            display: 'flex'
+          }}>
+            <AddIcon fontSize="small" />
+          </Box>
+          {t('pidBuilder.toolbar.newDiagramTitle')}
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          <TextField
+            autoFocus
+            label={t('pidBuilder.toolbar.diagramNameLabel')}
+            placeholder={t('pidBuilder.toolbar.diagramNamePlaceholder')}
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={newDiagramName}
+            onChange={(e) => setNewDiagramName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleConfirmNew()}
+            sx={{ mt: 1 }}
+            InputLabelProps={{
+              sx: { fontWeight: 500 }
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
+          <Button 
+            onClick={() => setNewDiagramOpen(false)} 
+            color="inherit" 
+            variant="outlined"
+            sx={{ textTransform: 'none', px: 3, fontWeight: 500 }}
+          >
+            {t('pidBuilder.toolbar.cancel')}
+          </Button>
+          <Button 
+            onClick={handleConfirmNew} 
+            variant="contained" 
+            color="primary" 
+            disableElevation
+            sx={{ textTransform: 'none', px: 4, fontWeight: 600 }}
+          >
+            {t('pidBuilder.toolbar.create')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Diyagramı Yeniden Adlandır Pop-up */}
+      <Dialog 
+        open={renameDialogOpen} 
+        onClose={() => setRenameDialogOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            minWidth: { xs: 300, sm: 450 },
+            bgcolor: 'background.paper',
+            backgroundImage: 'none',
+            boxShadow: 24,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          px: 3,
+          py: 2,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          color: 'text.primary'
+        }}>
+          <Box sx={{ 
+            bgcolor: 'primary.main', 
+            color: 'primary.contrastText',
+            borderRadius: 1,
+            p: 0.5,
+            display: 'flex'
+          }}>
+            <EditIcon fontSize="small" />
+          </Box>
+          {t('pidBuilder.toolbar.renameDiagramTitle')}
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          <TextField
+            autoFocus
+            label={t('pidBuilder.toolbar.diagramNameLabel')}
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={renameDiagramName}
+            onChange={(e) => setRenameDiagramName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleConfirmRename()}
+            sx={{ mt: 1 }}
+            InputLabelProps={{
+              sx: { fontWeight: 500 }
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
+          <Button 
+            onClick={() => setRenameDialogOpen(false)} 
+            color="inherit" 
+            variant="outlined"
+            sx={{ textTransform: 'none', px: 3, fontWeight: 500 }}
+          >
+            {t('pidBuilder.toolbar.cancel')}
+          </Button>
+          <Button 
+            onClick={handleConfirmRename} 
+            variant="contained" 
+            color="primary" 
+            disableElevation
+            sx={{ textTransform: 'none', px: 4, fontWeight: 600 }}
+          >
+            {t('pidBuilder.toolbar.save')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Silme Onay Pop-up */}
+      <Dialog 
+        open={deleteConfirmOpen} 
+        onClose={() => setDeleteConfirmOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            minWidth: { xs: 300, sm: 400 },
+            bgcolor: 'background.paper',
+            backgroundImage: 'none',
+            boxShadow: 24,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          px: 3,
+          py: 2,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          color: 'error.main'
+        }}>
+          <DeleteOutline fontSize="small" />
+          {t('pidBuilder.toolbar.deleteConfirmTitle')}
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          {t('pidBuilder.toolbar.deleteConfirmMessage')}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
+          <Button 
+            onClick={() => setDeleteConfirmOpen(false)} 
+            color="inherit" 
+            variant="outlined"
+            sx={{ textTransform: 'none', px: 3, fontWeight: 500 }}
+          >
+            {t('pidBuilder.toolbar.cancel')}
+          </Button>
+          <Button 
+            onClick={handleConfirmDelete} 
+            variant="contained" 
+            color="error" 
+            disableElevation
+            sx={{ textTransform: 'none', px: 4, fontWeight: 600 }}
+          >
+            {t('pidBuilder.toolbar.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

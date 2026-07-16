@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { addEdge, applyNodeChanges, applyEdgeChanges, MarkerType } from 'reactflow';
+import { addEdge, applyNodeChanges, applyEdgeChanges } from 'reactflow';
 import { useSelector } from 'react-redux';
 import { selectRole } from '../../features/auth/authSlice';
 
@@ -13,24 +13,51 @@ export const usePID = () => {
   return context;
 };
 
-const loadSavedFlow = (role) => {
+const generateId = () => `diag_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
+
+const loadDiagramList = (role) => {
   try {
-    const saved = localStorage.getItem(`pid_saved_flow_${role}`);
-    if (saved) return JSON.parse(saved);
+    const list = localStorage.getItem(`pid_diagram_list_${role}`);
+    if (list) return JSON.parse(list);
+    
+    // Geriye dönük uyumluluk (Migration)
+    const oldSaved = localStorage.getItem(`pid_saved_flow_${role}`);
+    if (oldSaved) {
+      const defaultId = generateId();
+      localStorage.setItem(`pid_flow_${defaultId}`, oldSaved);
+      const initialList = [{ id: defaultId, name: 'default_diagram', updatedAt: Date.now() }];
+      localStorage.setItem(`pid_diagram_list_${role}`, JSON.stringify(initialList));
+      localStorage.setItem(`pid_active_diagram_${role}`, defaultId);
+      // Eski veriyi silebiliriz ama güvenlik için şimdilik bırakalım
+      return initialList;
+    }
   } catch (e) {
     console.error('Local storage okuma hatası', e);
+  }
+  return [];
+};
+
+const loadDiagramContent = (id) => {
+  try {
+    const saved = localStorage.getItem(`pid_flow_${id}`);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.error('Diyagram okuma hatası', e);
   }
   return { nodes: [], edges: [] };
 };
 
 export const PIDProvider = ({ children }) => {
   const role = useSelector(selectRole) || 'admin';
-  const initialData = loadSavedFlow(role);
-  const [nodes, setNodes] = useState(initialData.nodes);
-  const [edges, setEdges] = useState(initialData.edges);
-  const [savedState, setSavedState] = useState(JSON.stringify(initialData));
+  
+  const [diagrams, setDiagrams] = useState([]);
+  const [activeDiagramId, setActiveDiagramId] = useState(null);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
+  const [savedState, setSavedState] = useState(JSON.stringify({ nodes: [], edges: [] }));
   
   const isDirty = JSON.stringify({ nodes, edges }) !== savedState;
+  
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [activeFlowType, setActiveFlowType] = useState('duct_mixed');
@@ -41,18 +68,45 @@ export const PIDProvider = ({ children }) => {
   const [past, setPast] = useState([]);
   const [future, setFuture] = useState([]);
 
-  // Her değişiklikten önce mevcut durumu past dizisine atar ve future dizisini sıfırlar
+  // Role değiştiğinde veya ilk yüklemede diyagramları getir
+  useEffect(() => {
+    const list = loadDiagramList(role);
+    setDiagrams(list);
+    
+    let activeId = localStorage.getItem(`pid_active_diagram_${role}`);
+    if (!activeId && list.length > 0) {
+      activeId = list[0].id;
+    } else if (list.length === 0) {
+      // Hiç diyagram yoksa temiz bir tane oluştur
+      activeId = generateId();
+      const newList = [{ id: activeId, name: 'default_diagram', updatedAt: Date.now() }];
+      setDiagrams(newList);
+      localStorage.setItem(`pid_diagram_list_${role}`, JSON.stringify(newList));
+    }
+    
+    setActiveDiagramId(activeId);
+    localStorage.setItem(`pid_active_diagram_${role}`, activeId);
+    
+    const content = loadDiagramContent(activeId);
+    setNodes(content.nodes || []);
+    setEdges(content.edges || []);
+    setSavedState(JSON.stringify(content));
+    setPast([]);
+    setFuture([]);
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+  }, [role]);
+
   const pushHistory = useCallback(() => {
     setPast((currPast) => {
       const currentState = JSON.parse(JSON.stringify({ nodes, edges }));
       return [...currPast, currentState];
     });
-    setFuture([]); // Yeni bir işlem yapıldığında eski 'redo' geçmişi geçersizdir
+    setFuture([]); 
   }, [nodes, edges]);
 
   const undo = useCallback(() => {
     if (past.length === 0) return;
-    
     const previousState = past[past.length - 1];
     const newPast = past.slice(0, past.length - 1);
     
@@ -60,7 +114,6 @@ export const PIDProvider = ({ children }) => {
       const currentState = JSON.parse(JSON.stringify({ nodes, edges }));
       return [...currFuture, currentState];
     });
-    
     setNodes(previousState.nodes);
     setEdges(previousState.edges);
     setPast(newPast);
@@ -68,7 +121,6 @@ export const PIDProvider = ({ children }) => {
 
   const redo = useCallback(() => {
     if (future.length === 0) return;
-    
     const nextState = future[future.length - 1];
     const newFuture = future.slice(0, future.length - 1);
     
@@ -76,7 +128,6 @@ export const PIDProvider = ({ children }) => {
       const currentState = JSON.parse(JSON.stringify({ nodes, edges }));
       return [...currPast, currentState];
     });
-    
     setNodes(nextState.nodes);
     setEdges(nextState.edges);
     setFuture(newFuture);
@@ -140,16 +191,6 @@ export const PIDProvider = ({ children }) => {
     }
   }, [pushHistory, selectedNodeId, selectedEdgeId]);
 
-  const getFlowColor = (flowType) => {
-    switch (flowType) {
-      case 'duct_mixed': return '#3b82f6';
-      case 'duct_hot': return '#f97316';
-      case 'duct_cold': return '#ef4444';
-      case 'duct_exhaust': return '#64748b';
-      default: return '#3b82f6';
-    }
-  };
-
   const onConnect = useCallback((connection) => {
     pushHistory();
     setEdges((eds) => addEdge({ 
@@ -184,7 +225,6 @@ export const PIDProvider = ({ children }) => {
     }));
   }, [pushHistory]);
 
-  // React Flow'un kendi sürükleme/seçme eventleri için (Geçmişe atmak istenirse burası genişletilebilir)
   const onNodesChange = useCallback((changes) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
   }, []);
@@ -193,41 +233,137 @@ export const PIDProvider = ({ children }) => {
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
 
-  const saveFlow = useCallback(() => {
+  const saveFlow = useCallback((customName = null) => {
+    if (!activeDiagramId) return;
+    
     const flow = { nodes, edges };
     const flowStr = JSON.stringify(flow);
-    localStorage.setItem(`pid_saved_flow_${role}`, flowStr);
+    localStorage.setItem(`pid_flow_${activeDiagramId}`, flowStr);
     setSavedState(flowStr);
-  }, [nodes, edges, role]);
+    
+    setDiagrams(prev => {
+      const updated = prev.map(d => {
+        if (d.id === activeDiagramId) {
+          return { ...d, name: customName || d.name, updatedAt: Date.now() };
+        }
+        return d;
+      });
+      localStorage.setItem(`pid_diagram_list_${role}`, JSON.stringify(updated));
+      return updated;
+    });
+  }, [nodes, edges, activeDiagramId, role]);
 
-  const restoreFlow = useCallback(() => {
-    const savedFlow = localStorage.getItem(`pid_saved_flow_${role}`);
-    if (savedFlow) {
-      try {
-        const parsedFlow = JSON.parse(savedFlow);
-        if (parsedFlow.nodes) setNodes(parsedFlow.nodes);
-        if (parsedFlow.edges) setEdges(parsedFlow.edges);
-        setSavedState(savedFlow);
-      } catch (error) {
-        console.error('Akış geri yüklenirken hata oluştu:', error);
-      }
-    } else {
-      // If there's no saved flow for this role, clear the canvas
-      setNodes([]);
-      setEdges([]);
-      setSavedState(JSON.stringify({ nodes: [], edges: [] }));
-    }
-    // Reset selection and history
-    setSelectedNodeId(null);
-    setSelectedEdgeId(null);
+  const createNewDiagram = useCallback((name) => {
+    const newId = generateId();
+    const newDiagram = { id: newId, name: name || 'Yeni Diyagram', updatedAt: Date.now() };
+    
+    setDiagrams(prev => {
+      const updated = [...prev, newDiagram];
+      localStorage.setItem(`pid_diagram_list_${role}`, JSON.stringify(updated));
+      return updated;
+    });
+    
+    setActiveDiagramId(newId);
+    localStorage.setItem(`pid_active_diagram_${role}`, newId);
+    localStorage.setItem(`pid_flow_${newId}`, JSON.stringify({ nodes: [], edges: [] }));
+    
+    setNodes([]);
+    setEdges([]);
+    setSavedState(JSON.stringify({ nodes: [], edges: [] }));
     setPast([]);
     setFuture([]);
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
   }, [role]);
 
-  // Rol değiştiğinde o role ait diyagramı yükle
-  useEffect(() => {
-    restoreFlow();
-  }, [role, restoreFlow]);
+  const switchDiagram = useCallback((id) => {
+    if (isDirty) {
+      return false; 
+    }
+    
+    setActiveDiagramId(id);
+    localStorage.setItem(`pid_active_diagram_${role}`, id);
+    
+    const content = loadDiagramContent(id);
+    setNodes(content.nodes || []);
+    setEdges(content.edges || []);
+    setSavedState(JSON.stringify(content));
+    setPast([]);
+    setFuture([]);
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+    return true; 
+  }, [isDirty, role]);
+
+  const renameDiagram = useCallback((id, newName) => {
+    setDiagrams(prev => {
+      const updated = prev.map(d => {
+        if (d.id === id) {
+          return { ...d, name: newName, updatedAt: Date.now() };
+        }
+        return d;
+      });
+      localStorage.setItem(`pid_diagram_list_${role}`, JSON.stringify(updated));
+      return updated;
+    });
+  }, [role]);
+
+  const deleteDiagram = useCallback((id) => {
+    setDiagrams(prev => {
+      const updated = prev.filter(d => d.id !== id);
+      localStorage.setItem(`pid_diagram_list_${role}`, JSON.stringify(updated));
+      
+      localStorage.removeItem(`pid_flow_${id}`);
+      
+      if (updated.length === 0) {
+        const newId = generateId();
+        const newDiagram = { id: newId, name: 'default_diagram', updatedAt: Date.now() };
+        const newList = [newDiagram];
+        localStorage.setItem(`pid_diagram_list_${role}`, JSON.stringify(newList));
+        
+        setActiveDiagramId(newId);
+        localStorage.setItem(`pid_active_diagram_${role}`, newId);
+        localStorage.setItem(`pid_flow_${newId}`, JSON.stringify({ nodes: [], edges: [] }));
+        
+        setNodes([]);
+        setEdges([]);
+        setSavedState(JSON.stringify({ nodes: [], edges: [] }));
+        setPast([]);
+        setFuture([]);
+        setSelectedNodeId(null);
+        setSelectedEdgeId(null);
+        
+        return newList;
+      } else if (activeDiagramId === id) {
+        const fallbackId = updated[0].id;
+        setActiveDiagramId(fallbackId);
+        localStorage.setItem(`pid_active_diagram_${role}`, fallbackId);
+        
+        const content = loadDiagramContent(fallbackId);
+        setNodes(content.nodes || []);
+        setEdges(content.edges || []);
+        setSavedState(JSON.stringify(content));
+        setPast([]);
+        setFuture([]);
+        setSelectedNodeId(null);
+        setSelectedEdgeId(null);
+      }
+      
+      return updated;
+    });
+  }, [activeDiagramId, role]);
+
+  const restoreFlow = useCallback(() => {
+    if (!activeDiagramId) return;
+    const content = loadDiagramContent(activeDiagramId);
+    setNodes(content.nodes || []);
+    setEdges(content.edges || []);
+    setSavedState(JSON.stringify(content));
+    setPast([]);
+    setFuture([]);
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+  }, [activeDiagramId]);
 
   const clearFlow = useCallback(() => {
     pushHistory();
@@ -235,11 +371,15 @@ export const PIDProvider = ({ children }) => {
     setEdges([]);
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
-    localStorage.removeItem(`pid_saved_flow_${role}`);
-    setSavedState(JSON.stringify({ nodes: [], edges: [] }));
-  }, [pushHistory, role]);
+  }, [pushHistory]);
 
   const value = {
+    diagrams,
+    activeDiagramId,
+    createNewDiagram,
+    switchDiagram,
+    renameDiagram,
+    deleteDiagram,
     nodes,
     edges,
     selectedNode,
