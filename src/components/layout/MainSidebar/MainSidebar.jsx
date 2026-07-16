@@ -44,8 +44,8 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
     pid: false,
   });
 
-  // On mobile, default to collapsed
-  const [isCollapsed, setIsCollapsed] = useState(isMobile);
+  // Default to collapsed everywhere as requested
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const toggleAccordion = (panel) => {
     setOpenAccordion((prev) => ({

@@ -22,7 +22,7 @@ const getCategoryTranslation = (category, t) => {
 const DevicePalette = () => {
   const { t } = useTranslation();
   const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData, addNode } = usePID();
-  const { screenToFlowPosition, project } = useReactFlow();
+  const { screenToFlowPosition, project, getNodes } = useReactFlow();
 
   const handleDeviceClick = (device) => {
     let position;
@@ -32,6 +32,21 @@ const DevicePalette = () => {
        position = project({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     } else {
        position = { x: 100, y: 100 };
+    }
+    
+    let hasCollision = true;
+    let attempts = 0;
+    while(hasCollision && attempts < 20) {
+      hasCollision = false;
+      for (const node of getNodes()) {
+         if (Math.abs(node.position.x - position.x) < 50 && Math.abs(node.position.y - position.y) < 50) {
+            position.x += 40;
+            position.y += 40;
+            hasCollision = true;
+            break;
+         }
+      }
+      attempts++;
     }
     
     addNode(device, position);

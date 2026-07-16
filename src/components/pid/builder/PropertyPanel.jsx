@@ -15,7 +15,8 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-  InputAdornment
+  InputAdornment,
+  Dialog
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
@@ -78,25 +79,9 @@ const PropertyPanel = ({ variant }) => {
     return selectedNode.data?.defaultData?.birim || unitMap[key] || '';
   };
 
-  return (
-    <Drawer
-      anchor="right"
-      variant="persistent"
-      open={!!selectedNode}
-      sx={{
-        width: 320,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 320,
-          position: 'absolute',
-          right: 0,
-          height: '100%',
-          borderLeft: '1px solid',
-          borderColor: 'divider',
-          boxSizing: 'border-box'
-        }
-      }}
-    >
+  const isTemporary = variant === 'temporary';
+
+  const panelContent = (
       <Box 
         sx={{ 
           display: 'flex', 
@@ -352,6 +337,48 @@ const PropertyPanel = ({ variant }) => {
           </Box>
         </Box>
       </Box>
+  );
+
+  if (isTemporary) {
+    return (
+      <Dialog 
+        open={!!selectedNode} 
+        onClose={() => setSelectedNode(null)}
+        fullWidth
+        maxWidth="xs"
+        PaperProps={{
+          sx: { 
+            height: '80vh', 
+            borderRadius: 2,
+            bgcolor: 'background.paper'
+          }
+        }}
+      >
+        {panelContent}
+      </Dialog>
+    );
+  }
+
+  return (
+    <Drawer
+      anchor="right"
+      variant="persistent"
+      open={!!selectedNode}
+      sx={{
+        width: 320,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: 320,
+          position: 'absolute',
+          right: 0,
+          height: '100%',
+          borderLeft: '1px solid',
+          borderColor: 'divider',
+          boxSizing: 'border-box'
+        }
+      }}
+    >
+      {panelContent}
     </Drawer>
   );
 };

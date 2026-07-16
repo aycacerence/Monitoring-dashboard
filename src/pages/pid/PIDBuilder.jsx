@@ -11,7 +11,7 @@ import BuilderCanvas from '../../components/pid/builder/BuilderCanvas';
 import PropertyPanel from '../../components/pid/builder/PropertyPanel';
 
 const PIDBuilder = () => {
-  const isMobile = useMediaQuery('(max-width:768px)');
+  const isTabletOrMobile = useMediaQuery('(max-width:1024px)');
   const [mobilePaletteOpen, setMobilePaletteOpen] = useState(false);
 
   return (
@@ -20,11 +20,11 @@ const PIDBuilder = () => {
         <div className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden relative">
           
           <div className="relative z-20">
-            <BuilderToolbar onMenuClick={isMobile ? () => setMobilePaletteOpen(true) : undefined} />
+            <BuilderToolbar onMenuClick={isTabletOrMobile ? () => setMobilePaletteOpen(true) : undefined} />
           </div>
 
           <div className="flex flex-1 overflow-hidden relative">
-            {isMobile ? (
+            {isTabletOrMobile ? (
               <Drawer
                 anchor="left"
                 variant="temporary"
@@ -39,7 +39,7 @@ const PIDBuilder = () => {
             
             <BuilderCanvas />
             
-            <PropertyPanel variant={isMobile ? 'temporary' : 'persistent'} />
+            <PropertyPanel variant={isTabletOrMobile ? 'temporary' : 'persistent'} />
           </div>
 
         </div>

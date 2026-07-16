@@ -8,6 +8,8 @@ import {
   Undo,
   Redo,
   DeleteOutline,
+  DeleteForever,
+  CleaningServices,
   Save,
   Restore,
   ZoomOutMap,
@@ -32,26 +34,37 @@ import {
   FormControl,
 } from '@mui/material';
 
-const ResponsiveButton = ({ icon: Icon, label, ...props }) => (
-  <Tooltip title={label}>
-    <span>
-      <Button
-        sx={{ 
-          minWidth: { xs: '40px', md: 'auto' },
-          px: { xs: 1, md: 2 },
-          whiteSpace: 'nowrap',
-          ...props.sx 
-        }}
-        {...props}
-      >
-        <Icon sx={{ mr: { xs: 0, md: 1 } }} />
-        <Box component="span" sx={{ display: { xs: 'none', md: 'block' } }}>
+const ResponsiveButton = ({ icon: Icon, label, ...props }) => {
+  const { sx, ...rest } = props;
+  return (
+    <Tooltip title={label}>
+      <span>
+        <IconButton
+          {...rest}
+          sx={{ 
+            display: { xs: 'flex', md: 'none' },
+            p: 0.5,
+            ...sx
+          }}
+        >
+          <Icon fontSize="small" />
+        </IconButton>
+        
+        <Button
+          {...rest}
+          sx={{ 
+            display: { xs: 'none', md: 'flex' },
+            whiteSpace: 'nowrap',
+            ...sx 
+          }}
+        >
+          <Icon sx={{ mr: 1 }} fontSize="small" />
           {label}
-        </Box>
-      </Button>
-    </span>
-  </Tooltip>
-);
+        </Button>
+      </span>
+    </Tooltip>
+  );
+};
 
 const BuilderToolbar = ({ onMenuClick }) => {
   const { t } = useTranslation();
@@ -215,10 +228,20 @@ const BuilderToolbar = ({ onMenuClick }) => {
         onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
         onClick={(e) => e.stopPropagation()}
       >
-        <Toolbar className="justify-between min-h-[64px] px-2 sm:px-4">
-          <Box className="flex items-center gap-2">
+        <Toolbar 
+          sx={{ 
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'stretch', md: 'center' },
+            justifyContent: 'space-between',
+            minHeight: '56px',
+            p: { xs: 1, sm: 2 },
+            gap: { xs: 1, md: 0 }
+          }}
+        >
+          <Box className="flex items-center gap-0.5 sm:gap-2" sx={{ width: { xs: '100%', md: 'auto' }, justifyContent: { xs: 'space-between', md: 'flex-start' } }}>
             {onMenuClick && (
-              <IconButton onClick={onMenuClick} color="inherit" edge="start" sx={{ mr: 1 }}>
+              <IconButton onClick={onMenuClick} color="inherit" edge="start" sx={{ p: 0.5 }}>
                 <MenuIcon />
               </IconButton>
             )}
@@ -247,8 +270,8 @@ const BuilderToolbar = ({ onMenuClick }) => {
             </Tooltip>
 
             {diagrams && diagrams.length > 0 && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <FormControl size="small" sx={{ minWidth: { xs: 120, sm: 180 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1, justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                <FormControl size="small" sx={{ minWidth: { xs: 100, sm: 180 }, flex: { xs: 1, md: 'none' } }}>
                   <Select
                     value={activeDiagramId || ''}
                     onChange={handleSwitch}
@@ -272,13 +295,13 @@ const BuilderToolbar = ({ onMenuClick }) => {
 
                 <Tooltip title={t('pidBuilder.toolbar.deleteDiagram')}>
                   <IconButton size="small" color="error" onClick={() => setDeleteConfirmOpen(true)}>
-                    <DeleteOutline fontSize="small" />
+                    <DeleteForever fontSize="small" />
                   </IconButton>
                 </Tooltip>
               </Box>
             )}
           </Box>
-          <Box className="flex items-center gap-1 sm:gap-3 overflow-x-auto no-scrollbar" sx={{ width: '100%', justifyContent: 'flex-end' }}>
+          <Box className="flex items-center gap-0.5 sm:gap-2" sx={{ justifyContent: { xs: 'center', md: 'flex-end' }, width: { xs: '100%', md: 'auto' }, flex: { md: 1 }, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
             <ResponsiveButton
               icon={Delete}
               label={t('pidBuilder.toolbar.delete')}
@@ -315,10 +338,11 @@ const BuilderToolbar = ({ onMenuClick }) => {
                   onClick={handleZoomToSelection}
                   disabled={selectedItemCount === 0}
                   sx={{ 
+                    p: 0.5,
                     '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } 
                   }}
                 >
-                  <ZoomOutMap />
+                  <ZoomOutMap fontSize="small" />
                 </IconButton>
               </span>
             </Tooltip>
@@ -326,7 +350,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
             <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
 
             <ResponsiveButton
-              icon={DeleteOutline}
+              icon={CleaningServices}
               label={t('pidBuilder.toolbar.clear')}
               disabled={nodes.length === 0 && edges.length === 0}
               onClick={clearFlow}
@@ -533,7 +557,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
           gap: 1.5,
           color: 'error.main'
         }}>
-          <DeleteOutline fontSize="small" />
+          <DeleteForever fontSize="small" />
           {t('pidBuilder.toolbar.deleteConfirmTitle')}
         </DialogTitle>
         <DialogContent sx={{ p: 3, pt: 4 }}>
