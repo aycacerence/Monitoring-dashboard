@@ -9,6 +9,7 @@ import { builderNodeTypes, edgeTypes } from '../registry';
 import { useSelector } from 'react-redux';
 import { selectColorMode } from '../../../features/theme/themeSlice';
 import { iconMap } from '../../../data/pid/iconMap';
+import CustomConnectionLine from './CustomConnectionLine';
 
 // Hizalama toleransı (kaç piksel kala kılavuz çizgi çıksın ve yapışsın?)
 const SNAP_DISTANCE = 15; 
@@ -117,6 +118,7 @@ const BuilderCanvasInner = () => {
   const [helperLines, setHelperLines] = useState({ horizontal: null, vertical: null });
   const [selectedNodesLocal, setSelectedNodesLocal] = useState([]);
   const [selectedEdgesLocal, setSelectedEdgesLocal] = useState([]);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
@@ -253,13 +255,15 @@ const BuilderCanvasInner = () => {
   const multiSelectionCount = selectedNodesLocal.length + selectedEdgesLocal.length;
 
   return (
-    <div className="flex-1 h-full relative bg-slate-50 dark:bg-slate-950">
+    <div className={`flex-1 h-full relative bg-slate-50 dark:bg-slate-950 ${isConnecting ? 'react-flow-connecting' : ''}`}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onConnectStart={() => setIsConnecting(true)}
+        onConnectEnd={() => setIsConnecting(false)}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
@@ -270,6 +274,7 @@ const BuilderCanvasInner = () => {
         onNodeDragStop={onNodeDragStop}
         nodeTypes={builderNodeTypes}
         edgeTypes={edgeTypes}
+        connectionLineComponent={CustomConnectionLine}
         panOnScroll={true}
         panOnScrollMode="free"
         panOnDrag={true}

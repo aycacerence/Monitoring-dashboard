@@ -371,3 +371,49 @@ html.dark .react-flow__node {
 html.dark .react-flow__node-textNode {
   background-color: transparent !important;
 }
+
+/* ========================================================
+   PROACTIVE VISUAL FEEDBACK (CONNECTION STATE)
+======================================================== */
+/* Bağlantı çizilirken diğer tüm Handle'ları hafiflet (karart) */
+.react-flow-connecting .react-flow__handle {
+  opacity: 0.2;
+}
+
+/* Ancak, bağlantının çekildiği (kaynak) Handle'ı tam parlak bırak */
+.react-flow-connecting .react-flow__handle.react-flow__handle-connecting {
+  opacity: 1;
+}
+
+/* Fare üzerine geldiğinde, geçerli (valid) olan Handle'ı parlat ve zıplat */
+.react-flow-connecting .react-flow__handle.react-flow__handle-valid {
+  opacity: 1 !important;
+}
+.react-flow-connecting .react-flow__handle.react-flow__handle-valid > div {
+  background-color: #22c55e !important;
+  animation: handle-pulse 1.5s infinite;
+}
+
+/* Geçersiz olan Handle'da kırmızı renk ver */
+.react-flow-connecting .react-flow__handle.react-flow__handle-invalid {
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+}
+.react-flow-connecting .react-flow__handle.react-flow__handle-invalid > div {
+  background-color: #ef4444 !important;
+}
+
+@keyframes handle-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    transform: scale(1.5);
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
