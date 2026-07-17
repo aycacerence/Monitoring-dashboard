@@ -241,19 +241,6 @@ const FlowEdge = ({
       activePoints[activePoints.length - 2] = { x: targetX + endMarginX, y: targetY + endMarginY };
   }
 
-  // Çift tıklama ile boruyu sıfırla
-  const onEdgeDoubleClick = (e) => {
-    e.stopPropagation();
-    setEdges((edges) =>
-      edges.map((edge) => {
-        if (edge.id !== id) return edge;
-        const newData = { ...edge.data };
-        delete newData.points;
-        return { ...edge, data: newData };
-      })
-    );
-  };
-
   const onHandlePointerDown = (event, segmentIndex) => {
     event.stopPropagation();
     setDraggingHandle(segmentIndex);
@@ -379,7 +366,6 @@ const FlowEdge = ({
           onPointerDown={(e) => onHandlePointerDown(e, i)}
           onPointerEnter={() => setHoveredHandle(i)}
           onPointerLeave={() => setHoveredHandle(null)}
-          onDoubleClick={onEdgeDoubleClick}
           style={{ cursor: Math.abs(pA.y - pB.y) < 1 ? 'ns-resize' : 'ew-resize', pointerEvents: 'all' }}
         >
           {/* Çift tıklama algılaması için geniş ve görünmez dokunma alanı */}
@@ -465,7 +451,7 @@ const FlowEdge = ({
           className="react-flow__edge-path"
           style={{ stroke: theme.palette.flow.hot, strokeWidth: selected ? 2.5 : 2, filter: selected ? `drop-shadow(0px 0px 4px ${theme.palette.flow.hot})` : 'none', transition: 'all 0.2s ease' }}
         />
-        <path d={path} fill="none" strokeOpacity={0} strokeWidth={20} className="react-flow__edge-interaction" onDoubleClick={onEdgeDoubleClick} />
+        <path d={path} fill="none" strokeOpacity={0} strokeWidth={20} className="react-flow__edge-interaction" />
         {handles}
         {deleteButton}
       </>
@@ -480,7 +466,7 @@ const FlowEdge = ({
         markerEnd={markerEnd}
         style={{ stroke: color, strokeWidth: selected ? 2.5 : 2, filter: selected ? `drop-shadow(0px 0px 4px ${color})` : 'none', transition: 'all 0.2s ease' }}
       />
-      <path d={path} fill="none" strokeOpacity={0} strokeWidth={20} className="react-flow__edge-interaction" onDoubleClick={onEdgeDoubleClick} />
+      <path d={path} fill="none" strokeOpacity={0} strokeWidth={20} className="react-flow__edge-interaction" />
       {handles}
       {deleteButton}
     </>

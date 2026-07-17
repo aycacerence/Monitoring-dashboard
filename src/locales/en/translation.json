@@ -133,7 +133,7 @@
       "delete": "Delete",
       "undo": "Undo",
       "redo": "Redo",
-      "clear": "Clear",
+      "clear": "Clear Diagram",
       "restore": "Restore Changes",
       "save": "Save",
       "restoreSuccess": "Restored to last saved state",
