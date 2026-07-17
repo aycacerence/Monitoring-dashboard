@@ -45,14 +45,38 @@ const MonitoringCanvas = ({ autoRefresh = true, onAlarmsChange }) => {
     setSelectedNode(node);
   }, [setSelectedNode]);
 
+  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
+  const wrapperRef = React.useRef(null);
+
+  // ResizeObserver: Ekran boyutu değiştiğinde diyagramı ortala
+  useEffect(() => {
+    if (!wrapperRef.current || !reactFlowInstance) return;
+    
+    let timeoutId = null;
+    const observer = new ResizeObserver(() => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        reactFlowInstance.fitView({ duration: 600, padding: 0.1 });
+      }, 100);
+    });
+
+    observer.observe(wrapperRef.current);
+
+    return () => {
+      observer.disconnect();
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [reactFlowInstance]);
+
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div ref={wrapperRef} style={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={mergedNodes}
         edges={edges}
         // nodeTypes={monitoringNodeTypes}
         // edgeTypes={edgeTypes}
         onNodeClick={handleNodeClick}
+        onInit={setReactFlowInstance}
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={true}

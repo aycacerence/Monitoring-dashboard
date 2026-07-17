@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import ReactFlow, { Background, Controls, useReactFlow, ReactFlowProvider, useStore, Panel, useOnSelectionChange } from 'reactflow';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -143,8 +143,32 @@ const BuilderCanvasInner = () => {
   const mode = useSelector(selectColorMode);
   const { t } = useTranslation();
   
-  const { screenToFlowPosition, getNodes } = useReactFlow();
+  const { screenToFlowPosition, getNodes, fitView } = useReactFlow();
   const transform = useStore((s) => s.transform);
+  const wrapperRef = useRef(null);
+
+  // ResizeObserver: Tablet/Web geçişlerinde diyagramın boyutlara uyum sağlaması için
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    
+    // Küçük boyut değişikliklerini ignore etmek ve performansı korumak için timeout
+    let timeoutId = null;
+    
+    const observer = new ResizeObserver(() => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        // Yeni boyuta göre diyagramı animasyonlu merkeze al
+        fitView({ duration: 600, padding: 0.1 });
+      }, 100);
+    });
+
+    observer.observe(wrapperRef.current);
+
+    return () => {
+      observer.disconnect();
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [fitView]);
 
   const [helperLines, setHelperLines] = useState({ horizontal: null, vertical: null });
   const [selectedNodesLocal, setSelectedNodesLocal] = useState([]);
@@ -286,7 +310,7 @@ const BuilderCanvasInner = () => {
   const multiSelectionCount = selectedNodesLocal.length + selectedEdgesLocal.length;
 
   return (
-    <div className={`flex-1 h-full relative bg-slate-50 dark:bg-slate-950 ${isConnecting ? 'react-flow-connecting' : ''}`}>
+    <div ref={wrapperRef} className={`flex-1 h-full relative bg-slate-50 dark:bg-slate-950 ${isConnecting ? 'react-flow-connecting' : ''}`}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
