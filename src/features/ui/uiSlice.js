@@ -21,4 +21,5 @@ const uiSlice = createSlice({
 
 export const { setIsDirty, setEditMode, toggleEditMode } = uiSlice.actions;
 export const selectIsEditMode = (state) => state.ui.isEditMode;
+export const selectIsDirty = (state) => state.ui.isDirty;
 export default uiSlice.reducer;

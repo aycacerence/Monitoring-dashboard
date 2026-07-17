@@ -4,12 +4,13 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { Button, Select, MenuItem, Box, IconButton, Tooltip, ToggleButtonGroup, ToggleButton, Menu } from '@mui/material';
+import { Button, Select, MenuItem, Box, IconButton, Tooltip, ToggleButtonGroup, ToggleButton, Menu, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import TranslateIcon from '@mui/icons-material/Translate';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';
 import MenuIcon from '@mui/icons-material/Menu';
 import { toggleMode, selectColorMode } from '../../../features/theme/themeSlice';
+import { selectIsDirty } from '../../../features/ui/uiSlice';
 import { useTranslation } from 'react-i18next';
 import { selectRole, setRole } from '../../../features/auth/authSlice';
 import { useState } from 'react';
@@ -25,6 +26,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
   const dispatch = useDispatch();
   const mode = useSelector(selectColorMode);
   const role = useSelector(selectRole);
+  const isDirty = useSelector(selectIsDirty);
   const { t, i18n: i18nInstance } = useTranslation();
   const { title, subtitle } = usePageTitle();
   const { pathname } = useLocation();
@@ -41,9 +43,19 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
   const handleTimeClick = (event) => setTimeAnchorEl(event.currentTarget);
   const handleTimeClose = () => setTimeAnchorEl(null);
 
+  const [langModalOpen, setLangModalOpen] = useState(false);
+  const [pendingLang, setPendingLang] = useState(null);
+
   const handleTimeChange = (value) => {
     onTimeRangeChange(value);
     handleTimeClose();
+  };
+
+  const executeLangChange = (langToSet) => {
+    localStorage.setItem(`i18nLang_${role}`, langToSet);
+    i18nInstance.changeLanguage(langToSet).then(() => {
+      window.location.reload();
+    });
   };
 
   const handleRoleChange = (newRole) => {
@@ -52,9 +64,12 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
     // Dil secimini role gore guncelle
     const newRoleLang = localStorage.getItem(`i18nLang_${newRole}`) || 'tr';
     if (newRoleLang !== i18nInstance.language) {
-      i18nInstance.changeLanguage(newRoleLang).then(() => {
-        window.location.reload();
-      });
+      if (isDirty) {
+        setPendingLang(newRoleLang);
+        setLangModalOpen(true);
+      } else {
+        executeLangChange(newRoleLang);
+      }
     } else {
       window.location.reload();
     }
@@ -226,10 +241,15 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
               exclusive
               onChange={(_, newLang) => {
                 if (newLang && newLang !== i18nInstance.language) {
-                  localStorage.setItem(`i18nLang_${role}`, newLang);
-                  i18nInstance.changeLanguage(newLang).then(() => {
-                    window.location.reload();
-                  });
+                  if (isDirty) {
+                    setPendingLang(newLang);
+                    setLangModalOpen(true);
+                  } else {
+                    localStorage.setItem(`i18nLang_${role}`, newLang);
+                    i18nInstance.changeLanguage(newLang).then(() => {
+                      window.location.reload();
+                    });
+                  }
                 }
               }}
               size="small"
@@ -311,6 +331,49 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
           </Button>
         </div>
       </div>
+
+      {/* Dil Değiştirme / Veri Kaybı Uyarı Modalı */}
+      <Dialog
+        open={langModalOpen}
+        onClose={() => setLangModalOpen(false)}
+        aria-labelledby="lang-modal-title"
+        aria-describedby="lang-modal-description"
+        PaperProps={{
+          sx: { borderRadius: '12px', p: 1 }
+        }}
+      >
+        <DialogTitle id="lang-modal-title" sx={{ fontWeight: 'bold', color: 'error.main' }}>
+          {t('header.unsavedWarning.title', 'Kaydedilmemiş Değişiklikler!')}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="lang-modal-description" sx={{ color: 'text.secondary', fontSize: '0.95rem' }}>
+            {t('header.unsavedWarning.message', 'Kaydedilmemiş değişiklikleriniz var! Dil değiştirirseniz bu değişiklikler kaybolabilir. Yine de devam etmek istiyor musunuz?')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button 
+            onClick={() => {
+              setLangModalOpen(false);
+              setPendingLang(null);
+            }} 
+            color="inherit"
+            sx={{ fontWeight: 'bold' }}
+          >
+            {t('common.cancel', 'İptal')}
+          </Button>
+          <Button 
+            onClick={() => {
+              setLangModalOpen(false);
+              if (pendingLang) executeLangChange(pendingLang);
+            }} 
+            variant="contained" 
+            color="error"
+            sx={{ fontWeight: 'bold' }}
+          >
+            {t('common.proceed', 'Devam Et')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

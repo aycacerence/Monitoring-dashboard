@@ -22,10 +22,18 @@
       "30d": "Last 30 Days"
     },
     "lightMode": "Light Mode",
-    "darkMode": "Dark Mode"
+    "darkMode": "Dark Mode",
+    "unsavedWarning": {
+      "title": "Unsaved Changes!",
+      "message": "You have unsaved changes! Changing the language will discard them. Do you wish to proceed?"
+    }
   },
   "splash": {
     "loading": "Loading system data..."
+  },
+  "common": {
+    "cancel": "Cancel",
+    "proceed": "Proceed"
   },
   "kpi": {
     "totalDevices": "Total Devices",

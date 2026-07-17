@@ -22,10 +22,18 @@
       "30d": "Son 30 Gün"
     },
     "lightMode": "Açık Mod",
-    "darkMode": "Koyu Mod"
+    "darkMode": "Koyu Mod",
+    "unsavedWarning": {
+      "title": "Kaydedilmemiş Değişiklikler!",
+      "message": "Kaydedilmemiş değişiklikleriniz var! Dil değiştirirseniz bu değişiklikler kaybolabilir. Yine de devam etmek istiyor musunuz?"
+    }
   },
   "splash": {
     "loading": "Sistem verileri yükleniyor..."
+  },
+  "common": {
+    "cancel": "İptal",
+    "proceed": "Devam Et"
   },
   "kpi": {
     "totalDevices": "Toplam Cihaz",
