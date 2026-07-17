@@ -16,6 +16,7 @@ import {
   Menu as MenuIcon,
   Add as AddIcon,
   Edit as EditIcon,
+  TextFields as TextFieldsIcon,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -93,7 +94,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
     deleteDiagram,
   } = usePID();
 
-  const { fitView, getNodes, getEdges } = useReactFlow();
+  const { fitView, getNodes, getEdges, screenToFlowPosition, project, setNodes } = useReactFlow();
   const [selectedItemCount, setSelectedItemCount] = useState(0);
   
   // Çoklu Diyagram State
@@ -171,6 +172,38 @@ const BuilderToolbar = ({ onMenuClick }) => {
       setSelectedItemCount(nodes.length + edges.length);
     },
   });
+
+  const handleAddText = () => {
+    let position;
+    if (screenToFlowPosition) {
+       position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    } else if (project) {
+       position = project({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    } else {
+       position = { x: 250, y: 150 };
+    }
+    
+    // Eğer üst üste binerse kaydır
+    const existingTexts = getNodes().filter(n => n.type === 'textNode');
+    position.y += existingTexts.length * 30;
+
+    const newNode = {
+      id: `text-${Date.now()}`,
+      type: 'textNode',
+      position: position,
+      data: { text: 'Yeni Metin' },
+      style: { 
+        zIndex: 10,
+        backgroundColor: 'transparent',
+        border: 'none',
+        boxShadow: 'none',
+        padding: 0
+      }
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+    toast.success('Metin alanı eklendi');
+  };
 
   const handleZoomToSelection = () => {
     const allNodes = getNodes();
@@ -286,6 +319,16 @@ const BuilderToolbar = ({ onMenuClick }) => {
             )}
           </Box>
           <Box className="flex items-center gap-0.5 sm:gap-2" sx={{ justifyContent: { xs: 'center', md: 'flex-end' }, width: { xs: '100%', md: 'auto' }, flex: { md: 1 }, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
+            <ResponsiveButton
+              icon={TextFieldsIcon}
+              label="Metin Ekle"
+              onClick={handleAddText}
+              color="primary"
+              variant="text"
+            />
+
+            <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
+
             <ResponsiveButton
               icon={Undo}
               label={t('pidBuilder.toolbar.undo')}

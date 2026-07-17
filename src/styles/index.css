@@ -361,3 +361,13 @@ html.dark .react-flow__minimap-node {
 html.dark .react-flow__node {
   background-color: #1a1d27; /* Karanlık Mod arkaplanı */
 }
+
+/* Metin kutularının (TextNode) arkaplanını şeffaf yap */
+.react-flow__node-textNode {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+html.dark .react-flow__node-textNode {
+  background-color: transparent !important;
+}

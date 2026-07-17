@@ -38,7 +38,7 @@ const PropertyPanel = ({ variant }) => {
     setIsEditing(false);
   }, [selectedNode?.id]);
 
-  if (!selectedNode) return null;
+  if (!selectedNode || selectedNode.type === 'textNode') return null;
 
   const handleDataChange = (field, value) => {
     updateNodeData(selectedNode.id, { [field]: value });
