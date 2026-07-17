@@ -142,9 +142,11 @@ const FlowEdge = ({
   const [hoveredHandle, setHoveredHandle] = useState(null);
   const [draggingHandle, setDraggingHandle] = useState(null);
 
-  const isReversed = id.includes('reverse') || (source > target);
+  const isSelfLoop = source === target;
+  const isReversed = id.includes('reverse') || (source > target) || isSelfLoop;
   // İlk çizginin (ana hattın) dümdüz olması için offset 0. Dönüş/Ters hattın etrafından dolanması için offset 60.
-  const offset = isReversed ? 60 : 0;
+  // Kendi kendine bağlanan (self-loop) oklarda da node'un içinden geçmemesi için offset (Örn: 75) uyguluyoruz.
+  const offset = isSelfLoop ? 75 : isReversed ? 60 : 0;
 
   const getInitialPoints = useCallback(() => {
     let pts = [{ x: sourceX, y: sourceY }];
