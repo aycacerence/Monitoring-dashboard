@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { deviceCategories } from '../../../data/pid/deviceCatalog';
 import { iconMap } from '../../../data/pid/iconMap';
 import { usePID } from '../../../context/pid/PIDContext';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
-import { useReactFlow } from 'reactflow';
+import { useReactFlow, useOnSelectionChange } from 'reactflow';
 import toast from 'react-hot-toast';
 
 const getCategoryTranslation = (category, t) => {
@@ -22,7 +22,22 @@ const getCategoryTranslation = (category, t) => {
 const DevicePalette = () => {
   const { t } = useTranslation();
   const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData, addNode } = usePID();
-  const { screenToFlowPosition, project, getNodes } = useReactFlow();
+  const { screenToFlowPosition, project, getNodes, setEdges } = useReactFlow();
+
+  const [isEdgeSelected, setIsEdgeSelected] = useState(false);
+  const pipesSectionRef = useRef(null);
+
+  useOnSelectionChange({
+    onChange: ({ nodes, edges }) => {
+      const edgeSelected = edges.length === 1 && nodes.length === 0;
+      if (edgeSelected && !isEdgeSelected) {
+        setTimeout(() => {
+          pipesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+      setIsEdgeSelected(edgeSelected);
+    },
+  });
 
   const handleDeviceClick = (device) => {
     let position;
@@ -158,17 +173,25 @@ const DevicePalette = () => {
           {t('pidBuilder.palette.pipesAndFlows')}
         </Typography>
         <Box 
+          ref={pipesSectionRef}
           sx={{ 
             mx: 1, 
             border: 1, 
-            borderColor: 'divider', 
+            borderColor: isEdgeSelected ? 'primary.main' : 'divider', 
             borderRadius: 2, 
             p: 1, 
             bgcolor: 'background.default', 
             display: 'flex', 
             flexDirection: 'column', 
             gap: 1, 
-            boxShadow: 1 
+            boxShadow: isEdgeSelected ? '0 0 10px rgba(59, 130, 246, 0.5)' : 1,
+            transition: 'all 0.3s ease',
+            animation: isEdgeSelected ? 'pulseHighlight 2s infinite' : 'none',
+            '@keyframes pulseHighlight': {
+              '0%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.4)' },
+              '70%': { boxShadow: '0 0 0 8px rgba(59, 130, 246, 0)' },
+              '100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0)' }
+            }
           }}
         >
           {flows.map((f) => (
@@ -176,7 +199,9 @@ const DevicePalette = () => {
               key={f.type}
               onClick={() => {
                 setActiveFlowType(f.type);
-                if (selectedEdge) {
+                if (isEdgeSelected) {
+                  setEdges((eds) => eds.map(e => e.selected ? { ...e, data: { ...e.data, flowType: f.type } } : e));
+                } else if (selectedEdge) {
                   updateEdgeData(selectedEdge.id, { flowType: f.type });
                 }
               }}
