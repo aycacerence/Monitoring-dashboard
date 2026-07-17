@@ -156,7 +156,18 @@
       "deleteDiagram": "Delete Diagram",
       "deleteConfirmTitle": "Are you sure?",
       "deleteConfirmMessage": "Are you sure you want to permanently delete this diagram? This action cannot be undone.",
-      "deleteSuccess": "Diagram deleted."
+      "deleteSuccess": "Diagram deleted.",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesMessage": "Do you want to save your changes before continuing? If you don't save, your recent changes will be lost.",
+      "discard": "Continue Anyway",
+      "saveAndContinue": "Save and Continue",
+      "addText": "Add Text",
+      "textAdded": "Text field added",
+      "zoomToSelection": "Zoom to Selection (Shift + Drag)"
+    },
+    "canvas": {
+      "deleteSelected": "Delete Selected",
+      "newText": "New Text"
     },
     "categories": {
       "hvac": "HVAC & Equipment",

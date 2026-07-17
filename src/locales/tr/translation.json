@@ -156,7 +156,18 @@
       "deleteDiagram": "Diyagramı Sil",
       "deleteConfirmTitle": "Emin misiniz?",
       "deleteConfirmMessage": "Bu diyagramı tamamen silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
-      "deleteSuccess": "Diyagram silindi."
+      "deleteSuccess": "Diyagram silindi.",
+      "unsavedChangesTitle": "Kaydedilmemiş Değişiklikler",
+      "unsavedChangesMessage": "Devam etmeden önce değişikliklerinizi kaydetmek ister misiniz? Kaydetmezseniz son değişiklikler kaybolacaktır.",
+      "discard": "Yine de Devam Et",
+      "saveAndContinue": "Kaydet ve Devam Et",
+      "addText": "Metin Ekle",
+      "textAdded": "Metin alanı eklendi",
+      "zoomToSelection": "Seçili Alana Yakınlaş (Shift + Sürükle)"
+    },
+    "canvas": {
+      "deleteSelected": "Seçilileri Sil",
+      "newText": "Yeni Metin"
     },
     "categories": {
       "hvac": "HVAC & Ekipmanlar",

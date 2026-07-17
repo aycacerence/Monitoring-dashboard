@@ -4,11 +4,13 @@ import { Box, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
+import { useTranslation } from 'react-i18next';
 
 const TextNode = ({ id, data, selected }) => {
   const { updateNodeData, setNodes } = useReactFlow();
+  const { t } = useTranslation();
   const fontSize = data.fontSize || 24;
-  const textRef = useRef(data.text || 'Yeni Metin');
+  const textRef = useRef(data.text || t('pidBuilder.canvas.newText', 'Yeni Metin'));
   const [isEditing, setIsEditing] = useState(false);
 
   const handleBlur = (e) => {

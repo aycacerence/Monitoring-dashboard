@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import ReactFlow, { Background, Controls, MiniMap, useReactFlow, ReactFlowProvider, useStore, Panel, useOnSelectionChange } from 'reactflow';
 import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import 'reactflow/dist/style.css';
 
 import { usePID } from '../../../context/pid/PIDContext';
@@ -142,6 +143,7 @@ const BuilderCanvasInner = () => {
 
   const theme = useTheme();
   const mode = useSelector(selectColorMode);
+  const { t } = useTranslation();
   
   const { screenToFlowPosition, getNodes } = useReactFlow();
   const transform = useStore((s) => s.transform);
@@ -369,7 +371,7 @@ const BuilderCanvasInner = () => {
             onClick={handleMultiDelete}
             sx={{ borderRadius: 8, px: 3, boxShadow: 3, textTransform: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}
           >
-            Seçilileri Sil ({multiSelectionCount})
+            {t('pidBuilder.canvas.deleteSelected', 'Seçilileri Sil')} ({multiSelectionCount})
           </Button>
         </div>
       )}

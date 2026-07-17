@@ -216,7 +216,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
       id: `text-${Date.now()}`,
       type: 'textNode',
       position: position,
-      data: { text: 'Yeni Metin' },
+      data: { text: t('pidBuilder.canvas.newText', 'Yeni Metin') },
       style: { 
         zIndex: 10,
         backgroundColor: 'transparent',
@@ -227,7 +227,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
     };
 
     setNodes((nds) => nds.concat(newNode));
-    toast.success('Metin alanı eklendi');
+    toast.success(t('pidBuilder.toolbar.textAdded', 'Metin alanı eklendi'));
   };
 
   const handleZoomToSelection = () => {
@@ -346,7 +346,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
           <Box className="flex items-center gap-0.5 sm:gap-2" sx={{ justifyContent: { xs: 'center', md: 'flex-end' }, width: { xs: '100%', md: 'auto' }, flex: { md: 1 }, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
             <ResponsiveButton
               icon={TextFieldsIcon}
-              label="Metin Ekle"
+              label={t('pidBuilder.toolbar.addText', 'Metin Ekle')}
               onClick={handleAddText}
               color="primary"
               variant="text"
@@ -374,7 +374,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
 
             <Box sx={{ height: 24, width: '1px', bgcolor: 'divider', mx: 1 }} />
 
-            <Tooltip title="Seçili Alana Yakınlaş (Shift + Sürükle)">
+            <Tooltip title={t('pidBuilder.toolbar.zoomToSelection', 'Seçili Alana Yakınlaş (Shift + Sürükle)')}>
               <span>
                 <IconButton
                   color="inherit"
