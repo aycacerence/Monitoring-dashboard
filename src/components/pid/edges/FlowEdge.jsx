@@ -143,8 +143,8 @@ const FlowEdge = ({
   const [draggingHandle, setDraggingHandle] = useState(null);
 
   const isReversed = id.includes('reverse') || (source > target);
-  // İlk çizginin (ana hattın) dümdüz olması için offset 0. Dönüş/Ters hattın etrafından dolanması için offset 40.
-  const offset = isReversed ? 40 : 0;
+  // İlk çizginin (ana hattın) dümdüz olması için offset 0. Dönüş/Ters hattın etrafından dolanması için offset 60.
+  const offset = isReversed ? 60 : 0;
 
   const getInitialPoints = useCallback(() => {
     let pts = [{ x: sourceX, y: sourceY }];
