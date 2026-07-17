@@ -58,7 +58,25 @@ const GenericDeviceNode = ({ id, data, selected }) => {
         </IconButton>
       )}
       
-      <Handle type="target" position={Position.Left} style={{ top: '50%', transform: 'translateY(-50%)' }} />
+      <Handle 
+        type="target" 
+        position={Position.Left} 
+        style={{ 
+          top: '50%', 
+          transform: 'translateY(-50%)',
+          width: 32,
+          height: 32,
+          left: -16,
+          backgroundColor: 'transparent',
+          border: 'none',
+          cursor: 'crosshair',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', pointerEvents: 'none' }} />
+      </Handle>
       
       <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-10 h-10 object-contain" />
       
@@ -82,7 +100,25 @@ const GenericDeviceNode = ({ id, data, selected }) => {
         {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
       </Typography>
       
-      <Handle type="source" position={Position.Right} style={{ top: '50%', transform: 'translateY(-50%)' }} />
+      <Handle 
+        type="source" 
+        position={Position.Right} 
+        style={{ 
+          top: '50%', 
+          transform: 'translateY(-50%)',
+          width: 32,
+          height: 32,
+          right: -16,
+          backgroundColor: 'transparent',
+          border: 'none',
+          cursor: 'crosshair',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', pointerEvents: 'none' }} />
+      </Handle>
     </Box>
   );
 };
