@@ -289,8 +289,8 @@ export const PIDProvider = ({ children }) => {
     setSelectedEdgeId(null);
   }, [role]);
 
-  const switchDiagram = useCallback((id) => {
-    if (isDirty) {
+  const switchDiagram = useCallback((id, force = false) => {
+    if (isDirty && !force) {
       return false; 
     }
     

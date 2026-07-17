@@ -17,6 +17,7 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   TextFields as TextFieldsIcon,
+  WarningAmber as WarningIcon,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -33,6 +34,7 @@ import {
   Select,
   MenuItem,
   FormControl,
+  Typography,
 } from '@mui/material';
 
 const ResponsiveButton = ({ icon: Icon, label, ...props }) => {
@@ -105,10 +107,14 @@ const BuilderToolbar = ({ onMenuClick }) => {
   const [renameDiagramName, setRenameDiagramName] = useState('');
   
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  
+  const [unsavedConfirmOpen, setUnsavedConfirmOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
 
   const handleCreateNew = () => {
     if (isDirty) {
-      toast.error(t('pidBuilder.toolbar.unsavedWarning'));
+      setPendingAction({ type: 'new' });
+      setUnsavedConfirmOpen(true);
       return;
     }
     setNewDiagramName('');
@@ -130,13 +136,32 @@ const BuilderToolbar = ({ onMenuClick }) => {
     if (targetId === activeDiagramId) return;
 
     if (isDirty) {
-      toast.error(t('pidBuilder.toolbar.unsavedWarning'));
+      setPendingAction({ type: 'switch', payload: targetId });
+      setUnsavedConfirmOpen(true);
       return;
     }
     const success = switchDiagram(targetId);
     if (success) {
       toast.success(t('pidBuilder.toolbar.diagramLoaded'));
     }
+  };
+
+  const handleUnsavedAction = (actionType) => {
+    if (actionType === 'save') {
+      saveFlow();
+      toast.success(t('pidBuilder.toolbar.saveSuccess', 'Diyagram kaydedildi'));
+    }
+    
+    if (pendingAction?.type === 'switch') {
+      switchDiagram(pendingAction.payload, true);
+      toast.success(t('pidBuilder.toolbar.diagramLoaded'));
+    } else if (pendingAction?.type === 'new') {
+      setNewDiagramName('');
+      setNewDiagramOpen(true);
+    }
+    
+    setUnsavedConfirmOpen(false);
+    setPendingAction(null);
   };
 
   const handleOpenRename = () => {
@@ -598,6 +623,68 @@ const BuilderToolbar = ({ onMenuClick }) => {
             sx={{ textTransform: 'none', px: 4, fontWeight: 600 }}
           >
             {t('pidBuilder.toolbar.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Kaydedilmemiş Değişiklikler Uyarı Pop-up */}
+      <Dialog 
+        open={unsavedConfirmOpen} 
+        onClose={() => setUnsavedConfirmOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            minWidth: { xs: 300, sm: 400 },
+            bgcolor: 'background.paper',
+            backgroundImage: 'none',
+            boxShadow: 24,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          px: 3,
+          py: 2,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          color: 'warning.main'
+        }}>
+          <WarningIcon fontSize="small" />
+          {t('pidBuilder.toolbar.unsavedChangesTitle', 'Kaydedilmemiş Değişiklikler')}
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          <Typography color="text.secondary">
+            {t('pidBuilder.toolbar.unsavedChangesMessage', 'Devam etmeden önce değişikliklerinizi kaydetmek ister misiniz? Kaydetmezseniz son değişiklikler kaybolacaktır.')}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
+          <Button 
+            onClick={() => setUnsavedConfirmOpen(false)} 
+            color="inherit" 
+            variant="outlined"
+            sx={{ textTransform: 'none', px: 3, fontWeight: 500 }}
+          >
+            {t('pidBuilder.toolbar.cancel')}
+          </Button>
+          <Button 
+            onClick={() => handleUnsavedAction('discard')} 
+            variant="outlined" 
+            color="error" 
+            sx={{ textTransform: 'none', px: 3, fontWeight: 500 }}
+          >
+            {t('pidBuilder.toolbar.discard', 'Yine de Devam Et')}
+          </Button>
+          <Button 
+            onClick={() => handleUnsavedAction('save')} 
+            variant="contained" 
+            color="primary" 
+            disableElevation
+            sx={{ textTransform: 'none', px: 4, fontWeight: 600 }}
+          >
+            {t('pidBuilder.toolbar.saveAndContinue', 'Kaydet ve Devam Et')}
           </Button>
         </DialogActions>
       </Dialog>
