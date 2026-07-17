@@ -353,6 +353,17 @@ html.dark .react-flow__minimap-node {
   z-index: 0 !important;
 }
 
+/* Çizim anındaki aktif bağlantı çizgisini (ve tooltip'i) cihazların üstünde göster */
+.react-flow__edges.react-flow__connectionlines,
+.react-flow__connectionlines {
+  z-index: 20 !important;
+}
+
+/* KULLANICI KABLO ÇEKERKEN (SÜRÜKLERKEN) TÜM BORULARI VE TOOLTIP'İ CİHAZLARIN ÜSTÜNE ÇIKAR */
+.react-flow-connecting .react-flow__edges {
+  z-index: 20 !important;
+}
+
 /* Boruların cihazların arkasından görünmesini engellemek için katı arka planlar */
 .react-flow__node {
   background-color: #ffffff; /* Aydınlık Mod arkaplanı */

@@ -167,7 +167,13 @@
     },
     "canvas": {
       "deleteSelected": "Seçilileri Sil",
-      "newText": "Yeni Metin"
+      "newText": "Yeni Metin",
+      "invalidConnection": "Bağlantı sadece Çıkış'tan Giriş'e yapılabilir",
+      "connectionError": {
+        "sourceToSource": "Bağlantı sadece Çıkış'tan Giriş'e yapılabilir.",
+        "targetToTarget": "Bağlantı sadece Giriş'ten Çıkış'a yapılabilir.",
+        "generic": "Geçersiz bağlantı noktası."
+      }
     },
     "categories": {
       "hvac": "HVAC & Ekipmanlar",

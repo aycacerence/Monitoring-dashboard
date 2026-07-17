@@ -167,7 +167,13 @@
     },
     "canvas": {
       "deleteSelected": "Delete Selected",
-      "newText": "New Text"
+      "newText": "New Text",
+      "invalidConnection": "Connections can only be made from Source to Target",
+      "connectionError": {
+        "sourceToSource": "Connections must be made from Output to Input.",
+        "targetToTarget": "Connections must be made from Input to Output.",
+        "generic": "Invalid connection point."
+      }
     },
     "categories": {
       "hvac": "HVAC & Equipment",
