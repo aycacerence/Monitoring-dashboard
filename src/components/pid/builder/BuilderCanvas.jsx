@@ -287,6 +287,14 @@ const BuilderCanvasInner = () => {
   const onPaneClick = () => {
     setSelectedNode(null);
     setSelectedEdge(null);
+    // Force blur on any active element (like contentEditable text nodes)
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+    // Clear any native text selections to avoid "stuck" highlights
+    if (window.getSelection) {
+      window.getSelection().removeAllRanges();
+    }
   };
 
   const showMultiDelete = selectedNodesLocal.length > 1 || selectedEdgesLocal.length > 1 || (selectedNodesLocal.length > 0 && selectedEdgesLocal.length > 0);
