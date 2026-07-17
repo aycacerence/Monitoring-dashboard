@@ -113,6 +113,22 @@ export const PIDProvider = ({ children }) => {
   const pushHistory = useCallback(() => {
     setPast((currPast) => {
       const currentState = JSON.parse(JSON.stringify({ nodes, edges }));
+      
+      // Sadece tarihçeye kaydedilmesi GEÇERLİ olan (saf) verileri kıyaslamak için al
+      const stripUI = (nds, eds) => ({
+        nodes: nds.map(({ id, type, position, data }) => ({ id, type, position, data })),
+        edges: eds.map(({ id, source, sourceHandle, target, targetHandle, type, data }) => ({ id, source, sourceHandle, target, targetHandle, type, data }))
+      });
+
+      if (currPast.length > 0) {
+        const lastState = currPast[currPast.length - 1];
+        const strippedCurrent = stripUI(currentState.nodes, currentState.edges);
+        const strippedLast = stripUI(lastState.nodes, lastState.edges);
+        
+        if (JSON.stringify(strippedCurrent) === JSON.stringify(strippedLast)) {
+          return currPast; // Skip if only selection/dragging changed
+        }
+      }
       return [...currPast, currentState];
     });
     setFuture([]); 
@@ -127,8 +143,17 @@ export const PIDProvider = ({ children }) => {
       const currentState = JSON.parse(JSON.stringify({ nodes, edges }));
       return [...currFuture, currentState];
     });
-    setNodes(previousState.nodes);
-    setEdges(previousState.edges);
+
+    // Mevcut seçim durumlarını (selected) koruyarak geçmiş durumu yükle
+    setNodes(previousState.nodes.map(n => {
+      const curr = nodes.find(c => c.id === n.id);
+      return { ...n, selected: curr ? curr.selected : false };
+    }));
+    setEdges(previousState.edges.map(e => {
+      const curr = edges.find(c => c.id === e.id);
+      return { ...e, selected: curr ? curr.selected : false };
+    }));
+    
     setPast(newPast);
   }, [nodes, edges, past]);
 
@@ -141,8 +166,17 @@ export const PIDProvider = ({ children }) => {
       const currentState = JSON.parse(JSON.stringify({ nodes, edges }));
       return [...currPast, currentState];
     });
-    setNodes(nextState.nodes);
-    setEdges(nextState.edges);
+
+    // Mevcut seçim durumlarını koruyarak ileri durumu yükle
+    setNodes(nextState.nodes.map(n => {
+      const curr = nodes.find(c => c.id === n.id);
+      return { ...n, selected: curr ? curr.selected : false };
+    }));
+    setEdges(nextState.edges.map(e => {
+      const curr = edges.find(c => c.id === e.id);
+      return { ...e, selected: curr ? curr.selected : false };
+    }));
+
     setFuture(newFuture);
   }, [nodes, edges, future]);
 
@@ -215,14 +249,12 @@ export const PIDProvider = ({ children }) => {
   }, [pushHistory, activeFlowType]);
 
   const handleSetSelectedNode = useCallback((node) => {
-    pushHistory();
     setSelectedNodeId(node ? node.id : null);
-  }, [pushHistory]);
+  }, []);
 
   const handleSetSelectedEdge = useCallback((edge) => {
-    pushHistory();
     setSelectedEdgeId(edge ? edge.id : null);
-  }, [pushHistory]);
+  }, []);
 
   const updateEdgeData = useCallback((id, newData) => {
     pushHistory();
@@ -239,12 +271,28 @@ export const PIDProvider = ({ children }) => {
   }, [pushHistory]);
 
   const onNodesChange = useCallback((changes) => {
+    // Sadece önemli değişikliklerde (ekleme, silme, taşıma bitişi) tarihçeye kaydet
+    const hasSignificantChange = changes.some((c) => {
+      if (c.type === 'select') return false;
+      if (c.type === 'dimensions') return false;
+      if (c.type === 'position' && c.dragging) return false;
+      return true;
+    });
+    
+    if (hasSignificantChange) {
+      pushHistory();
+    }
     setNodes((nds) => applyNodeChanges(changes, nds));
-  }, []);
+  }, [pushHistory]);
 
   const onEdgesChange = useCallback((changes) => {
+    const hasSignificantChange = changes.some((c) => c.type !== 'select');
+    
+    if (hasSignificantChange) {
+      pushHistory();
+    }
     setEdges((eds) => applyEdgeChanges(changes, eds));
-  }, []);
+  }, [pushHistory]);
 
   const saveFlow = useCallback((customName = null) => {
     if (!activeDiagramId) return;
