@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import ReactFlow, { Background, Controls, MiniMap, useReactFlow, ReactFlowProvider, useStore } from 'reactflow';
+import ReactFlow, { Background, Controls, MiniMap, useReactFlow, ReactFlowProvider, useStore, Panel, useOnSelectionChange } from 'reactflow';
 import { useTheme } from '@mui/material/styles';
 import 'reactflow/dist/style.css';
 
@@ -122,6 +122,9 @@ const resolveNodeCollision = (targetNode, allNodes) => {
   return { x, y };
 };
 
+import { Button } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 const BuilderCanvasInner = () => {
   const {
     nodes,
@@ -133,27 +136,39 @@ const BuilderCanvasInner = () => {
     setSelectedNode,
     setSelectedEdge,
     setActiveFlowType,
-    setNodes
+    setNodes,
+    deleteMultiple
   } = usePID();
 
   const theme = useTheme();
   const mode = useSelector(selectColorMode);
   
-  // project yerine ekran koordinatlarını kanvas koordinatlarına milimetrik çeviren fonksiyonu alıyoruz
   const { screenToFlowPosition, getNodes } = useReactFlow();
-  
-  // Kameranın (tuvalin) anlık yakınlaştırma ve kaydırma verisi
   const transform = useStore((s) => s.transform);
 
   const [helperLines, setHelperLines] = useState({ horizontal: null, vertical: null });
+  const [selectedNodesLocal, setSelectedNodesLocal] = useState([]);
+  const [selectedEdgesLocal, setSelectedEdgesLocal] = useState([]);
+
+  useOnSelectionChange({
+    onChange: ({ nodes, edges }) => {
+      setSelectedNodesLocal(nodes);
+      setSelectedEdgesLocal(edges);
+    },
+  });
+
+  const handleMultiDelete = () => {
+    if (selectedNodesLocal.length > 0 || selectedEdgesLocal.length > 0) {
+      deleteMultiple(selectedNodesLocal, selectedEdgesLocal);
+    }
+  };
 
   const onNodeDrag = useCallback((event, draggedNode) => {
-    const allNodes = getNodes(); // react flow'dan veya context'ten gelen güncel cihazlar
+    const allNodes = getNodes();
     const lines = getHelperLines(draggedNode, allNodes);
 
     setHelperLines({ horizontal: lines.horizontal, vertical: lines.vertical });
 
-    // Eğer yapışma sınırındaysa cihazın konumunu otomatik olarak kilitlenen (snap) koordinata çek
     setNodes((nds) =>
       nds.map((n) => {
         if (n.id === draggedNode.id) {
@@ -171,10 +186,8 @@ const BuilderCanvasInner = () => {
   }, [getNodes, setNodes]);
 
   const onNodeDragStop = useCallback((event, node) => {
-    // Sürükleme bittiğinde kılavuz çizgilerini temizle
     setHelperLines({ horizontal: null, vertical: null });
     
-    // AABB Çarpışma Kontrolü (Cihazı sürükleyip bıraktıktan sonra üst üste binmesin diye)
     const allNodes = getNodes();
     const newPosition = resolveNodeCollision(node, allNodes);
     
@@ -191,13 +204,11 @@ const BuilderCanvasInner = () => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
 
-    // Dışarıdan yeni bir PNG/Cihaz sürüklenirken de helper lines göster
     const tempPosition = screenToFlowPosition({
       x: e.clientX - 40,
       y: e.clientY - 40,
     });
     
-    // Varsayılan bir genişlik/yükseklik vererek geçici bir node objesi oluşturuyoruz
     const mockNode = { id: 'temp-drag', position: tempPosition, width: 48, height: 48 };
     const lines = getHelperLines(mockNode, getNodes());
     
@@ -220,7 +231,6 @@ const BuilderCanvasInner = () => {
       y: e.clientY - 40,
     });
     
-    // Bırakıldığı anda eğer hizalama çizgisine yakınsa tam oraya yapıştır (snap)
     const mockNode = { id: 'temp-drag', position, width: 48, height: 48 };
     const allNodes = getNodes();
     const lines = getHelperLines(mockNode, allNodes);
@@ -228,7 +238,6 @@ const BuilderCanvasInner = () => {
     if (lines.vertical) position.x = lines.snapPosition.x;
     if (lines.horizontal) position.y = lines.snapPosition.y;
 
-    // Yapışma veya düz bırakma sonrası çarpışma kontrolü
     mockNode.position = position;
     const safePosition = resolveNodeCollision(mockNode, allNodes);
     position = safePosition;
@@ -254,6 +263,26 @@ const BuilderCanvasInner = () => {
     setSelectedNode(null);
     setSelectedEdge(null);
   };
+
+  const showMultiDelete = selectedNodesLocal.length > 1 || selectedEdgesLocal.length > 1 || (selectedNodesLocal.length > 0 && selectedEdgesLocal.length > 0);
+  
+  const getMultiDeletePosition = () => {
+    if (selectedNodesLocal.length > 0) {
+      let minY = Infinity, maxX = -Infinity;
+      selectedNodesLocal.forEach(n => {
+        minY = Math.min(minY, n.position.y);
+        maxX = Math.max(maxX, n.position.x + (n.width || 100));
+      });
+      return {
+        left: maxX * transform[2] + transform[0] + 20,
+        top: minY * transform[2] + transform[1] - 20,
+        transform: 'none'
+      };
+    }
+    return { left: '50%', top: 20, transform: 'translateX(-50%)' };
+  };
+
+  const multiSelectionCount = selectedNodesLocal.length + selectedEdgesLocal.length;
 
   return (
     <div className="flex-1 h-full relative bg-slate-50 dark:bg-slate-950">
@@ -329,6 +358,21 @@ const BuilderCanvasInner = () => {
           </defs>
         </svg>
       </ReactFlow>
+
+      {/* Yüzen Çoklu Silme Butonu */}
+      {showMultiDelete && (
+        <div style={{ position: 'absolute', zIndex: 100, ...getMultiDeletePosition() }}>
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={handleMultiDelete}
+            sx={{ borderRadius: 8, px: 3, boxShadow: 3, textTransform: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}
+          >
+            Seçilileri Sil ({multiSelectionCount})
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

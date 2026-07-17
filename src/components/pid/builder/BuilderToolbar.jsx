@@ -196,22 +196,6 @@ const BuilderToolbar = ({ onMenuClick }) => {
     }
   };
 
-  const handleDelete = () => {
-    const allNodes = getNodes();
-    const allEdges = getEdges();
-    
-    const nodesToRemove = allNodes.filter(n => n.selected);
-    const edgesToRemove = allEdges.filter(e => e.selected);
-    
-    if (nodesToRemove.length > 0 || edgesToRemove.length > 0) {
-      deleteMultiple(nodesToRemove, edgesToRemove);
-    } else if (selectedNode) {
-      deleteMultiple([selectedNode], []);
-    } else if (selectedEdge) {
-      deleteMultiple([], [selectedEdge]);
-    }
-  };
-
   return (
     <>
       <AppBar 
@@ -302,15 +286,6 @@ const BuilderToolbar = ({ onMenuClick }) => {
             )}
           </Box>
           <Box className="flex items-center gap-0.5 sm:gap-2" sx={{ justifyContent: { xs: 'center', md: 'flex-end' }, width: { xs: '100%', md: 'auto' }, flex: { md: 1 }, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
-            <ResponsiveButton
-              icon={Delete}
-              label={t('pidBuilder.toolbar.delete')}
-              disabled={selectedItemCount === 0 && !selectedNode && !selectedEdge}
-              onClick={handleDelete}
-              color="inherit"
-              sx={{ '&.Mui-disabled': { color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)' } }}
-            />
-
             <ResponsiveButton
               icon={Undo}
               label={t('pidBuilder.toolbar.undo')}

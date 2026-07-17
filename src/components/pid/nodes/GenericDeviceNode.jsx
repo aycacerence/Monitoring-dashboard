@@ -1,11 +1,26 @@
 import React from 'react';
-import { Handle, Position } from 'reactflow';
-import { Box, Typography } from '@mui/material';
+import { Handle, Position, useReactFlow, getConnectedEdges } from 'reactflow';
+import { Box, Typography, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { iconMap } from '../../../data/pid/iconMap';
 import { useTranslation } from 'react-i18next';
 
-const GenericDeviceNode = ({ data, selected }) => {
+const GenericDeviceNode = ({ id, data, selected }) => {
   const { t } = useTranslation();
+  const { setNodes, setEdges, getNode, getEdges } = useReactFlow();
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    
+    setNodes((nds) => nds.filter((n) => n.id !== id));
+    
+    const node = getNode(id);
+    const edges = getEdges();
+    if (node) {
+      const connectedEdges = getConnectedEdges([node], edges);
+      setEdges((eds) => eds.filter((edge) => !connectedEdges.find((c) => c.id === edge.id)));
+    }
+  };
 
   return (
     <Box 
@@ -21,6 +36,28 @@ const GenericDeviceNode = ({ data, selected }) => {
         position: 'relative'
       }}
     >
+      {selected && (
+        <IconButton
+          size="small"
+          onClick={handleDelete}
+          sx={{
+            position: 'absolute',
+            top: -10,
+            right: -10,
+            bgcolor: 'error.main',
+            color: 'white',
+            width: 24,
+            height: 24,
+            '&:hover': {
+              bgcolor: 'error.dark',
+            },
+            zIndex: 10,
+          }}
+        >
+          <CloseIcon sx={{ fontSize: 16 }} />
+        </IconButton>
+      )}
+      
       <Handle type="target" position={Position.Left} style={{ top: '50%', transform: 'translateY(-50%)' }} />
       
       <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-10 h-10 object-contain" />

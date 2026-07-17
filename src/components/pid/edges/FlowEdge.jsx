@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { getSmoothStepPath, BaseEdge, useReactFlow } from 'reactflow';
+import { getSmoothStepPath, BaseEdge, useReactFlow, EdgeLabelRenderer } from 'reactflow';
+import { IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material/styles';
 import './flowEdge.css';
 
@@ -131,6 +133,11 @@ const FlowEdge = ({
 }) => {
   const theme = useTheme();
   const { setEdges, screenToFlowPosition } = useReactFlow();
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    setEdges((eds) => eds.filter((edge) => edge.id !== id));
+  };
 
   const [hoveredHandle, setHoveredHandle] = useState(null);
   const [draggingHandle, setDraggingHandle] = useState(null);
@@ -397,6 +404,45 @@ const FlowEdge = ({
     }
   }
 
+  const midIndex = Math.floor((activePoints.length - 1) / 2);
+  const pA = activePoints[midIndex];
+  const pB = activePoints[midIndex+1];
+  const labelX = (pA.x + pB.x) / 2;
+  const labelY = (pA.y + pB.y) / 2;
+
+  const isHoriz = Math.abs(pA.y - pB.y) < 1;
+  const offsetX = isHoriz ? 0 : 25;
+  const offsetY = isHoriz ? -25 : 0;
+
+  const deleteButton = selected ? (
+    <EdgeLabelRenderer>
+      <div
+        style={{
+          position: 'absolute',
+          transform: `translate(-50%, -50%) translate(${labelX + offsetX}px, ${labelY + offsetY}px)`,
+          pointerEvents: 'all',
+          zIndex: 20,
+        }}
+      >
+        <IconButton
+          size="small"
+          onClick={handleDelete}
+          sx={{
+            bgcolor: 'error.main',
+            color: 'white',
+            width: 24,
+            height: 24,
+            '&:hover': {
+              bgcolor: 'error.dark',
+            },
+          }}
+        >
+          <CloseIcon sx={{ fontSize: 16 }} />
+        </IconButton>
+      </div>
+    </EdgeLabelRenderer>
+  ) : null;
+
   if (data?.flowType === 'duct_mixed') {
     const pathTop = drawRoundedOrthogonalPath(getParallelPoints(activePoints, -6));
     const pathBottom = drawRoundedOrthogonalPath(getParallelPoints(activePoints, 6));
@@ -421,6 +467,7 @@ const FlowEdge = ({
         />
         <path d={path} fill="none" strokeOpacity={0} strokeWidth={20} className="react-flow__edge-interaction" onDoubleClick={onEdgeDoubleClick} />
         {handles}
+        {deleteButton}
       </>
     );
   }
@@ -435,6 +482,7 @@ const FlowEdge = ({
       />
       <path d={path} fill="none" strokeOpacity={0} strokeWidth={20} className="react-flow__edge-interaction" onDoubleClick={onEdgeDoubleClick} />
       {handles}
+      {deleteButton}
     </>
   );
 };
