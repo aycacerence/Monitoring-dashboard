@@ -56,22 +56,26 @@ const getHelperLines = (draggedNode, allNodes) => {
   return helperLines;
 };
 
-// AABB Çarpışma Algılama ve Çözümleme Fonksiyonu
+// AABB ve Matematiksel SVG Path Çarpışma Algılama ve Çözümleme Fonksiyonu
 const resolveNodeCollision = (targetNode, allNodes) => {
-  const PADDING = 10; // Cihazlar arası zorunlu minimum boşluk
+  const PADDING = 10; // Cihazlar ve borular arası zorunlu minimum boşluk
   let { x, y } = targetNode.position;
   let hasCollision = true;
   let safetyLimit = 0; // Sonsuz döngüyü önlemek için
 
-  while (hasCollision && safetyLimit < 50) {
+  // DOM'daki mevcut boruların (edges) SVG yollarını al
+  const edgePaths = Array.from(document.querySelectorAll('.react-flow__edge-path'));
+
+  while (hasCollision && safetyLimit < 100) {
     hasCollision = false;
+    const w1 = targetNode.width || 48; const h1 = targetNode.height || 48;
+
+    // 1. Düğüm (Node) Çarpışma Testi
     for (const node of allNodes) {
       if (node.id === targetNode.id) continue;
       
-      const w1 = targetNode.width || 48; const h1 = targetNode.height || 48;
       const w2 = node.width || 48; const h2 = node.height || 48;
 
-      // AABB Kesişim Testi
       const isIntersecting = 
         x < node.position.x + w2 + PADDING &&
         x + w1 + PADDING > node.position.x &&
@@ -82,9 +86,36 @@ const resolveNodeCollision = (targetNode, allNodes) => {
         hasCollision = true;
         // Üst üste bindiği cihazın hemen sağına it
         x = node.position.x + w2 + PADDING; 
-        break; // Yeni koordinatla testi baştan başlat
+        break; 
       }
     }
+
+    // 2. Boru (Edge) Çarpışma Testi (Eğer düğümle çarpışma yoksa test et)
+    if (!hasCollision) {
+      for (const path of edgePaths) {
+        // Borunun görünürlüğünü kontrol et (silinmiş/gizli borularla çarpışmayı önle)
+        if (!path.getTotalLength) continue; 
+        
+        const length = path.getTotalLength();
+        for (let i = 0; i <= length; i += 15) {
+          const point = path.getPointAtLength(i);
+          
+          if (
+            point.x >= x - PADDING &&
+            point.x <= x + w1 + PADDING &&
+            point.y >= y - PADDING &&
+            point.y <= y + h1 + PADDING
+          ) {
+            hasCollision = true;
+            // Borunun hemen sağına/aşağısına itmek yerine basitçe X'i kaydır
+            x += 20; 
+            break;
+          }
+        }
+        if (hasCollision) break;
+      }
+    }
+
     safetyLimit++;
   }
   return { x, y };
