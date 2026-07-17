@@ -463,7 +463,7 @@ const FlowEdge = ({
       <BaseEdge
         id={id}
         path={path}
-        markerEnd={markerEnd}
+        markerEnd={`url(#arrow-${data?.flowType || 'duct_cold'})`}
         style={{ stroke: color, strokeWidth: selected ? 2.5 : 2, filter: selected ? `drop-shadow(0px 0px 4px ${color})` : 'none', transition: 'all 0.2s ease' }}
       />
       <path d={path} fill="none" strokeOpacity={0} strokeWidth={20} className="react-flow__edge-interaction" />
