@@ -501,7 +501,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
         onClose={() => setSaveModalOpen(false)}
         screenshotBase64={screenshotBase64}
         initialDiagramName={diagrams.find(d => d.id === activeDiagramId)?.name || ''}
-        initialSelectedKpiIds={[]} // veya mevcut diag kpi listesi
+        initialSelectedKpiIds={diagrams.find(d => d.id === activeDiagramId)?.kpiConfig || []}
         diagramNodes={nodes}
         onConfirm={({ name, screenshot, selectedKpiIds }) => {
           // Güncel çizim verilerini al
@@ -524,9 +524,9 @@ const BuilderToolbar = ({ onMenuClick }) => {
 
           // Mevcut yapı (bozulmadan korundu)
           if (!activeDiagramId) {
-            createNewDiagram(name, currentNodes, currentEdges);
+            createNewDiagram(name, currentNodes, currentEdges, selectedKpiIds);
           } else {
-            renameDiagram(activeDiagramId, name);
+            renameDiagram(activeDiagramId, name, selectedKpiIds);
             saveFlow(); // Sadece var olan diyagram güncellenirken saveFlow çağrılır
           }
           

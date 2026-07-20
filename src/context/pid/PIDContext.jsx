@@ -314,9 +314,9 @@ export const PIDProvider = ({ children }) => {
     });
   }, [nodes, edges, activeDiagramId, role]);
 
-  const createNewDiagram = useCallback((name, initialNodes = [], initialEdges = []) => {
+  const createNewDiagram = useCallback((name, initialNodes = [], initialEdges = [], kpiConfig = []) => {
     const newId = generateId();
-    const newDiagram = { id: newId, name: name || 'Yeni Diyagram', updatedAt: Date.now() };
+    const newDiagram = { id: newId, name: name || 'Yeni Diyagram', updatedAt: Date.now(), kpiConfig };
     
     setDiagrams(prev => {
       const updated = [...prev, newDiagram];
@@ -356,11 +356,15 @@ export const PIDProvider = ({ children }) => {
     return true; 
   }, [isDirty, role]);
 
-  const renameDiagram = useCallback((id, newName) => {
+  const renameDiagram = useCallback((id, newName, newKpiConfig) => {
     setDiagrams(prev => {
       const updated = prev.map(d => {
         if (d.id === id) {
-          return { ...d, name: newName, updatedAt: Date.now() };
+          const updates = { ...d, name: newName, updatedAt: Date.now() };
+          if (newKpiConfig) {
+            updates.kpiConfig = newKpiConfig;
+          }
+          return updates;
         }
         return d;
       });
