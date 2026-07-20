@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { Chip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
   Flame, Fan, BatteryCharging, PiggyBank, Thermometer,
   Sun, SunDim, Wind, Waves, ThermometerSun, Gauge,
@@ -49,7 +50,9 @@ Sparkline.propTypes = {
 };
 
 const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isRecommended = false }) => {
+  const { t, i18n } = useTranslation();
   const IconComponent = iconMap[kpi.icon] || Activity;
+  const currentLabel = i18n.language === 'en' ? kpi.labelEN : kpi.labelTR;
   
   const isUp = kpi.trend.direction === 'up';
   const isDown = kpi.trend.direction === 'down';
@@ -88,8 +91,8 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
         outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2
         ${sizeClasses}
         ${selected 
-          ? 'border-2 border-brand-600 shadow-md opacity-100' 
-          : 'border border-slate-200 dark:border-slate-700 opacity-60 hover:opacity-85 shadow-sm'
+          ? 'border-2 border-brand-600 shadow-md ring-1 ring-brand-100' 
+          : 'border border-slate-200 dark:border-slate-700 hover:border-brand-300 hover:shadow-md shadow-sm transition-all'
         }
       `}
     >
@@ -101,26 +104,35 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
       )}
 
       {/* Önerilen Chip İkonu */}
-      {isRecommended && !selected && (
+      {isRecommended && (
         <Chip 
-          label="Önerilen" 
+          label={t('pidBuilder.saveModal.recommended', 'Önerilen')} 
           size="small" 
-          color="info" 
-          variant="outlined"
-          sx={{ position: 'absolute', top: -10, left: -10, zIndex: 10, pointerEvents: 'none', bgcolor: 'background.paper', fontSize: '0.65rem', height: '20px' }}
+          color="primary" 
+          variant="filled"
+          sx={{ 
+            position: 'absolute', 
+            top: -12, 
+            left: 12, 
+            zIndex: 10, 
+            pointerEvents: 'none', 
+            fontSize: '0.65rem', 
+            height: '20px',
+            boxShadow: 1
+          }}
         />
       )}
 
       {/* Üst Satır: İkon ve Başlık */}
       <div className="flex items-center justify-between w-full">
-        <div className={`p-1.5 rounded-lg ${selected ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
+        <div className={`p-1.5 rounded-lg ${selected ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400'}`}>
           <IconComponent className="w-4 h-4" />
         </div>
         <span 
-          className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate ml-2 text-right"
-          title={kpi.labelTR}
+          className="font-medium text-[0.8rem] leading-tight text-slate-700 dark:text-slate-300 line-clamp-2 ml-2 flex-1 text-right"
+          title={currentLabel}
         >
-          {kpi.labelTR}
+          {currentLabel}
         </span>
       </div>
 

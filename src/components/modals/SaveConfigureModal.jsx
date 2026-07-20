@@ -17,6 +17,7 @@ import {
 import { X, Image as ImageIcon, Search } from 'lucide-react';
 import { KPI_CATEGORIES, kpiDashboardConfig } from '../../config/kpiDashboardConfig';
 import KPIPreviewCard from '../pid/kpi/KPIPreviewCard';
+import { useTranslation } from 'react-i18next';
 
 function SaveConfigureModal({
   open,
@@ -27,6 +28,7 @@ function SaveConfigureModal({
   diagramNodes = [],
   onConfirm
 }) {
+  const { t, i18n } = useTranslation();
   const [name, setName] = useState(initialDiagramName);
   const [selectedKpiIds, setSelectedKpiIds] = useState(initialSelectedKpiIds);
   const [searchQuery, setSearchQuery] = useState('');
@@ -130,7 +132,7 @@ function SaveConfigureModal({
       {/* BAŞLIK VE KAPATMA BUTONU */}
       <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6" component="div" fontWeight="bold">
-          Diyagramı Kaydet ve Dashboard'ı Yapılandır
+          {t('pidBuilder.saveModal.title', "Diyagramı Kaydet ve Dashboard'ı Yapılandır")}
         </Typography>
         <IconButton
           aria-label="close"
@@ -162,27 +164,27 @@ function SaveConfigureModal({
                 ) : (
                   <div className="flex flex-col items-center justify-center text-slate-400">
                     <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                    <Typography variant="body2">Görsel bulunamadı</Typography>
+                    <Typography variant="body2">{t('pidBuilder.saveModal.noImage', 'Görsel bulunamadı')}</Typography>
                   </div>
                 )}
               </Box>
 
               {/* Diyagram Adı Input */}
               <TextField
-                label="Diyagram Adı"
+                label={t('pidBuilder.saveModal.diagramName', 'Diyagram Adı')}
                 required
                 fullWidth
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 error={submitAttempted && !name.trim()}
-                helperText={submitAttempted && !name.trim() ? "Diyagram adı zorunludur" : ""}
+                helperText={submitAttempted && !name.trim() ? t('pidBuilder.saveModal.nameRequired', 'Diyagram adı zorunludur') : ""}
                 variant="outlined"
               />
 
               {/* Seçili KPI Sayısı Bilgisi */}
               <Box className="p-3 bg-brand-50/50 dark:bg-brand-900/10 rounded-lg border border-brand-100 dark:border-brand-900/30 text-center md:text-left">
                 <Typography variant="body2" color="text.secondary" className="font-medium">
-                  Seçilen KPI sayısı: <span className="text-brand-600 dark:text-brand-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
+                  {t('pidBuilder.saveModal.selectedKpiCount', 'Seçilen KPI sayısı:')} <span className="text-brand-600 dark:text-brand-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
                 </Typography>
                 
                 {recommendedCount > 0 && (
@@ -191,7 +193,7 @@ function SaveConfigureModal({
                     className="block mt-2 text-brand-600 dark:text-brand-400 cursor-pointer hover:underline font-semibold"
                     onClick={handleSelectAllRecommended}
                   >
-                    Diyagramınıza göre {recommendedCount} kart öneriliyor. Tümünü Seç.
+                    {t('pidBuilder.saveModal.recommendedCount', { count: recommendedCount, defaultValue: `Diyagramınıza göre ${recommendedCount} kart öneriliyor. Tümünü Seç.` })}
                   </Typography>
                 )}
               </Box>
@@ -209,7 +211,7 @@ function SaveConfigureModal({
               
               {/* Arama Kutusu */}
               <TextField
-                placeholder="KPI ara... (örn. Fan, Basınç)"
+                placeholder={t('pidBuilder.saveModal.searchPlaceholder', 'KPI ara... (örn. Fan, Basınç)')}
                 size="small"
                 fullWidth
                 value={searchQuery}
@@ -228,10 +230,12 @@ function SaveConfigureModal({
               {filteredTotalKpis === 0 ? (
                 <Box className="flex flex-col items-center justify-center py-10 text-slate-500">
                   <Search className="w-10 h-10 mb-3 opacity-30" />
-                  <Typography variant="body1">Sonuç bulunamadı</Typography>
+                  <Typography variant="body1">{t('pidBuilder.saveModal.noResults', 'Sonuç bulunamadı')}</Typography>
                 </Box>
               ) : (
                 KPI_CATEGORIES.map((category, index) => {
+                  const currentLabel = i18n.language === 'en' ? category.labelEN : category.labelTR;
+                  
                   // Bu kategoriye ait KPI'ları filtrele, öneri durumunu belirle ve önerilenleri başa al
                   const categoryKpis = kpiDashboardConfig
                     .filter(kpi => kpi.categoryKey === category.key)
@@ -258,11 +262,11 @@ function SaveConfigureModal({
                           fontWeight="bold" 
                           className="text-slate-800 dark:text-slate-200 uppercase tracking-wider"
                         >
-                          {category.labelTR}
+                          {currentLabel}
                         </Typography>
                         <Box display="flex" alignItems="center" gap={1.5}>
                           <Typography variant="caption" color="text.secondary" fontWeight="medium">
-                            ({selectedInCategory} / {totalInCategory} seçili)
+                            ({selectedInCategory} / {totalInCategory})
                           </Typography>
                           <Button 
                             size="small" 
@@ -271,7 +275,7 @@ function SaveConfigureModal({
                             onClick={() => handleCategorySelectAll(categoryKpis, isAllSelected)}
                             sx={{ textTransform: 'none', fontWeight: 600, minWidth: 'auto', p: 0, '&:hover': { background: 'transparent', textDecoration: 'underline' } }}
                           >
-                            {isAllSelected ? "Temizle" : "Tümünü Seç"}
+                            {isAllSelected ? t('pidBuilder.saveModal.clear', 'Temizle') : t('pidBuilder.saveModal.selectAll', 'Tümünü Seç')}
                           </Button>
                         </Box>
                       </Box>
@@ -279,11 +283,13 @@ function SaveConfigureModal({
                     {/* CSS Grid (Responsive) */}
                     <div 
                       role="group"
-                      aria-label={`${category.labelTR} KPI kartları`}
+                      aria-label={`${currentLabel} KPI`}
                       style={{ 
                         display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
-                        gap: '12px' 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', 
+                        gap: '24px',
+                        paddingTop: '12px',
+                        paddingBottom: '8px'
                       }}
                     >
                       {categoryKpis.map(kpi => (
@@ -317,14 +323,14 @@ function SaveConfigureModal({
         <Box>
           {hasNoKpiSelected && (
             <Typography variant="body2" color="error" className="font-medium animate-pulse flex items-center">
-              * Lütfen en az bir KPI kartı seçin.
+              {t('pidBuilder.saveModal.minOneKpi', '* Lütfen en az bir KPI kartı seçin.')}
             </Typography>
           )}
         </Box>
         
         <Box className="flex gap-3">
           <Button onClick={onClose} color="inherit" variant="text" sx={{ px: 3 }}>
-            Vazgeç
+            {t('pidBuilder.saveModal.cancel', 'Vazgeç')}
           </Button>
           <Button 
             onClick={handleSave} 
@@ -334,7 +340,7 @@ function SaveConfigureModal({
             sx={{ px: 4, py: 1 }}
             disableElevation
           >
-            Kaydet
+            {t('pidBuilder.saveModal.save', 'Kaydet')}
           </Button>
         </Box>
       </DialogActions>

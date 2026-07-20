@@ -137,6 +137,22 @@
     "editModePreviewDisabled": "Preview disabled in edit mode"
   },
   "pidBuilder": {
+    "saveModal": {
+      "title": "Save Diagram and Configure Dashboard",
+      "noImage": "Image not found",
+      "diagramName": "Diagram Name",
+      "nameRequired": "Diagram name is required",
+      "selectedKpiCount": "Selected KPI count:",
+      "recommendedCount": "{{count}} cards recommended. Select All.",
+      "selectAll": "Select All",
+      "clear": "Clear",
+      "searchPlaceholder": "Search KPI... (e.g. Fan, Pressure)",
+      "noResults": "No results found",
+      "minOneKpi": "* Please select at least one KPI card.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "recommended": "Recommended"
+    },
     "toolbar": {
       "delete": "Delete",
       "undo": "Undo",

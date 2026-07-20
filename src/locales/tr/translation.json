@@ -137,6 +137,22 @@
     "editModePreviewDisabled": "Düzenleme modunda önizleme devre dışı"
   },
   "pidBuilder": {
+    "saveModal": {
+      "title": "Diyagramı Kaydet ve Dashboard'ı Yapılandır",
+      "noImage": "Görsel bulunamadı",
+      "diagramName": "Diyagram Adı",
+      "nameRequired": "Diyagram adı zorunludur",
+      "selectedKpiCount": "Seçilen KPI sayısı:",
+      "recommendedCount": "Diyagramınıza göre {{count}} kart öneriliyor. Tümünü Seç.",
+      "selectAll": "Tümünü Seç",
+      "clear": "Temizle",
+      "searchPlaceholder": "KPI ara... (örn. Fan, Basınç)",
+      "noResults": "Sonuç bulunamadı",
+      "minOneKpi": "* Lütfen en az bir KPI kartı seçin.",
+      "cancel": "Vazgeç",
+      "save": "Kaydet",
+      "recommended": "Önerilen"
+    },
     "toolbar": {
       "delete": "Sil",
       "undo": "Geri Al",
