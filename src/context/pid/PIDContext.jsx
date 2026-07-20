@@ -314,7 +314,7 @@ export const PIDProvider = ({ children }) => {
     });
   }, [nodes, edges, activeDiagramId, role]);
 
-  const createNewDiagram = useCallback((name) => {
+  const createNewDiagram = useCallback((name, initialNodes = [], initialEdges = []) => {
     const newId = generateId();
     const newDiagram = { id: newId, name: name || 'Yeni Diyagram', updatedAt: Date.now() };
     
@@ -326,11 +326,11 @@ export const PIDProvider = ({ children }) => {
     
     setActiveDiagramId(newId);
     localStorage.setItem(`pid_active_diagram_${role}`, newId);
-    localStorage.setItem(`pid_flow_${newId}`, JSON.stringify({ nodes: [], edges: [] }));
+    localStorage.setItem(`pid_flow_${newId}`, JSON.stringify({ nodes: initialNodes, edges: initialEdges }));
     
-    setNodes([]);
-    setEdges([]);
-    setSavedStateStr(cleanFlow([], []));
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+    setSavedStateStr(cleanFlow(initialNodes, initialEdges));
     setPast([]);
     setFuture([]);
     setSelectedNodeId(null);

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { usePID } from '../../../context/pid/PIDContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -19,6 +20,9 @@ import {
   TextFields as TextFieldsIcon,
   WarningAmber as WarningIcon,
 } from '@mui/icons-material';
+import { toPng } from 'html-to-image';
+import SaveConfigureModal from '../../modals/SaveConfigureModal';
+import CircularProgress from '@mui/material/CircularProgress';
 import {
   AppBar,
   Toolbar,
@@ -71,6 +75,7 @@ const ResponsiveButton = ({ icon: Icon, label, ...props }) => {
 
 const BuilderToolbar = ({ onMenuClick }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const {
     selectedNode,
@@ -109,26 +114,29 @@ const BuilderToolbar = ({ onMenuClick }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   
   const [unsavedConfirmOpen, setUnsavedConfirmOpen] = useState(false);
+  const [confirmNewDialogOpen, setConfirmNewDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [screenshotBase64, setScreenshotBase64] = useState('');
+  const [screenshotLoading, setScreenshotLoading] = useState(false);
+  const reactFlowWrapperRef = React.useRef(null);
 
   const handleCreateNew = () => {
     if (isDirty) {
-      setPendingAction({ type: 'new' });
-      setUnsavedConfirmOpen(true);
-      return;
+      setConfirmNewDialogOpen(true);
+    } else {
+      handleConfirmNew();
     }
-    setNewDiagramName('');
-    setNewDiagramOpen(true);
   };
 
   const handleConfirmNew = () => {
-    if (!newDiagramName.trim()) {
-      toast.error(t('pidBuilder.toolbar.invalidName'));
-      return;
-    }
-    createNewDiagram(newDiagramName.trim());
-    setNewDiagramOpen(false);
-    toast.success(t('pidBuilder.toolbar.diagramCreated'));
+    clearFlow();
+    // İsim sorma iptal, backend diyagram oluşturmasını Save modal'ına bıraktık.
+    // Diyagram seçiciye "Yeni Diyagram (kaydedilmedi)" şeklinde yansıtmak için activeDiagramId'yi temizleyebiliriz
+    // veya PIDContext'te özel bir methodunuz varsa (resetBuilder vb) çağırabilirsiniz.
+    switchDiagram(null); // veya clearFlow + state sıfırlama
+    setConfirmNewDialogOpen(false);
   };
 
   const handleSwitch = (event) => {
@@ -317,8 +325,14 @@ const BuilderToolbar = ({ onMenuClick }) => {
                   <Select
                     value={activeDiagramId || ''}
                     onChange={handleSwitch}
+                    displayEmpty
                     sx={{ height: 36, bgcolor: 'background.default' }}
                   >
+                    {!activeDiagramId && (
+                      <MenuItem value="" disabled sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                        Yeni Diyagram (kaydedilmedi)
+                      </MenuItem>
+                    )}
                     {diagrams.map(d => {
                       let displayName = d.name;
                       if (displayName === 'Varsayılan Diyagram' || displayName === 'İlk Diyagram' || displayName === 'default_diagram') {
@@ -414,12 +428,31 @@ const BuilderToolbar = ({ onMenuClick }) => {
             />
 
             <ResponsiveButton
-              icon={Save}
+              icon={screenshotLoading ? () => <CircularProgress size={16} color="inherit" /> : Save}
               label={t('pidBuilder.toolbar.save')}
-              disabled={!isDirty}
-              onClick={() => {
-                saveFlow();
-                toast.success(t('pidBuilder.toolbar.saveSuccess'));
+              disabled={screenshotLoading}
+              onClick={async () => {
+                const element = document.querySelector('.react-flow') || reactFlowWrapperRef.current;
+                if (!element) return;
+                setScreenshotLoading(true);
+                try {
+                  // Ekran Görüntüsü (Screenshot) Odaklama Sorununun Çözümü
+                  fitView({ padding: 0.2, duration: 800 });
+                  await new Promise(resolve => setTimeout(resolve, 850));
+
+                  const dataUrl = await toPng(element, {
+                    backgroundColor: '#ffffff',
+                    quality: 0.95,
+                    pixelRatio: 2,
+                    filter: (node) => !node.classList?.contains('react-flow__controls') && !node.classList?.contains('react-flow__panel')
+                  });
+                  setScreenshotBase64(dataUrl);
+                  setSaveModalOpen(true);
+                } catch (err) {
+                  toast.error("Ekran görüntüsü alınırken hata oluştu.");
+                } finally {
+                  setScreenshotLoading(false);
+                }
               }}
               color="primary"
               variant="contained"
@@ -427,6 +460,55 @@ const BuilderToolbar = ({ onMenuClick }) => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      <SaveConfigureModal 
+        open={saveModalOpen}
+        onClose={() => setSaveModalOpen(false)}
+        screenshotBase64={screenshotBase64}
+        initialDiagramName={diagrams.find(d => d.id === activeDiagramId)?.name || ''}
+        initialSelectedKpiIds={[]} // veya mevcut diag kpi listesi
+        onConfirm={({ name, screenshot, selectedKpiIds }) => {
+          // Güncel çizim verilerini al
+          const currentNodes = getNodes();
+          const currentEdges = getEdges();
+          
+          /* 
+            NOT: saveDiagramThunk henüz bu dosyada import edilmediği için 
+            Vite hata vermesin diye yoruma alındı. Redux action'ınız hazır olduğunda
+            yukarıda import edip aşağıdaki satırı aktif edebilirsiniz.
+            
+            dispatch(saveDiagramThunk({
+                name,
+                screenshot,
+                kpiConfig: selectedKpiIds,
+                nodes: currentNodes,
+                edges: currentEdges
+            }));
+          */
+
+          // Mevcut yapı (bozulmadan korundu)
+          if (!activeDiagramId) {
+            createNewDiagram(name, currentNodes, currentEdges);
+          } else {
+            renameDiagram(activeDiagramId, name);
+            saveFlow(); // Sadece var olan diyagram güncellenirken saveFlow çağrılır
+          }
+          
+          toast.success("Diyagram kaydedildi");
+          setSaveModalOpen(false);
+        }}
+      />
+
+      <Dialog open={confirmNewDialogOpen} onClose={() => setConfirmNewDialogOpen(false)}>
+        <DialogTitle>Uyarı</DialogTitle>
+        <DialogContent>
+          Kaydedilmemiş değişiklikler var. Yeni bir çizime başlarsanız bu veriler silinecektir. Emin misiniz?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmNewDialogOpen(false)}>Vazgeç</Button>
+          <Button color="error" variant="contained" onClick={handleConfirmNew}>Evet, Yeni Başlat</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Yeni Diyagram Pop-up (Kurumsal Tasarım) */}
       <Dialog 
