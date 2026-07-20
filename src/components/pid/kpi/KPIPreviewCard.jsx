@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 import { Chip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
-  Flame, Fan, BatteryCharging, PiggyBank, Thermometer,
+  Flame, Fan, BatteryCharging, PiggyBank, Leaf, Thermometer,
   Sun, SunDim, Wind, Waves, ThermometerSun, Gauge,
   Droplets, BellRing, Power, Activity, ActivitySquare,
   SlidersHorizontal, CheckCircle, ArrowUpRight, ArrowDownRight, Minus
 } from 'lucide-react';
+import LinearProgress from '@mui/material/LinearProgress';
 
 // Dinamik ikon eşleştirmesi için harita
 const iconMap = {
-  Flame, Fan, BatteryCharging, PiggyBank, Thermometer,
+  Flame, Fan, BatteryCharging, PiggyBank, Leaf, Thermometer,
   Sun, SunDim, Wind, Waves, ThermometerSun, Gauge,
   Droplets, BellRing, Power, Activity, ActivitySquare,
   SlidersHorizontal
@@ -68,10 +69,10 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
     TrendIcon = ArrowDownRight;
   }
 
-  // İstenen 180-200px genişlik ve 110-120px yükseklik için boyut class'ları
+  // Responsive genişlik ve uyumlu yükseklik için boyut class'ları
   const sizeClasses = size === 'compact' 
-    ? 'w-[160px] h-[100px] p-2' 
-    : 'w-[190px] h-[115px] p-3';
+    ? 'w-full min-w-[140px] h-[100px] p-2.5' 
+    : 'w-full min-w-[150px] h-[120px] p-3';
 
   return (
     <div
@@ -125,8 +126,12 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
 
       {/* Üst Satır: İkon ve Başlık */}
       <div className="flex items-center justify-between w-full">
-        <div className={`p-1.5 rounded-lg ${selected ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400'}`}>
-          <IconComponent className="w-4 h-4" />
+        <div className="flex items-center justify-center">
+          <IconComponent 
+            className="w-[22px] h-[22px]" 
+            style={{ color: kpi.iconColor || '#94a3b8' }} 
+            strokeWidth={2} 
+          />
         </div>
         <span 
           className="font-medium text-[0.8rem] leading-tight text-slate-700 dark:text-slate-300 line-clamp-2 ml-2 flex-1 text-right"
@@ -146,13 +151,31 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
         </span>
       </div>
 
-      {/* Alt Satır: Trend ve Mini Grafik (Sparkline) */}
+      {/* Alt Satır: Trend ve Mini Grafik (Sparkline) / Progress */}
       <div className="flex items-center justify-between mt-auto pt-1">
-        <div className={`flex items-center text-xs font-medium ${trendColor}`}>
+        <div className={`flex items-center text-xs font-medium ${kpi.displayFormat === 'basic' ? `px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700/50 ${trendColor}` : trendColor}`}>
           <TrendIcon className="w-3.5 h-3.5 mr-0.5" />
-          <span>{kpi.trend.value}%</span>
+          <span>{kpi.trend.value}{kpi.displayFormat !== 'basic' && '%'}</span>
         </div>
-        <Sparkline data={kpi.sparklineData} colorClass={trendColor} />
+        
+        {(!kpi.displayFormat || kpi.displayFormat === 'sparkline') && (
+          <Sparkline data={kpi.sparklineData} colorClass={trendColor} />
+        )}
+        
+        {kpi.displayFormat === 'progress' && (
+          <div className="w-16">
+            <LinearProgress 
+              variant="determinate" 
+              value={Number(kpi.mockValue) || 50} 
+              sx={{ 
+                height: 4, 
+                borderRadius: 2,
+                backgroundColor: 'rgba(148, 163, 184, 0.2)',
+                '& .MuiLinearProgress-bar': { backgroundColor: kpi.iconColor || '#3B82F6' }
+              }} 
+            />
+          </div>
+        )}
       </div>
     </div>
   );

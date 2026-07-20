@@ -146,29 +146,10 @@ function SaveConfigureModal({
       <DialogContent dividers sx={{ overflow: { md: 'hidden' } }}>
         <Grid container spacing={4} sx={{ height: '100%' }}>
           
-          {/* SOL PANEL */}
-          <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+          {/* SOL PANEL (Genişlik: ~%67) */}
+          <Grid item xs={12} md={8} sx={{ height: '100%' }}>
             <Box className="flex flex-col gap-5 sticky top-0">
               
-              {/* Ekran Görüntüsü Önizleme */}
-              <Box 
-                className="flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden"
-                sx={{ width: '100%', height: 'auto', minHeight: 300, maxHeight: 500, p: 2 }}
-              >
-                {screenshotBase64 ? (
-                  <img 
-                    src={screenshotBase64} 
-                    alt="Diagram Preview" 
-                    style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '460px', borderRadius: '4px' }}
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-slate-400">
-                    <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                    <Typography variant="body2">{t('pidBuilder.saveModal.noImage', 'Görsel bulunamadı')}</Typography>
-                  </div>
-                )}
-              </Box>
-
               {/* Diyagram Adı Input */}
               <TextField
                 label={t('pidBuilder.saveModal.diagramName', 'Diyagram Adı')}
@@ -180,6 +161,25 @@ function SaveConfigureModal({
                 helperText={submitAttempted && !name.trim() ? t('pidBuilder.saveModal.nameRequired', 'Diyagram adı zorunludur') : ""}
                 variant="outlined"
               />
+
+              {/* Ekran Görüntüsü Önizleme */}
+              <Box 
+                className="flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden"
+                sx={{ width: '100%', height: 'auto', minHeight: 400, maxHeight: 600, p: 2 }}
+              >
+                {screenshotBase64 ? (
+                  <img 
+                    src={screenshotBase64} 
+                    alt="Diagram Preview" 
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '560px', borderRadius: '4px' }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-slate-400">
+                    <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
+                    <Typography variant="body2">{t('pidBuilder.saveModal.noImage', 'Görsel bulunamadı')}</Typography>
+                  </div>
+                )}
+              </Box>
 
               {/* Seçili KPI Sayısı Bilgisi */}
               <Box className="p-3 bg-brand-50/50 dark:bg-brand-900/10 rounded-lg border border-brand-100 dark:border-brand-900/30 text-center md:text-left">
@@ -200,8 +200,8 @@ function SaveConfigureModal({
             </Box>
           </Grid>
 
-          {/* SAĞ PANEL */}
-          <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+          {/* SAĞ PANEL (Genişlik: ~%33) */}
+          <Grid item xs={12} md={4} sx={{ height: '100%' }}>
             <Box 
               sx={{ overflowY: 'auto', maxHeight: { xs: 'none', md: '75vh' }, pr: { xs: 0, md: 2 }, pb: 4 }} 
               className="flex flex-col gap-6"
@@ -287,7 +287,7 @@ function SaveConfigureModal({
                       style={{ 
                         display: 'grid', 
                         gridTemplateColumns: 'repeat(2, 1fr)', 
-                        gap: '24px',
+                        gap: '16px',
                         paddingTop: '12px',
                         paddingBottom: '8px'
                       }}
@@ -322,7 +322,7 @@ function SaveConfigureModal({
       <DialogActions sx={{ px: 3, py: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           {hasNoKpiSelected && (
-            <Typography variant="body2" color="error" className="font-medium animate-pulse flex items-center">
+            <Typography variant="body2" className="text-brand-600 dark:text-brand-400 font-semibold animate-pulse flex items-center">
               {t('pidBuilder.saveModal.minOneKpi', '* Lütfen en az bir KPI kartı seçin.')}
             </Typography>
           )}
