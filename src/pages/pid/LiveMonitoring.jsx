@@ -84,7 +84,8 @@ const MonitoringContent = () => {
             />
           </ReactFlowProvider>
         </Box>
-
+        {/* Sağdan Açılan Overlay Cihaz Detay Çekmecesi (Artık Header'ı örtmez) */}
+        <DeviceDetailPanel liveData={liveData} />
       </Box>
     </Box>
   );
