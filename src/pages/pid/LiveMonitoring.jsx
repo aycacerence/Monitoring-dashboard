@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 import { ArrowLeft } from 'lucide-react';
 import { ReactFlowProvider } from 'reactflow';
@@ -15,14 +15,13 @@ import MonitoringCanvas from '../../components/pid/monitoring/MonitoringCanvas';
 import DeviceDetailPanel from '../../components/pid/monitoring/DeviceDetailPanel';
 
 const MonitoringContent = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
-  const { diagrams } = usePID();
+  const { diagrams, activeDiagramId } = usePID();
   
   const [autoRefresh, setAutoRefresh] = useState(true);
 
-  // 1. URL parametresinden (id) gelen diyagramı bul
-  const diagram = diagrams?.find((d) => d.id === id);
+  // 1. PIDContext'ten gelen aktif diyagramı bul
+  const diagram = diagrams?.find((d) => d.id === activeDiagramId);
 
   // 2. Eğer diyagram varsa cihazlarını liveData hook'una bağla
   const nodes = diagram?.nodes || [];

@@ -21,12 +21,7 @@ const MonitoringTopBar = ({
             </IconButton>
           </Tooltip>
           
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Activity size={24} className="text-blue-600 dark:text-blue-500" />
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', display: { xs: 'none', sm: 'block' } }}>
-              FlowMonitor
-            </Typography>
-          </Box>
+      
 
           {diagramName && (
             <Chip 

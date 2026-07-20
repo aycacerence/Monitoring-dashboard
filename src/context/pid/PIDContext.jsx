@@ -335,6 +335,8 @@ export const PIDProvider = ({ children }) => {
     setFuture([]);
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
+    
+    return newId;
   }, [role]);
 
   const switchDiagram = useCallback((id, force = false) => {

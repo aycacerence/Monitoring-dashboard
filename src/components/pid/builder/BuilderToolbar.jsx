@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { usePID } from '../../../context/pid/PIDContext';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useReactFlow, useOnSelectionChange, getNodesBounds, getViewportForBounds } from 'reactflow';
 import {
@@ -119,6 +120,8 @@ const BuilderToolbar = ({ onMenuClick }) => {
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [screenshotBase64, setScreenshotBase64] = useState('');
   const [screenshotLoading, setScreenshotLoading] = useState(false);
+  
+  const navigate = useNavigate();
 
   const handleCreateNew = () => {
     if (isDirty) {
@@ -525,7 +528,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
         initialDiagramName={diagrams.find(d => d.id === activeDiagramId)?.name || ''}
         initialSelectedKpiIds={diagrams.find(d => d.id === activeDiagramId)?.kpiConfig || []}
         diagramNodes={nodes}
-        onConfirm={({ name, screenshot, selectedKpiIds }) => {
+        onConfirm={({ name, screenshot, selectedKpiIds }, shouldNavigate) => {
           // Güncel çizim verilerini al
           const currentNodes = getNodes();
           const currentEdges = getEdges();
@@ -552,8 +555,13 @@ const BuilderToolbar = ({ onMenuClick }) => {
             saveFlow(); // Sadece var olan diyagram güncellenirken saveFlow çağrılır
           }
           
-          toast.success("Diyagram kaydedildi");
+          // Sadece klasik, temiz toast göster (içinde ek buton yok)
+          toast.success(t('pidBuilder.toolbar.saveSuccess', 'Diyagram kaydedildi'));
           setSaveModalOpen(false);
+
+          if (shouldNavigate) {
+            navigate('/pid/monitoring');
+          }
         }}
       />
 

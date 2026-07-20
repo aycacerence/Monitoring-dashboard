@@ -89,8 +89,7 @@ function SaveConfigureModal({
     });
   };
 
-  // Kaydet Butonu
-  const handleSave = () => {
+  const handleSave = (shouldNavigate = false) => {
     setSubmitAttempted(true);
     
     // Validasyon: İsim boş mu?
@@ -104,7 +103,7 @@ function SaveConfigureModal({
       name: name.trim(),
       screenshot: screenshotBase64,
       selectedKpiIds
-    });
+    }, shouldNavigate);
     
     // Modalı kapat
     onClose();
@@ -333,14 +332,23 @@ function SaveConfigureModal({
             {t('pidBuilder.saveModal.cancel', 'Vazgeç')}
           </Button>
           <Button 
-            onClick={handleSave} 
+            onClick={() => handleSave(false)} 
+            variant="outlined" 
+            color="primary"
+            disabled={hasNoKpiSelected}
+            sx={{ px: 3, py: 1 }}
+          >
+            {t('pidBuilder.saveModal.saveOnly', 'Kaydet')}
+          </Button>
+          <Button 
+            onClick={() => handleSave(true)} 
             variant="contained" 
             color="primary"
             disabled={hasNoKpiSelected}
-            sx={{ px: 4, py: 1 }}
+            sx={{ px: 3, py: 1 }}
             disableElevation
           >
-            {t('pidBuilder.saveModal.save', 'Kaydet')}
+            {t('pidBuilder.saveModal.saveAndMonitor', 'Kaydet ve Canlı İzlemeye Git')}
           </Button>
         </Box>
       </DialogActions>
