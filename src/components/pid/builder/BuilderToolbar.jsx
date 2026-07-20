@@ -477,6 +477,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
         screenshotBase64={screenshotBase64}
         initialDiagramName={diagrams.find(d => d.id === activeDiagramId)?.name || ''}
         initialSelectedKpiIds={[]} // veya mevcut diag kpi listesi
+        diagramNodes={nodes}
         onConfirm={({ name, screenshot, selectedKpiIds }) => {
           // Güncel çizim verilerini al
           const currentNodes = getNodes();

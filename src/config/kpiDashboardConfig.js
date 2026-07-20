@@ -15,7 +15,7 @@ export const kpiDashboardConfig = [
     mockValue: 124.6,
     trend: { value: 2.1, direction: "up" },
     icon: "Flame",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["boiler", "chiller", "cogen", "trigeneration"],
     sparklineData: [110, 115, 112, 120, 118, 122, 124.6]
   },
   {
@@ -27,7 +27,7 @@ export const kpiDashboardConfig = [
     mockValue: 18.7,
     trend: { value: 0.5, direction: "up" },
     icon: "Fan",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["fan", "ahu", "hru", "fcu"],
     sparklineData: [17.5, 18.0, 17.8, 18.2, 18.5, 18.4, 18.7]
   },
   {
@@ -39,7 +39,7 @@ export const kpiDashboardConfig = [
     mockValue: 228139,
     trend: { value: 5.4, direction: "up" },
     icon: "BatteryCharging",
-    relatedDeviceType: null,
+    relatedDeviceTypes: [],
     sparklineData: [225000, 225500, 226100, 226800, 227500, 227900, 228139]
   },
   {
@@ -51,7 +51,7 @@ export const kpiDashboardConfig = [
     mockValue: 56,
     trend: { value: 1.2, direction: "up" },
     icon: "PiggyBank",
-    relatedDeviceType: null,
+    relatedDeviceTypes: [],
     sparklineData: [52, 53, 54, 54.5, 55, 55.5, 56]
   },
   {
@@ -63,7 +63,7 @@ export const kpiDashboardConfig = [
     mockValue: 10.20,
     trend: { value: 0.3, direction: "down" },
     icon: "Thermometer",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["weather_station", "sensor"],
     sparklineData: [11.5, 11.2, 10.8, 10.5, 10.4, 10.3, 10.20]
   },
   {
@@ -75,7 +75,7 @@ export const kpiDashboardConfig = [
     mockValue: 42.769,
     trend: { value: 0.1, direction: "neutral" },
     icon: "Sun",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["weather_station", "sensor"],
     sparklineData: [42.5, 42.6, 42.8, 42.7, 42.6, 42.7, 42.769]
   },
   {
@@ -87,7 +87,7 @@ export const kpiDashboardConfig = [
     mockValue: 825,
     trend: { value: 15, direction: "up" },
     icon: "SunDim",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["weather_station", "sensor"],
     sparklineData: [780, 790, 800, 810, 815, 820, 825]
   },
   {
@@ -99,7 +99,7 @@ export const kpiDashboardConfig = [
     mockValue: 4.2,
     trend: { value: 0.5, direction: "up" },
     icon: "Wind",
-    relatedDeviceType: "WIND_SENSOR",
+    relatedDeviceTypes: ["wind_sensor", "weather_station"],
     sparklineData: [3.5, 3.8, 4.0, 3.9, 4.1, 4.3, 4.2]
   },
   {
@@ -111,7 +111,7 @@ export const kpiDashboardConfig = [
     mockValue: 5.240,
     trend: { value: 0.05, direction: "neutral" },
     icon: "Waves",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["pump", "chiller", "cooling_tower", "boiler"],
     sparklineData: [5.200, 5.210, 5.220, 5.230, 5.240, 5.235, 5.240]
   },
   {
@@ -123,7 +123,7 @@ export const kpiDashboardConfig = [
     mockValue: 40,
     trend: { value: 0, direction: "neutral" },
     icon: "ThermometerSun",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["chiller", "boiler", "ahu", "hru", "cooling_tower"],
     sparklineData: [39.8, 39.9, 40.1, 40.0, 40.0, 39.9, 40.0]
   },
   {
@@ -135,7 +135,7 @@ export const kpiDashboardConfig = [
     mockValue: 120,
     trend: { value: 5, direction: "down" },
     icon: "Gauge",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["pump", "fan", "ahu", "hru", "filter"],
     sparklineData: [130, 128, 125, 123, 122, 121, 120]
   },
   {
@@ -147,7 +147,7 @@ export const kpiDashboardConfig = [
     mockValue: 45,
     trend: { value: 2, direction: "up" },
     icon: "Droplets",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["ahu", "hru", "sensor"],
     sparklineData: [40, 41, 42, 43, 44, 44.5, 45]
   },
   {
@@ -159,7 +159,7 @@ export const kpiDashboardConfig = [
     mockValue: 2,
     trend: { value: 1, direction: "up" },
     icon: "BellRing",
-    relatedDeviceType: null,
+    relatedDeviceTypes: [],
     sparklineData: [0, 0, 1, 1, 1, 2, 2]
   },
   {
@@ -171,7 +171,7 @@ export const kpiDashboardConfig = [
     mockValue: "On",
     trend: { value: 0, direction: "neutral" },
     icon: "Power",
-    relatedDeviceType: null,
+    relatedDeviceTypes: [],
     sparklineData: [1, 1, 1, 1, 1, 1, 1]
   },
   {
@@ -183,7 +183,7 @@ export const kpiDashboardConfig = [
     mockValue: "Aktif",
     trend: { value: 0, direction: "neutral" },
     icon: "Activity",
-    relatedDeviceType: null,
+    relatedDeviceTypes: ["fan", "ahu", "hru", "fcu"],
     sparklineData: [1, 1, 1, 1, 1, 1, 1]
   },
   {
@@ -195,7 +195,7 @@ export const kpiDashboardConfig = [
     mockValue: 50.0,
     trend: { value: 0, direction: "neutral" },
     icon: "ActivitySquare",
-    relatedDeviceType: "VFD",
+    relatedDeviceTypes: ["vfd", "pump", "fan", "ahu", "hru", "cooling_tower"],
     sparklineData: [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]
   },
   {
@@ -207,7 +207,7 @@ export const kpiDashboardConfig = [
     mockValue: 75,
     trend: { value: 5, direction: "up" },
     icon: "SlidersHorizontal",
-    relatedDeviceType: "CONTROL_VALVE",
+    relatedDeviceTypes: ["control_valve", "damper", "ahu", "hru"],
     sparklineData: [60, 65, 68, 70, 72, 74, 75]
   }
 ];

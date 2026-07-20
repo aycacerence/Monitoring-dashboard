@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
+import { Chip } from '@mui/material';
 import {
   Flame, Fan, BatteryCharging, PiggyBank, Thermometer,
   Sun, SunDim, Wind, Waves, ThermometerSun, Gauge,
@@ -47,7 +48,7 @@ Sparkline.propTypes = {
   colorClass: PropTypes.string
 };
 
-const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default" }) => {
+const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isRecommended = false }) => {
   const IconComponent = iconMap[kpi.icon] || Activity;
   
   const isUp = kpi.trend.direction === 'up';
@@ -91,6 +92,17 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default" }) => {
         </div>
       )}
 
+      {/* Önerilen Chip İkonu */}
+      {isRecommended && !selected && (
+        <Chip 
+          label="Önerilen" 
+          size="small" 
+          color="info" 
+          variant="outlined"
+          sx={{ position: 'absolute', top: -10, left: -10, zIndex: 10, pointerEvents: 'none', bgcolor: 'background.paper', fontSize: '0.65rem', height: '20px' }}
+        />
+      )}
+
       {/* Üst Satır: İkon ve Başlık */}
       <div className="flex items-center justify-between w-full">
         <div className={`p-1.5 rounded-lg ${selected ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-500' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
@@ -132,7 +144,8 @@ KPIPreviewCard.propTypes = {
   kpi: PropTypes.object.isRequired,
   selected: PropTypes.bool.isRequired,
   onToggle: PropTypes.func.isRequired,
-  size: PropTypes.oneOf(['default', 'compact'])
+  size: PropTypes.oneOf(['default', 'compact']),
+  isRecommended: PropTypes.bool
 };
 
 export default KPIPreviewCard;

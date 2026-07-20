@@ -23,6 +23,7 @@ function SaveConfigureModal({
   screenshotBase64,
   initialDiagramName = '',
   initialSelectedKpiIds = [],
+  diagramNodes = [],
   onConfirm
 }) {
   // --- LOKAL STATE ---
@@ -38,6 +39,30 @@ function SaveConfigureModal({
       setSubmitAttempted(false);
     }
   }, [open, initialDiagramName, initialSelectedKpiIds]);
+
+  // Cihaz Tiplerini Çıkar (Benzersiz)
+  const activeDeviceTypes = new Set(
+    diagramNodes
+      .map(n => n.data?.label || n.data?.code)
+      .filter(Boolean)
+      .map(val => val.toLowerCase())
+  );
+
+  const isKpiRecommended = (kpi) => {
+    if (!kpi.relatedDeviceTypes || kpi.relatedDeviceTypes.length === 0) return false;
+    return kpi.relatedDeviceTypes.some(type => activeDeviceTypes.has(type));
+  };
+
+  const recommendedKpis = kpiDashboardConfig.filter(isKpiRecommended);
+  const recommendedCount = recommendedKpis.length;
+
+  const handleSelectAllRecommended = () => {
+    const recommendedIds = recommendedKpis.map(k => k.id);
+    setSelectedKpiIds(prev => {
+      const newSelection = new Set([...prev, ...recommendedIds]);
+      return Array.from(newSelection);
+    });
+  };
 
   // KPI seçim/kaldırma işlevi
   const handleToggleKpi = (id) => {
@@ -139,6 +164,16 @@ function SaveConfigureModal({
                 <Typography variant="body2" color="text.secondary" className="font-medium">
                   Seçilen KPI sayısı: <span className="text-blue-600 dark:text-blue-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
                 </Typography>
+                
+                {recommendedCount > 0 && (
+                  <Typography 
+                    variant="caption" 
+                    className="block mt-2 text-blue-600 dark:text-blue-400 cursor-pointer hover:underline font-semibold"
+                    onClick={handleSelectAllRecommended}
+                  >
+                    Diyagramınıza göre {recommendedCount} kart öneriliyor. Tümünü Seç.
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Grid>
@@ -148,8 +183,11 @@ function SaveConfigureModal({
             <Box sx={{ overflowY: 'auto', maxHeight: { xs: 'none', md: '65vh' }, pr: { xs: 0, md: 1 } }} className="flex flex-col gap-6">
               
               {KPI_CATEGORIES.map((category, index) => {
-                // Bu kategoriye ait KPI'ları filtrele
-                const categoryKpis = kpiDashboardConfig.filter(kpi => kpi.categoryKey === category.key);
+                // Bu kategoriye ait KPI'ları filtrele, öneri durumunu belirle ve önerilenleri başa al
+                const categoryKpis = kpiDashboardConfig
+                  .filter(kpi => kpi.categoryKey === category.key)
+                  .map(kpi => ({ ...kpi, isRecommended: isKpiRecommended(kpi) }))
+                  .sort((a, b) => (b.isRecommended ? 1 : 0) - (a.isRecommended ? 1 : 0));
                 
                 // Eğer bu kategoride KPI yoksa render etme
                 if (categoryKpis.length === 0) return null;
@@ -177,6 +215,7 @@ function SaveConfigureModal({
                           key={kpi.id}
                           kpi={kpi}
                           selected={selectedKpiIds.includes(kpi.id)}
+                          isRecommended={kpi.isRecommended}
                           onToggle={handleToggleKpi}
                           size="default"
                         />
@@ -232,6 +271,7 @@ SaveConfigureModal.propTypes = {
   screenshotBase64: PropTypes.string,
   initialDiagramName: PropTypes.string,
   initialSelectedKpiIds: PropTypes.arrayOf(PropTypes.string),
+  diagramNodes: PropTypes.array,
   onConfirm: PropTypes.func.isRequired
 };
 
