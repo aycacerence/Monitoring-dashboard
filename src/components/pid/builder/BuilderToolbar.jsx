@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { usePID } from '../../../context/pid/PIDContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import { useReactFlow, useOnSelectionChange } from 'reactflow';
+import { useReactFlow, useOnSelectionChange, getNodesBounds, getViewportForBounds } from 'reactflow';
 import {
   Delete,
   Undo,
@@ -114,17 +114,16 @@ const BuilderToolbar = ({ onMenuClick }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   
   const [unsavedConfirmOpen, setUnsavedConfirmOpen] = useState(false);
-  const [confirmNewDialogOpen, setConfirmNewDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
 
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [screenshotBase64, setScreenshotBase64] = useState('');
   const [screenshotLoading, setScreenshotLoading] = useState(false);
-  const reactFlowWrapperRef = React.useRef(null);
 
   const handleCreateNew = () => {
     if (isDirty) {
-      setConfirmNewDialogOpen(true);
+      setPendingAction({ type: 'new' });
+      setUnsavedConfirmOpen(true);
     } else {
       handleConfirmNew();
     }
@@ -132,11 +131,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
 
   const handleConfirmNew = () => {
     clearFlow();
-    // İsim sorma iptal, backend diyagram oluşturmasını Save modal'ına bıraktık.
-    // Diyagram seçiciye "Yeni Diyagram (kaydedilmedi)" şeklinde yansıtmak için activeDiagramId'yi temizleyebiliriz
-    // veya PIDContext'te özel bir methodunuz varsa (resetBuilder vb) çağırabilirsiniz.
-    switchDiagram(null); // veya clearFlow + state sıfırlama
-    setConfirmNewDialogOpen(false);
+    switchDiagram(null);
   };
 
   const handleSwitch = (event) => {
@@ -164,8 +159,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
       switchDiagram(pendingAction.payload, true);
       toast.success(t('pidBuilder.toolbar.diagramLoaded'));
     } else if (pendingAction?.type === 'new') {
-      setNewDiagramName('');
-      setNewDiagramOpen(true);
+      handleConfirmNew();
     }
     
     setUnsavedConfirmOpen(false);
@@ -432,16 +426,32 @@ const BuilderToolbar = ({ onMenuClick }) => {
               label={t('pidBuilder.toolbar.save')}
               disabled={screenshotLoading}
               onClick={async () => {
-                const element = document.querySelector('.react-flow') || reactFlowWrapperRef.current;
+                const element = document.querySelector('.react-flow__viewport');
                 if (!element) return;
                 setScreenshotLoading(true);
                 try {
-                  // Ekran Görüntüsü (Screenshot) Odaklama Sorununun Çözümü
-                  fitView({ padding: 0.2, duration: 800 });
-                  await new Promise(resolve => setTimeout(resolve, 850));
+                  // Arka planda görünmez bir şekilde tüm düğümleri kapsayan alanı hesapla
+                  const nodesBounds = getNodesBounds(getNodes());
+                  const imageWidth = Math.max(nodesBounds.width || 800, 800) + 100;
+                  const imageHeight = Math.max(nodesBounds.height || 600, 600) + 100;
+
+                  const transform = getViewportForBounds(
+                    nodesBounds,
+                    imageWidth,
+                    imageHeight,
+                    0.5,
+                    2
+                  );
 
                   const dataUrl = await toPng(element, {
                     backgroundColor: '#ffffff',
+                    width: imageWidth,
+                    height: imageHeight,
+                    style: {
+                      width: `${imageWidth}px`,
+                      height: `${imageHeight}px`,
+                      transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.zoom})`
+                    },
                     quality: 0.95,
                     pixelRatio: 2,
                     filter: (node) => !node.classList?.contains('react-flow__controls') && !node.classList?.contains('react-flow__panel')
@@ -498,17 +508,6 @@ const BuilderToolbar = ({ onMenuClick }) => {
           setSaveModalOpen(false);
         }}
       />
-
-      <Dialog open={confirmNewDialogOpen} onClose={() => setConfirmNewDialogOpen(false)}>
-        <DialogTitle>Uyarı</DialogTitle>
-        <DialogContent>
-          Kaydedilmemiş değişiklikler var. Yeni bir çizime başlarsanız bu veriler silinecektir. Emin misiniz?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmNewDialogOpen(false)}>Vazgeç</Button>
-          <Button color="error" variant="contained" onClick={handleConfirmNew}>Evet, Yeni Başlat</Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Yeni Diyagram Pop-up (Kurumsal Tasarım) */}
       <Dialog 

@@ -136,7 +136,8 @@ const BuilderCanvasInner = () => {
     setSelectedEdge,
     setActiveFlowType,
     setNodes,
-    deleteMultiple
+    deleteMultiple,
+    activeDiagramId
   } = usePID();
 
   const theme = useTheme();
@@ -157,8 +158,8 @@ const BuilderCanvasInner = () => {
     const observer = new ResizeObserver(() => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        // Yeni boyuta göre diyagramı animasyonlu merkeze al
-        fitView({ duration: 600, padding: 0.1 });
+        // Yeni boyuta göre diyagramı anında merkeze al
+        fitView({ padding: 0.1 });
       }, 100);
     });
 
@@ -169,6 +170,20 @@ const BuilderCanvasInner = () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [fitView]);
+
+  // Diyagramlar arası geçişte kamerayı ortalama
+  useEffect(() => {
+    if (nodes && nodes.length > 0) {
+      // React Flow'un node'ları DOM'a basmasını beklemek için kısa bir delay
+      const timeoutId = setTimeout(() => {
+        window.requestAnimationFrame(() => {
+          fitView({ padding: 0.2 });
+        });
+      }, 150); 
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activeDiagramId]);
 
   const [helperLines, setHelperLines] = useState({ horizontal: null, vertical: null });
   const [selectedNodesLocal, setSelectedNodesLocal] = useState([]);
