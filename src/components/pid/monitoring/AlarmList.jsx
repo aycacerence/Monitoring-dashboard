@@ -4,7 +4,7 @@ import { AlertTriangle, AlertCircle, CheckCircle } from 'lucide-react';
 
 const AlarmList = ({ alarms = [] }) => {
   return (
-    <Box className="max-h-64 overflow-y-auto">
+    <Box className="flex-1 overflow-y-auto flex flex-col min-h-0 pr-1">
       <Typography variant="subtitle2" className="mb-2 font-semibold text-slate-800 dark:text-slate-100 px-1">
         Alarm Geçmişi ({alarms.length})
       </Typography>
