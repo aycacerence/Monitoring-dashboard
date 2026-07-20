@@ -16,16 +16,15 @@ import DeviceDetailPanel from '../../components/pid/monitoring/DeviceDetailPanel
 
 const MonitoringContent = () => {
   const navigate = useNavigate();
-  const { diagrams, activeDiagramId } = usePID();
+  const { diagrams, activeDiagramId, nodes, edges } = usePID();
   
   const [autoRefresh, setAutoRefresh] = useState(true);
 
-  // 1. PIDContext'ten gelen aktif diyagramı bul
+  // 1. PIDContext'ten gelen aktif diyagramı bul (sadece metadata için)
   const diagram = diagrams?.find((d) => d.id === activeDiagramId);
 
-  // 2. Eğer diyagram varsa cihazlarını liveData hook'una bağla
-  const nodes = diagram?.nodes || [];
-  const { liveData, alarms, lastUpdate } = useDummySocket(nodes, autoRefresh);
+  // 2. Aktif diyagramın cihazlarını (nodes) liveData hook'una bağla
+  const { liveData, alarms, lastUpdate } = useDummySocket(nodes || [], autoRefresh);
 
   // 3. Boş State (Diyagram bulunamazsa)
   if (!diagram) {
@@ -71,7 +70,7 @@ const MonitoringContent = () => {
         
         {/* SOL PANEL: Sistem Durumu & Alarmlar */}
         <Box className="w-64 p-4 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-4 overflow-y-auto">
-          <SystemStatusCard nodes={diagram.nodes} liveData={liveData} />
+          <SystemStatusCard nodes={nodes} liveData={liveData} />
           <AlarmList alarms={alarms} />
         </Box>
 
@@ -79,16 +78,11 @@ const MonitoringContent = () => {
         <Box className="flex-1 relative bg-slate-50 dark:bg-slate-950">
           <ReactFlowProvider>
             <MonitoringCanvas 
-              nodes={diagram.nodes} 
-              edges={diagram.edges} 
+              nodes={nodes} 
+              edges={edges} 
               liveData={liveData} 
             />
           </ReactFlowProvider>
-        </Box>
-
-        {/* SAĞ PANEL: Cihaz Detayları */}
-        <Box className="w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto">
-          <DeviceDetailPanel liveData={liveData} />
         </Box>
 
       </Box>

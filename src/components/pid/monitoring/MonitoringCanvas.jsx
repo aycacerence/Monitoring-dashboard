@@ -1,12 +1,9 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
-import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
+import ReactFlow, { Background, Controls } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import { usePID } from '../../../context/pid/PIDContext';
-// Hooks will be passed via props
-// TODO: Import your specific node and edge types for monitoring
-// import { monitoringNodeTypes } from './monitoringNodeTypes';
-// import { edgeTypes } from '../builder/edgeTypes';
+import { monitoringNodeTypes, edgeTypes } from '../registry';
 
 const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
   const { setSelectedNode } = usePID();
@@ -57,18 +54,36 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
       <ReactFlow
         nodes={mergedNodes}
         edges={edges}
-        // nodeTypes={monitoringNodeTypes}
-        // edgeTypes={edgeTypes}
+        nodeTypes={monitoringNodeTypes}
+        edgeTypes={edgeTypes}
         onNodeClick={handleNodeClick}
         onInit={setReactFlowInstance}
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={true}
         fitView
+        proOptions={{ hideAttribution: true }}
       >
         <Background />
         <Controls />
-        <MiniMap zoomable pannable />
+
+        {/* Özel ok işaretleri (Custom Markers) - Builder ile aynı */}
+        <svg className="custom-markers-svg" style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }}>
+          <defs>
+            <marker id="arrow-duct_mixed" viewBox="0 0 10 10" refX="11" refY="5" markerWidth="6" markerHeight="6" orient="auto" overflow="visible">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+            </marker>
+            <marker id="arrow-duct_hot" viewBox="0 0 10 10" refX="11" refY="5" markerWidth="6" markerHeight="6" orient="auto" overflow="visible">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+            </marker>
+            <marker id="arrow-duct_cold" viewBox="0 0 10 10" refX="11" refY="5" markerWidth="6" markerHeight="6" orient="auto" overflow="visible">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+            </marker>
+            <marker id="arrow-duct_exhaust" viewBox="0 0 10 10" refX="11" refY="5" markerWidth="6" markerHeight="6" orient="auto" overflow="visible">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+            </marker>
+          </defs>
+        </svg>
       </ReactFlow>
     </div>
   );
