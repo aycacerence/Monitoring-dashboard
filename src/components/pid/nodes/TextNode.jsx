@@ -129,7 +129,7 @@ const TextNode = ({ id, data, selected }) => {
           outline: 'none',
           border: '2px',
           borderStyle: selected ? 'solid' : 'dashed',
-          borderColor: selected ? '#a42350' : 'divider',
+          borderColor: selected ? '#a42350' : 'transparent',
           '&:hover': {
             borderColor: selected ? '#a42350' : 'text.disabled',
             backgroundColor: !selected ? 'action.hover' : 'rgba(164, 35, 80, 0.05)',

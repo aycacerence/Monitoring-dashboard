@@ -429,13 +429,27 @@ const BuilderToolbar = ({ onMenuClick }) => {
                 const element = document.querySelector('.react-flow__viewport');
                 if (!element) return;
                 
+                // Ok işaretlerinin (marker) ekran görüntüsüne dahil olabilmesi için
+                // viewport'un içine geçici olarak kopyalayalım.
+                const markerSvg = document.querySelector('.custom-markers-svg');
+                let clonedMarkerSvg = null;
+                if (markerSvg) {
+                  clonedMarkerSvg = markerSvg.cloneNode(true);
+                  element.prepend(clonedMarkerSvg);
+                }
+                
                 const currentNodes = getNodes();
                 const selectedNodeIds = currentNodes.filter(n => n.selected).map(n => n.id);
                 
-                if (selectedNodeIds.length > 0) {
-                  setNodes(currentNodes.map(n => ({ ...n, selected: false })));
-                  // State güncellemelerinin DOM'a yansıması için kısa bir bekleme
-                  await new Promise(resolve => setTimeout(resolve, 50));
+                const currentEdges = getEdges();
+                const selectedEdgeIds = currentEdges.filter(e => e.selected).map(e => e.id);
+                
+                if (selectedNodeIds.length > 0 || selectedEdgeIds.length > 0) {
+                  if (selectedNodeIds.length > 0) setNodes(currentNodes.map(n => ({ ...n, selected: false })));
+                  if (selectedEdgeIds.length > 0) setEdges(currentEdges.map(e => ({ ...e, selected: false })));
+                  
+                  // State güncellemelerinin DOM'a yansıması için güvenli bir bekleme (50ms bazen yetersiz kalabiliyor)
+                  await new Promise(resolve => setTimeout(resolve, 250));
                 }
 
                 setScreenshotLoading(true);
@@ -483,9 +497,17 @@ const BuilderToolbar = ({ onMenuClick }) => {
                 } finally {
                   setScreenshotLoading(false);
                   
+                  // Geçici kopyalanan ok işareti SVG'sini temizle
+                  if (clonedMarkerSvg && clonedMarkerSvg.parentNode) {
+                    clonedMarkerSvg.parentNode.removeChild(clonedMarkerSvg);
+                  }
+                  
                   // Seçim state'ini geri yükle
                   if (selectedNodeIds.length > 0) {
                     setNodes(getNodes().map(n => ({ ...n, selected: selectedNodeIds.includes(n.id) })));
+                  }
+                  if (selectedEdgeIds.length > 0) {
+                    setEdges(getEdges().map(e => ({ ...e, selected: selectedEdgeIds.includes(e.id) })));
                   }
                 }
               }}
