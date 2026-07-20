@@ -200,7 +200,12 @@ function SaveConfigureModal({
 
           {/* SAĞ PANEL */}
           <Grid item xs={12} md={8} sx={{ height: '100%' }}>
-            <Box sx={{ overflowY: 'auto', maxHeight: { xs: 'none', md: '75vh' }, pr: { xs: 0, md: 2 }, pb: 4 }} className="flex flex-col gap-6">
+            <Box 
+              sx={{ overflowY: 'auto', maxHeight: { xs: 'none', md: '75vh' }, pr: { xs: 0, md: 2 }, pb: 4 }} 
+              className="flex flex-col gap-6"
+              role="group"
+              aria-label="KPI kartları seçimi"
+            >
               
               {/* Arama Kutusu */}
               <TextField
@@ -273,6 +278,8 @@ function SaveConfigureModal({
                     
                     {/* CSS Grid (Responsive) */}
                     <div 
+                      role="group"
+                      aria-label={`${category.labelTR} KPI kartları`}
                       style={{ 
                         display: 'grid', 
                         gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 

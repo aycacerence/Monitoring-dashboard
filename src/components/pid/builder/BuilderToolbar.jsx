@@ -428,9 +428,20 @@ const BuilderToolbar = ({ onMenuClick }) => {
               onClick={async () => {
                 const element = document.querySelector('.react-flow__viewport');
                 if (!element) return;
+                
+                const currentNodes = getNodes();
+                const selectedNodeIds = currentNodes.filter(n => n.selected).map(n => n.id);
+                
+                if (selectedNodeIds.length > 0) {
+                  setNodes(currentNodes.map(n => ({ ...n, selected: false })));
+                  // State güncellemelerinin DOM'a yansıması için kısa bir bekleme
+                  await new Promise(resolve => setTimeout(resolve, 50));
+                }
+
                 setScreenshotLoading(true);
                 try {
                   // Arka planda görünmez bir şekilde tüm düğümleri kapsayan alanı hesapla
+                  // getNodes() güncel state'i alır (seçimler temizlenmiş)
                   const nodesBounds = getNodesBounds(getNodes());
                   const imageWidth = Math.max(nodesBounds.width || 800, 800) + 100;
                   const imageHeight = Math.max(nodesBounds.height || 600, 600) + 100;
@@ -454,7 +465,16 @@ const BuilderToolbar = ({ onMenuClick }) => {
                     },
                     quality: 0.95,
                     pixelRatio: 2,
-                    filter: (node) => !node.classList?.contains('react-flow__controls') && !node.classList?.contains('react-flow__panel')
+                    filter: (node) => {
+                      const cl = node.classList;
+                      if (!cl) return true;
+                      return !cl.contains('react-flow__controls') && 
+                             !cl.contains('react-flow__panel') &&
+                             !cl.contains('react-flow__handle') &&
+                             !cl.contains('react-flow__selection') &&
+                             !cl.contains('node-delete-badge') &&
+                             !cl.contains('react-flow__resize-control');
+                    }
                   });
                   setScreenshotBase64(dataUrl);
                   setSaveModalOpen(true);
@@ -462,6 +482,11 @@ const BuilderToolbar = ({ onMenuClick }) => {
                   toast.error("Ekran görüntüsü alınırken hata oluştu.");
                 } finally {
                   setScreenshotLoading(false);
+                  
+                  // Seçim state'ini geri yükle
+                  if (selectedNodeIds.length > 0) {
+                    setNodes(getNodes().map(n => ({ ...n, selected: selectedNodeIds.includes(n.id) })));
+                  }
                 }
               }}
               color="primary"

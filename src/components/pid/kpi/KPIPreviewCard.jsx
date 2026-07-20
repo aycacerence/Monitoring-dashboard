@@ -74,10 +74,18 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
     <div
       role="checkbox"
       aria-checked={selected}
+      tabIndex={0}
       onClick={() => onToggle(kpi.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onToggle(kpi.id);
+        }
+      }}
       className={`
         relative flex flex-col justify-between cursor-pointer rounded-xl bg-white dark:bg-slate-800
         transition-all duration-150 ease-in-out select-none flex-shrink-0
+        outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2
         ${sizeClasses}
         ${selected 
           ? 'border-2 border-brand-600 shadow-md opacity-100' 
