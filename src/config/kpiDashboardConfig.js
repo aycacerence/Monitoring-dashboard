@@ -1,0 +1,217 @@
+export const KPI_CATEGORIES = [
+  { key: 'energy_power', labelTR: 'Enerji ve Güç', labelEN: 'Energy & Power' },
+  { key: 'environmental', labelTR: 'Çevresel Veriler', labelEN: 'Environmental Data' },
+  { key: 'flow_temp_pressure', labelTR: 'Akış, Sıcaklık ve Basınç', labelEN: 'Flow, Temperature & Pressure' },
+  { key: 'system_equipment', labelTR: 'Sistem ve Ekipman Durumu', labelEN: 'System & Equipment Status' }
+];
+
+export const kpiDashboardConfig = [
+  {
+    id: "thermal_power",
+    categoryKey: "energy_power",
+    labelTR: "Thermal Power",
+    labelEN: "Thermal Power",
+    unit: "kW",
+    mockValue: 124.6,
+    trend: { value: 2.1, direction: "up" },
+    icon: "Flame",
+    relatedDeviceType: null,
+    sparklineData: [110, 115, 112, 120, 118, 122, 124.6]
+  },
+  {
+    id: "fan_power",
+    categoryKey: "energy_power",
+    labelTR: "Fan Power",
+    labelEN: "Fan Power",
+    unit: "kW",
+    mockValue: 18.7,
+    trend: { value: 0.5, direction: "up" },
+    icon: "Fan",
+    relatedDeviceType: null,
+    sparklineData: [17.5, 18.0, 17.8, 18.2, 18.5, 18.4, 18.7]
+  },
+  {
+    id: "total_gain",
+    categoryKey: "energy_power",
+    labelTR: "Toplam Kazanç",
+    labelEN: "Total Gain",
+    unit: "kWh",
+    mockValue: 228139,
+    trend: { value: 5.4, direction: "up" },
+    icon: "BatteryCharging",
+    relatedDeviceType: null,
+    sparklineData: [225000, 225500, 226100, 226800, 227500, 227900, 228139]
+  },
+  {
+    id: "savings",
+    categoryKey: "energy_power",
+    labelTR: "Tasarruf",
+    labelEN: "Savings",
+    unit: "%",
+    mockValue: 56,
+    trend: { value: 1.2, direction: "up" },
+    icon: "PiggyBank",
+    relatedDeviceType: null,
+    sparklineData: [52, 53, 54, 54.5, 55, 55.5, 56]
+  },
+  {
+    id: "outdoor_temp",
+    categoryKey: "environmental",
+    labelTR: "Dış Hava Sıcaklığı",
+    labelEN: "Outdoor Temperature",
+    unit: "°C",
+    mockValue: 10.20,
+    trend: { value: 0.3, direction: "down" },
+    icon: "Thermometer",
+    relatedDeviceType: null,
+    sparklineData: [11.5, 11.2, 10.8, 10.5, 10.4, 10.3, 10.20]
+  },
+  {
+    id: "light_intensity",
+    categoryKey: "environmental",
+    labelTR: "Işık Şiddeti",
+    labelEN: "Light Intensity",
+    unit: "K-LUX",
+    mockValue: 42.769,
+    trend: { value: 0.1, direction: "neutral" },
+    icon: "Sun",
+    relatedDeviceType: null,
+    sparklineData: [42.5, 42.6, 42.8, 42.7, 42.6, 42.7, 42.769]
+  },
+  {
+    id: "solar_irradiance",
+    categoryKey: "environmental",
+    labelTR: "Anlık Işınım",
+    labelEN: "Solar Irradiance",
+    unit: "W/m2",
+    mockValue: 825,
+    trend: { value: 15, direction: "up" },
+    icon: "SunDim",
+    relatedDeviceType: null,
+    sparklineData: [780, 790, 800, 810, 815, 820, 825]
+  },
+  {
+    id: "wind_speed",
+    categoryKey: "environmental",
+    labelTR: "Rüzgar Hızı",
+    labelEN: "Wind Speed",
+    unit: "m/s",
+    mockValue: 4.2,
+    trend: { value: 0.5, direction: "up" },
+    icon: "Wind",
+    relatedDeviceType: "WIND_SENSOR",
+    sparklineData: [3.5, 3.8, 4.0, 3.9, 4.1, 4.3, 4.2]
+  },
+  {
+    id: "flow_rate",
+    categoryKey: "flow_temp_pressure",
+    labelTR: "Debi",
+    labelEN: "Flow Rate",
+    unit: "m3/h",
+    mockValue: 5.240,
+    trend: { value: 0.05, direction: "neutral" },
+    icon: "Waves",
+    relatedDeviceType: null,
+    sparklineData: [5.200, 5.210, 5.220, 5.230, 5.240, 5.235, 5.240]
+  },
+  {
+    id: "process_temp",
+    categoryKey: "flow_temp_pressure",
+    labelTR: "Proses Sıcaklığı",
+    labelEN: "Process Temperature",
+    unit: "°C",
+    mockValue: 40,
+    trend: { value: 0, direction: "neutral" },
+    icon: "ThermometerSun",
+    relatedDeviceType: null,
+    sparklineData: [39.8, 39.9, 40.1, 40.0, 40.0, 39.9, 40.0]
+  },
+  {
+    id: "diff_pressure",
+    categoryKey: "flow_temp_pressure",
+    labelTR: "Fark Basıncı",
+    labelEN: "Differential Pressure",
+    unit: "Pa",
+    mockValue: 120,
+    trend: { value: 5, direction: "down" },
+    icon: "Gauge",
+    relatedDeviceType: null,
+    sparklineData: [130, 128, 125, 123, 122, 121, 120]
+  },
+  {
+    id: "relative_humidity",
+    categoryKey: "flow_temp_pressure",
+    labelTR: "Bağıl Nem",
+    labelEN: "Relative Humidity",
+    unit: "% RH",
+    mockValue: 45,
+    trend: { value: 2, direction: "up" },
+    icon: "Droplets",
+    relatedDeviceType: null,
+    sparklineData: [40, 41, 42, 43, 44, 44.5, 45]
+  },
+  {
+    id: "active_alarms",
+    categoryKey: "system_equipment",
+    labelTR: "Aktif Alarmlar",
+    labelEN: "Active Alarms",
+    unit: "Yeni",
+    mockValue: 2,
+    trend: { value: 1, direction: "up" },
+    icon: "BellRing",
+    relatedDeviceType: null,
+    sparklineData: [0, 0, 1, 1, 1, 2, 2]
+  },
+  {
+    id: "system_switch",
+    categoryKey: "system_equipment",
+    labelTR: "Sistem Anahtarı",
+    labelEN: "System Switch",
+    unit: "",
+    mockValue: "On",
+    trend: { value: 0, direction: "neutral" },
+    icon: "Power",
+    relatedDeviceType: null,
+    sparklineData: [1, 1, 1, 1, 1, 1, 1]
+  },
+  {
+    id: "fan_status_matrix",
+    categoryKey: "system_equipment",
+    labelTR: "Fan Durum Matrisi",
+    labelEN: "Fan Status Matrix",
+    unit: "",
+    mockValue: "Aktif",
+    trend: { value: 0, direction: "neutral" },
+    icon: "Activity",
+    relatedDeviceType: null,
+    sparklineData: [1, 1, 1, 1, 1, 1, 1]
+  },
+  {
+    id: "vfd_frequency",
+    categoryKey: "system_equipment",
+    labelTR: "VFD Frekansı",
+    labelEN: "VFD Frequency",
+    unit: "Hz",
+    mockValue: 50.0,
+    trend: { value: 0, direction: "neutral" },
+    icon: "ActivitySquare",
+    relatedDeviceType: "VFD",
+    sparklineData: [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]
+  },
+  {
+    id: "damper_valve_pos",
+    categoryKey: "system_equipment",
+    labelTR: "Damper/Vana Pozisyonu",
+    labelEN: "Damper/Valve Position",
+    unit: "%",
+    mockValue: 75,
+    trend: { value: 5, direction: "up" },
+    icon: "SlidersHorizontal",
+    relatedDeviceType: "CONTROL_VALVE",
+    sparklineData: [60, 65, 68, 70, 72, 74, 75]
+  }
+];
+
+export const getKpiById = (id) => {
+  return kpiDashboardConfig.find(kpi => kpi.id === id);
+};
