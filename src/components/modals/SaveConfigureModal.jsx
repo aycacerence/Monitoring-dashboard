@@ -1,0 +1,238 @@
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Grid,
+  Typography,
+  Divider,
+  IconButton,
+  Box
+} from '@mui/material';
+import { X, Image as ImageIcon } from 'lucide-react';
+import { KPI_CATEGORIES, kpiDashboardConfig } from '../../config/kpiDashboardConfig';
+import KPIPreviewCard from '../pid/kpi/KPIPreviewCard';
+
+function SaveConfigureModal({
+  open,
+  onClose,
+  screenshotBase64,
+  initialDiagramName = '',
+  initialSelectedKpiIds = [],
+  onConfirm
+}) {
+  // --- LOKAL STATE ---
+  const [name, setName] = useState(initialDiagramName);
+  const [selectedKpiIds, setSelectedKpiIds] = useState(initialSelectedKpiIds);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  // Modal her açıldığında (veya initial proplar değiştiğinde) state'i resetle
+  useEffect(() => {
+    if (open) {
+      setName(initialDiagramName || '');
+      setSelectedKpiIds(initialSelectedKpiIds || []);
+      setSubmitAttempted(false);
+    }
+  }, [open, initialDiagramName, initialSelectedKpiIds]);
+
+  // KPI seçim/kaldırma işlevi
+  const handleToggleKpi = (id) => {
+    setSelectedKpiIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(kpiId => kpiId !== id) 
+        : [...prev, id]
+    );
+  };
+
+  // Kaydet Butonu
+  const handleSave = () => {
+    setSubmitAttempted(true);
+    
+    // Validasyon: İsim boş mu?
+    if (!name.trim()) return;
+    
+    // Validasyon: En az 1 KPI seçili mi? (Buton zaten disabled ama güvenlik amaçlı)
+    if (selectedKpiIds.length === 0) return; 
+
+    // Dışarıya veriyi yolla
+    onConfirm({
+      name: name.trim(),
+      screenshot: screenshotBase64,
+      selectedKpiIds
+    });
+    
+    // Modalı kapat
+    onClose();
+  };
+
+  const totalKpis = kpiDashboardConfig.length;
+  const hasNoKpiSelected = selectedKpiIds.length === 0;
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xl"
+      fullWidth
+      PaperProps={{
+        sx: { minHeight: '80vh' }
+      }}
+    >
+      {/* BAŞLIK VE KAPATMA BUTONU */}
+      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6" component="div" fontWeight="bold">
+          Diyagramı Kaydet ve Dashboard'ı Yapılandır
+        </Typography>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{ color: (theme) => theme.palette.grey[500] }}
+        >
+          <X />
+        </IconButton>
+      </DialogTitle>
+      
+      <DialogContent dividers>
+        <Grid container spacing={4}>
+          
+          {/* SOL PANEL */}
+          <Grid item xs={12} md={4}>
+            <Box className="flex flex-col gap-5 sticky top-0">
+              
+              {/* Ekran Görüntüsü Önizleme */}
+              <Box 
+                className="flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden"
+                sx={{ width: '100%', height: 'auto', minHeight: 200, maxHeight: 300, p: 1 }}
+              >
+                {screenshotBase64 ? (
+                  <img 
+                    src={screenshotBase64} 
+                    alt="Diagram Preview" 
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '280px', borderRadius: '4px' }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-slate-400">
+                    <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
+                    <Typography variant="body2">Görsel bulunamadı</Typography>
+                  </div>
+                )}
+              </Box>
+
+              {/* Diyagram Adı Input */}
+              <TextField
+                label="Diyagram Adı"
+                required
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                error={submitAttempted && !name.trim()}
+                helperText={submitAttempted && !name.trim() ? "Diyagram adı zorunludur" : ""}
+                variant="outlined"
+              />
+
+              {/* Seçili KPI Sayısı Bilgisi */}
+              <Box className="p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 text-center md:text-left">
+                <Typography variant="body2" color="text.secondary" className="font-medium">
+                  Seçilen KPI sayısı: <span className="text-blue-600 dark:text-blue-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* SAĞ PANEL */}
+          <Grid item xs={12} md={8}>
+            <Box sx={{ overflowY: 'auto', maxHeight: { xs: 'none', md: '65vh' }, pr: { xs: 0, md: 1 } }} className="flex flex-col gap-6">
+              
+              {KPI_CATEGORIES.map((category, index) => {
+                // Bu kategoriye ait KPI'ları filtrele
+                const categoryKpis = kpiDashboardConfig.filter(kpi => kpi.categoryKey === category.key);
+                
+                // Eğer bu kategoride KPI yoksa render etme
+                if (categoryKpis.length === 0) return null;
+
+                return (
+                  <Box key={category.key}>
+                    <Typography 
+                      variant="subtitle1" 
+                      fontWeight="bold" 
+                      className="mb-4 text-slate-800 dark:text-slate-200 uppercase tracking-wider text-sm"
+                    >
+                      {category.labelTR}
+                    </Typography>
+                    
+                    {/* CSS Grid (Responsive) */}
+                    <div 
+                      style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                        gap: '12px' 
+                      }}
+                    >
+                      {categoryKpis.map(kpi => (
+                        <KPIPreviewCard
+                          key={kpi.id}
+                          kpi={kpi}
+                          selected={selectedKpiIds.includes(kpi.id)}
+                          onToggle={handleToggleKpi}
+                          size="default"
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Son kategori değilse araya ayırıcı çizgi koy */}
+                    {index < KPI_CATEGORIES.length - 1 && (
+                      <Divider className="mt-6" />
+                    )}
+                  </Box>
+                );
+              })}
+              
+            </Box>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      
+      {/* ALT BUTONLAR (ACTIONS) */}
+      <DialogActions sx={{ px: 3, py: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          {hasNoKpiSelected && (
+            <Typography variant="body2" color="error" className="font-medium animate-pulse flex items-center">
+              * Lütfen en az bir KPI kartı seçin.
+            </Typography>
+          )}
+        </Box>
+        
+        <Box className="flex gap-3">
+          <Button onClick={onClose} color="inherit" variant="text" sx={{ px: 3 }}>
+            Vazgeç
+          </Button>
+          <Button 
+            onClick={handleSave} 
+            variant="contained" 
+            color="primary"
+            disabled={hasNoKpiSelected}
+            sx={{ px: 4, py: 1 }}
+            disableElevation
+          >
+            Kaydet
+          </Button>
+        </Box>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+SaveConfigureModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  screenshotBase64: PropTypes.string,
+  initialDiagramName: PropTypes.string,
+  initialSelectedKpiIds: PropTypes.arrayOf(PropTypes.string),
+  onConfirm: PropTypes.func.isRequired
+};
+
+export default SaveConfigureModal;
