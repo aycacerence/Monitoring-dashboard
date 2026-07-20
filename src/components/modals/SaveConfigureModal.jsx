@@ -147,19 +147,19 @@ function SaveConfigureModal({
         <Grid container spacing={4} sx={{ height: '100%' }}>
           
           {/* SOL PANEL */}
-          <Grid item xs={12} md={4} sx={{ height: '100%' }}>
+          <Grid item xs={12} md={6} sx={{ height: '100%' }}>
             <Box className="flex flex-col gap-5 sticky top-0">
               
               {/* Ekran Görüntüsü Önizleme */}
               <Box 
                 className="flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden"
-                sx={{ width: '100%', height: 'auto', minHeight: 200, maxHeight: 300, p: 1 }}
+                sx={{ width: '100%', height: 'auto', minHeight: 300, maxHeight: 500, p: 2 }}
               >
                 {screenshotBase64 ? (
                   <img 
                     src={screenshotBase64} 
                     alt="Diagram Preview" 
-                    style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '280px', borderRadius: '4px' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '460px', borderRadius: '4px' }}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-slate-400">
@@ -201,7 +201,7 @@ function SaveConfigureModal({
           </Grid>
 
           {/* SAĞ PANEL */}
-          <Grid item xs={12} md={8} sx={{ height: '100%' }}>
+          <Grid item xs={12} md={6} sx={{ height: '100%' }}>
             <Box 
               sx={{ overflowY: 'auto', maxHeight: { xs: 'none', md: '75vh' }, pr: { xs: 0, md: 2 }, pb: 4 }} 
               className="flex flex-col gap-6"
@@ -286,7 +286,7 @@ function SaveConfigureModal({
                       aria-label={`${currentLabel} KPI`}
                       style={{ 
                         display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', 
+                        gridTemplateColumns: 'repeat(2, 1fr)', 
                         gap: '24px',
                         paddingTop: '12px',
                         paddingBottom: '8px'
