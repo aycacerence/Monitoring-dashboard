@@ -80,7 +80,7 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
         transition-all duration-150 ease-in-out select-none flex-shrink-0
         ${sizeClasses}
         ${selected 
-          ? 'border-2 border-blue-500 shadow-md opacity-100' 
+          ? 'border-2 border-brand-600 shadow-md opacity-100' 
           : 'border border-slate-200 dark:border-slate-700 opacity-60 hover:opacity-85 shadow-sm'
         }
       `}
@@ -88,7 +88,7 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
       {/* Seçili (Selected) Check İkonu */}
       {selected && (
         <div className="absolute -top-2 -right-2 bg-white dark:bg-slate-800 rounded-full shadow-sm z-10">
-          <CheckCircle className="w-5 h-5 text-emerald-500 bg-white rounded-full" />
+          <CheckCircle className="w-5 h-5 text-brand-600 bg-white dark:bg-slate-800 rounded-full" />
         </div>
       )}
 
@@ -105,7 +105,7 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
 
       {/* Üst Satır: İkon ve Başlık */}
       <div className="flex items-center justify-between w-full">
-        <div className={`p-1.5 rounded-lg ${selected ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-500' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
+        <div className={`p-1.5 rounded-lg ${selected ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
           <IconComponent className="w-4 h-4" />
         </div>
         <span 
