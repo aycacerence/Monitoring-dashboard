@@ -39,13 +39,11 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
   return (
     <Card
       sx={{
-        position: 'absolute',
-        bottom: 24,
-        left: 24,
-        zIndex: 10,
-        minWidth: 240,
-        boxShadow: 3,
+        width: '100%',
+        boxShadow: 1,
         borderRadius: 2,
+        border: 1,
+        borderColor: 'divider',
       }}
     >
       <CardContent sx={{ pb: '16px !important' }}>

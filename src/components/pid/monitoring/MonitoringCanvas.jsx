@@ -3,31 +3,15 @@ import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import { usePID } from '../../../context/pid/PIDContext';
-import { useDummySocket } from '../../../hooks/useDummySocket';
-
+// Hooks will be passed via props
 // TODO: Import your specific node and edge types for monitoring
 // import { monitoringNodeTypes } from './monitoringNodeTypes';
 // import { edgeTypes } from '../builder/edgeTypes';
 
-const MonitoringCanvas = ({ autoRefresh = true, onAlarmsChange }) => {
-  const { nodes, edges, restoreFlow, setSelectedNode } = usePID();
+const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
+  const { setSelectedNode } = usePID();
 
-  // 1. Component mount olduğunda kaydedilmiş diyagramı yükle
-  useEffect(() => {
-    restoreFlow();
-  }, [restoreFlow]);
-
-  // 2. Canlı veriyi simüle eden soket hook'unu çağır
-  const { liveData, alarms } = useDummySocket(nodes, autoRefresh);
-
-  // 3. Alarmlar değiştiğinde callback'i güvenli şekilde çağır
-  useEffect(() => {
-    if (onAlarmsChange && typeof onAlarmsChange === 'function') {
-      onAlarmsChange(alarms);
-    }
-  }, [alarms, onAlarmsChange]);
-
-  // 4. Performans dostu veri birleştirme
+  // Performans dostu veri birleştirme
   const mergedNodes = useMemo(() => {
     return nodes.map(n => ({
       ...n,
