@@ -6,12 +6,13 @@ import { usePID } from '../../../context/pid/PIDContext';
 import { monitoringNodeTypes, edgeTypes } from '../registry';
 
 const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
-  const { setSelectedNode } = usePID();
+  const { selectedNode, setSelectedNode } = usePID();
 
   // Performans dostu veri birleştirme
   const mergedNodes = useMemo(() => {
     return nodes.map(n => ({
       ...n,
+      selected: selectedNode?.id === n.id,
       data: {
         ...n.data,
         liveValue: liveData[n.id]?.value ?? null,
@@ -21,7 +22,7 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         status: liveData[n.id]?.status ?? 'normal'
       }
     }));
-  }, [nodes, liveData]);
+  }, [nodes, liveData, selectedNode]);
 
   // Node seçimi için useCallback kullanımı
   const handleNodeClick = useCallback((e, node) => {
