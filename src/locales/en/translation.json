@@ -137,6 +137,7 @@
     "editModePreviewDisabled": "Preview disabled in edit mode"
   },
   "pidBuilder": {
+    "editDiagram": "Edit Diagram",
     "saveModal": {
       "title": "Save Diagram and Configure Dashboard",
       "noImage": "Image not found",
