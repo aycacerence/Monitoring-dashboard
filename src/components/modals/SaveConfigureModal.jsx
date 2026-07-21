@@ -161,16 +161,20 @@ function SaveConfigureModal({
                 variant="outlined"
               />
 
-              {/* Ekran Görüntüsü Önizleme */}
-              <Box 
-                className="flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden"
-                sx={{ width: '100%', height: 'auto', minHeight: 400, maxHeight: 600, p: 2 }}
-              >
+              {/* Ekran Görüntüsü Önizleme Başlığı ve Alanı */}
+              <Box className="flex flex-col h-full">
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {t('pidBuilder.saveModal.previewTitle', 'Diyagram Önizlemesi')}
+                </Typography>
+                <Box 
+                  className="flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden"
+                  sx={{ width: '100%', height: 'calc(100vh - 350px)', minHeight: 400, p: 2 }}
+                >
                 {screenshotBase64 ? (
                   <img 
                     src={screenshotBase64} 
                     alt="Diagram Preview" 
-                    style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '560px', borderRadius: '4px' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '4px' }}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-slate-400">
@@ -178,23 +182,7 @@ function SaveConfigureModal({
                     <Typography variant="body2">{t('pidBuilder.saveModal.noImage', 'Görsel bulunamadı')}</Typography>
                   </div>
                 )}
-              </Box>
-
-              {/* Seçili KPI Sayısı Bilgisi */}
-              <Box className="p-3 bg-brand-50/50 dark:bg-brand-900/10 rounded-lg border border-brand-100 dark:border-brand-900/30 text-center md:text-left">
-                <Typography variant="body2" color="text.secondary" className="font-medium">
-                  {t('pidBuilder.saveModal.selectedKpiCount', 'Seçilen KPI sayısı:')} <span className="text-brand-600 dark:text-brand-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
-                </Typography>
-                
-                {recommendedCount > 0 && (
-                  <Typography 
-                    variant="caption" 
-                    className="block mt-2 text-brand-600 dark:text-brand-400 cursor-pointer hover:underline font-semibold"
-                    onClick={handleSelectAllRecommended}
-                  >
-                    {t('pidBuilder.saveModal.recommendedCount', { count: recommendedCount, defaultValue: `Diyagramınıza göre ${recommendedCount} kart öneriliyor. Tümünü Seç.` })}
-                  </Typography>
-                )}
+                </Box>
               </Box>
             </Box>
           </Grid>
@@ -223,8 +211,25 @@ function SaveConfigureModal({
                     </InputAdornment>
                   )
                 }}
-                sx={{ mb: 2 }}
+                sx={{ mb: 0 }}
               />
+
+              {/* Seçili KPI Sayısı Bilgisi (Arama Barının Altı) */}
+              <Box className="p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 text-center md:text-left mb-2">
+                <Typography variant="body2" color="text.secondary" className="font-medium">
+                  {t('pidBuilder.saveModal.selectedKpiCount', 'Seçilen KPI sayısı:')} <span className="text-blue-600 dark:text-blue-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
+                </Typography>
+                
+                {recommendedCount > 0 && (
+                  <Typography 
+                    variant="caption" 
+                    className="block mt-2 text-blue-600 dark:text-blue-400 cursor-pointer hover:underline font-semibold"
+                    onClick={handleSelectAllRecommended}
+                  >
+                    {t('pidBuilder.saveModal.recommendedCount', { count: recommendedCount, defaultValue: `Diyagramınıza göre ${recommendedCount} kart öneriliyor. Tümünü Seç.` })}
+                  </Typography>
+                )}
+              </Box>
 
               {filteredTotalKpis === 0 ? (
                 <Box className="flex flex-col items-center justify-center py-10 text-slate-500">

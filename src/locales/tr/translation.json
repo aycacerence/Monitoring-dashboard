@@ -151,6 +151,9 @@
       "minOneKpi": "* Lütfen en az bir KPI kartı seçin.",
       "cancel": "Vazgeç",
       "save": "Kaydet",
+      "saveOnly": "Kaydet",
+      "saveAndMonitor": "Kaydet ve Canlı İzlemeye Git",
+      "previewTitle": "Diyagram Önizlemesi",
       "recommended": "Önerilen"
     },
     "toolbar": {

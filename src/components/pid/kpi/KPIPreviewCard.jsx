@@ -87,20 +87,20 @@ const KPIPreviewCard = memo(({ kpi, selected, onToggle, size = "default", isReco
         }
       }}
       className={`
-        relative flex flex-col justify-between cursor-pointer rounded-xl bg-white dark:bg-slate-800
+        relative flex flex-col justify-between cursor-pointer rounded-xl
         transition-all duration-150 ease-in-out select-none flex-shrink-0
-        outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 focus-visible:outline-offset-2
+        outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-2
         ${sizeClasses}
         ${selected 
-          ? 'border-2 border-brand-600 shadow-md ring-1 ring-brand-100' 
-          : 'border border-slate-200 dark:border-slate-700 hover:border-brand-300 hover:shadow-md shadow-sm transition-all'
+          ? 'border-2 border-blue-500 bg-blue-50/50 dark:bg-blue-900/20 shadow-md ring-2 ring-blue-100 dark:ring-blue-800/30' 
+          : 'border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 hover:shadow-md shadow-sm'
         }
       `}
     >
       {/* Seçili (Selected) Check İkonu */}
       {selected && (
         <div className="absolute -top-2 -right-2 bg-white dark:bg-slate-800 rounded-full shadow-sm z-10">
-          <CheckCircle className="w-5 h-5 text-brand-600 bg-white dark:bg-slate-800 rounded-full" />
+          <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 rounded-full" />
         </div>
       )}
 

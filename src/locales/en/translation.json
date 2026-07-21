@@ -151,6 +151,9 @@
       "minOneKpi": "* Please select at least one KPI card.",
       "cancel": "Cancel",
       "save": "Save",
+      "saveOnly": "Save Only",
+      "saveAndMonitor": "Save and Monitor Live",
+      "previewTitle": "Diagram Preview",
       "recommended": "Recommended"
     },
     "toolbar": {
