@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
-import ReactFlow, { Background, Controls } from 'reactflow';
+import ReactFlow, { Background } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import { usePID } from '../../../context/pid/PIDContext';
@@ -72,16 +72,22 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         edgeTypes={edgeTypes}
         onNodeClick={handleNodeClick}
         onInit={setReactFlowInstance}
+        className="monitoring-flow"
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={true}
         fitView
         fitViewOptions={{ padding: 0.4, maxZoom: 1, duration: 600 }}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
+        zoomOnDoubleClick={false}
+        panOnDrag={false}
+        panOnScroll={false}
+        preventScrolling={false}
         minZoom={0.1}
         maxZoom={2}
         proOptions={{ hideAttribution: true }}
       >
-        <Controls />
 
         {/* Özel ok işaretleri (Custom Markers) - Builder ile aynı */}
         <svg className="custom-markers-svg" style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }}>
@@ -100,6 +106,13 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
             </marker>
           </defs>
         </svg>
+
+        {/* Grab cursor'ını engellemek için */}
+        <style>{`
+          .monitoring-flow .react-flow__pane {
+            cursor: default !important;
+          }
+        `}</style>
       </ReactFlow>
     </div>
   );
