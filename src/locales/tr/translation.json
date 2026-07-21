@@ -31,7 +31,18 @@
     }
   },
   "splash": {
-    "loading": "Sistem verileri yükleniyor..."
+    "loading": "Sistem verileri yükleniyor...",
+    "dashboardTitle": "Kontrol Paneli",
+    "dashboardMessage": "Grafikler ve özet veriler yükleniyor...",
+    "settingsTitle": "Panel Ayarları",
+    "settingsMessage": "Düzenleme modu başlatılıyor...",
+    "monitoringTitle": "P&ID Canlı İzleme",
+    "monitoringMessage": "{{diagramName}} verileri yükleniyor...",
+    "alarmsTitle": "Alarm Yönetimi",
+    "alarmsMessage": "Geçmiş alarm kayıtları yükleniyor...",
+    "builderTitle": "P&ID Tasarımcı",
+    "builderMessage": "Çizim araçları ve kütüphane yükleniyor...",
+    "system": "Sistem"
   },
   "common": {
     "cancel": "İptal",

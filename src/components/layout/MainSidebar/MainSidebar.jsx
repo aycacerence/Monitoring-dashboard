@@ -44,7 +44,7 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
 
   const [openAccordion, setOpenAccordion] = useState({
     kontrolPaneli: true,
-    pid: false,
+    pid: true,
   });
 
   // Default to collapsed everywhere as requested

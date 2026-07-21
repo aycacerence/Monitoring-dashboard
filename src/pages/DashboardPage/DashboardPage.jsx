@@ -70,7 +70,15 @@ function DashboardPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const isVisible = !isEditMode && isInitialLoad.current && (!minTimePassed || isLoading);
+  const isVisible = isInitialLoad.current && (!minTimePassed || isLoading);
+
+  const splashTitle = isEditMode 
+    ? t('splash.settingsTitle', 'Panel Ayarları') 
+    : t('splash.dashboardTitle', 'Kontrol Paneli');
+    
+  const splashMessage = isEditMode 
+    ? t('splash.settingsMessage', 'Düzenleme modu başlatılıyor...') 
+    : t('splash.dashboardMessage', 'Grafikler ve özet veriler yükleniyor...');
 
   useEffect(() => {
     if (!isVisible) {
@@ -289,7 +297,7 @@ function DashboardPage() {
 
   return (
     <>
-      <SplashScreen isVisible={isVisible} />
+      <SplashScreen isVisible={isVisible} title={splashTitle} message={splashMessage} />
 
       <PageContainer data-testid="dashboard-page" key={role} className={`flex flex-1 h-full min-h-0 flex-col overflow-y-auto ${isEditMode ? 'overflow-x-auto' : 'lg:overflow-hidden'} p-4`}>
         <DraggableGrid widgets={dashboardWidgets} />

@@ -18,8 +18,11 @@ import {
 } from '@mui/material';
 import { AlertTriangle, AlertCircle, BellRing, Settings2 } from 'lucide-react';
 import { PIDProvider, usePID } from '../../context/pid/PIDContext';
+import SplashScreen from '../../components/common/SplashScreen/SplashScreen';
+import { useTranslation } from 'react-i18next';
 
 function AlarmsContent() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { diagrams, activeDiagramId } = usePID();
 
@@ -28,6 +31,12 @@ function AlarmsContent() {
   );
 
   const [alarms, setAlarms] = useState([]);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!selectedDiagramId && activeDiagramId) {
@@ -60,8 +69,14 @@ function AlarmsContent() {
   const selectedDiagramName = diagrams?.find(d => d.id === selectedDiagramId)?.name || '';
 
   return (
-    <Box className="p-6 h-full flex flex-col">
-      <Box className="mb-4 flex items-center justify-between">
+    <>
+      <SplashScreen 
+        isVisible={isPageLoading} 
+        title={t('splash.alarmsTitle', 'Alarm Yönetimi')} 
+        message={t('splash.alarmsMessage', 'Geçmiş alarm kayıtları yükleniyor...')} 
+      />
+      <Box className="p-6 h-full flex flex-col">
+        <Box className="mb-4 flex items-center justify-between">
         <Box className="flex items-center gap-4">
           <FormControl size="small" sx={{ minWidth: 200 }}>
             <Select
@@ -132,10 +147,11 @@ function AlarmsContent() {
                 </TableRow>
               ))
             )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </>
   );
 }
 

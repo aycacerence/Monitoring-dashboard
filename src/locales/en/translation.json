@@ -31,7 +31,18 @@
     }
   },
   "splash": {
-    "loading": "Loading system data..."
+    "loading": "Loading system data...",
+    "dashboardTitle": "Dashboard",
+    "dashboardMessage": "Loading charts and summary data...",
+    "settingsTitle": "Panel Settings",
+    "settingsMessage": "Starting edit mode...",
+    "monitoringTitle": "Live Process Monitoring",
+    "monitoringMessage": "Loading {{diagramName}} data...",
+    "alarmsTitle": "Alarm Management",
+    "alarmsMessage": "Loading past alarm records...",
+    "builderTitle": "P&ID Designer",
+    "builderMessage": "Loading drawing tools and library...",
+    "system": "System"
   },
   "common": {
     "cancel": "Cancel",

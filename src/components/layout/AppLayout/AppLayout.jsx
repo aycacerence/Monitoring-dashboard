@@ -82,6 +82,7 @@ function AppLayout() {
               minHeight: 0,
               display: 'flex',
               flexDirection: 'column',
+              position: 'relative',
             }}
           >
             <Outlet context={{ setHeaderProps }} />

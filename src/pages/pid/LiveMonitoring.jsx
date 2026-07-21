@@ -13,12 +13,21 @@ import SystemStatusCard from '../../components/pid/monitoring/SystemStatusCard';
 import AlarmList from '../../components/pid/monitoring/AlarmList';
 import MonitoringCanvas from '../../components/pid/monitoring/MonitoringCanvas';
 import DeviceDetailPanel from '../../components/pid/monitoring/DeviceDetailPanel';
+import SplashScreen from '../../components/common/SplashScreen/SplashScreen';
+import { useTranslation } from 'react-i18next';
 
 const MonitoringContent = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { diagrams, activeDiagramId, nodes, edges, switchDiagram } = usePID();
   
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // 1. PIDContext'ten gelen aktif diyagramı bul (sadece metadata için)
   const diagram = diagrams?.find((d) => d.id === activeDiagramId);
@@ -55,8 +64,14 @@ const MonitoringContent = () => {
 
   // 4. Ana Yapı
   return (
-    <Box className="flex flex-col w-full h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
-      {/* ÜST BAR */}
+    <>
+      <SplashScreen 
+        isVisible={isPageLoading} 
+        title={t('splash.monitoringTitle', 'P&ID Canlı İzleme')} 
+        message={t('splash.monitoringMessage', '{{diagramName}} verileri yükleniyor...', { diagramName: diagram?.name || t('splash.system', 'Sistem') })} 
+      />
+      <Box className="flex flex-col w-full h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+        {/* ÜST BAR */}
       <MonitoringTopBar 
         autoRefresh={autoRefresh}
         onToggleAutoRefresh={setAutoRefresh}
@@ -94,10 +109,10 @@ const MonitoringContent = () => {
             />
           </ReactFlowProvider>
         </Box>
-        {/* Sağdan Açılan Overlay Cihaz Detay Çekmecesi (Artık Header'ı örtmez) */}
-        <DeviceDetailPanel liveData={liveData} />
+          <DeviceDetailPanel liveData={liveData} />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 
