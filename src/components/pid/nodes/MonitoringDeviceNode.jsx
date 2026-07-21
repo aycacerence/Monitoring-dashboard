@@ -7,6 +7,18 @@ import { useTranslation } from 'react-i18next';
 const MonitoringDeviceNode = ({ id, data, selected }) => {
   const { t } = useTranslation();
 
+  const currentStatus = data.status?.toLowerCase() || 'normal';
+
+  const statusConfig = {
+    alarm: { text: t('pidBuilder.status.alarm', 'Alarm'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500', borderClass: 'border-red-500' },
+    warning: { text: t('pidBuilder.status.warning', 'Uyarı'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-400', borderClass: 'border-orange-400' },
+    normal: { text: t('pidBuilder.status.normal', 'Normal'), colorClass: 'text-green-600 dark:text-green-400', bgClass: 'bg-green-500', borderClass: 'border-green-500' },
+    pasif: { text: t('pidBuilder.status.pasif', 'Pasif'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500', borderClass: 'border-red-500' },
+    'bakımda': { text: t('pidBuilder.status.bakımda', 'Bakımda'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-500', borderClass: 'border-orange-500' },
+  };
+
+  const activeStatus = statusConfig[currentStatus] || statusConfig.normal;
+
   return (
     <Box 
       className="bg-white dark:bg-slate-800 rounded-lg"
@@ -39,27 +51,13 @@ const MonitoringDeviceNode = ({ id, data, selected }) => {
           {/* Badge Kartı */}
           <Paper
             elevation={4}
-            className={`px-3 py-1.5 rounded-lg border-2 flex flex-col items-center justify-center min-w-[85px] shadow-lg ${
-              data.status === 'alarm' ? 'border-red-500 bg-white dark:bg-slate-800' :
-              data.status === 'warning' ? 'border-orange-400 bg-white dark:bg-slate-800' :
-              'border-green-500 bg-white dark:bg-slate-800'
-            }`}
+            className={`px-3 py-1.5 rounded-lg border-2 flex flex-col items-center justify-center min-w-[85px] shadow-lg bg-white dark:bg-slate-800 ${activeStatus.borderClass}`}
           >
             {/* Durum (Status) */}
             <Box display="flex" alignItems="center" gap={0.75} mb={0.5}>
-              <div className={`w-2 h-2 rounded-full ${
-                data.status === 'alarm' ? 'bg-red-500 animate-pulse' :
-                data.status === 'warning' ? 'bg-orange-400' :
-                'bg-green-500'
-              }`} />
-              <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.65rem', letterSpacing: '0.02em', textTransform: 'uppercase' }} className={
-                data.status === 'alarm' ? 'text-red-600 dark:text-red-400' :
-                data.status === 'warning' ? 'text-orange-600 dark:text-orange-400' :
-                'text-green-600 dark:text-green-400'
-              }>
-                {data.status === 'alarm' ? t('pidBuilder.status.alarm', 'Alarm') : 
-                 data.status === 'warning' ? t('pidBuilder.status.warning', 'Uyarı') : 
-                 t('pidBuilder.status.normal', 'Normal')}
+              <div className={`w-2 h-2 rounded-full ${activeStatus.bgClass} ${currentStatus === 'alarm' ? 'animate-pulse' : ''}`} />
+              <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.65rem', letterSpacing: '0.02em', textTransform: 'uppercase' }} className={activeStatus.colorClass}>
+                {activeStatus.text}
               </Typography>
             </Box>
             

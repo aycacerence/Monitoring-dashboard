@@ -6,17 +6,6 @@ import { getKpiById } from '../../../config/kpiDashboardConfig';
 const KPILiveCard = ({ kpiId, liveData }) => {
   const kpi = getKpiById(kpiId);
   const data = liveData?.[kpiId];
-  const [flash, setFlash] = useState(false);
-  const prevValue = useRef(data?.value);
-
-  useEffect(() => {
-    if (data?.value !== undefined && data?.value !== prevValue.current) {
-      setFlash(true);
-      prevValue.current = data?.value;
-      const timer = setTimeout(() => setFlash(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [data?.value]);
 
   if (!kpi || !data) return null;
 
@@ -34,17 +23,9 @@ const KPILiveCard = ({ kpiId, liveData }) => {
   if (isAlarm) textColor = 'text-red-600 dark:text-red-400';
   else if (isWarning) textColor = 'text-orange-500 dark:text-orange-400';
 
-  // Güncelleme anındaki parlama (flash) arka plan rengi
-  let flashBg = 'rgba(16, 185, 129, 0.15)'; // Normal için yeşil parlama
-  if (isAlarm) flashBg = 'rgba(239, 68, 68, 0.2)'; // Alarm için kırmızı parlama
-  else if (isWarning) flashBg = 'rgba(249, 115, 22, 0.2)'; // Uyarı için turuncu parlama
-
   return (
     <Box 
       className={`relative p-4 rounded-xl border bg-white dark:bg-slate-900 shadow-sm transition-colors duration-300 ${borderColor}`}
-      style={{
-        backgroundColor: flash ? flashBg : undefined,
-      }}
     >
       <div className="flex items-center justify-between mb-2">
         <Typography 

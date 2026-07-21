@@ -120,32 +120,34 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
         }
       }}
     >
-      <Box sx={{ p: 2, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+      <Box sx={{ p: 2.5, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem' }}>
           Cihaz Detayı
         </Typography>
-        <IconButton onClick={handleClose} size="small">
+        <IconButton onClick={handleClose} size="small" sx={{ color: 'text.secondary', '&:hover': { bgcolor: 'action.hover' } }}>
           <CloseIcon fontSize="small" />
         </IconButton>
       </Box>
 
-      <Box sx={{ px: 2, display: 'flex', gap: 2, alignItems: 'flex-start', mb: 2 }}>
-        <Box sx={{ width: 64, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ px: 2.5, display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+        <Box sx={{ width: 56, height: 56, borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'background.default', border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
           {iconMap[nodeData.iconKey] && (
-            <img src={iconMap[nodeData.iconKey]} alt="device-icon" className="w-14 h-14 object-contain" />
+            <img src={iconMap[nodeData.iconKey]} alt="device-icon" className="w-8 h-8 object-contain opacity-80" />
           )}
         </Box>
         
         <Box display="flex" flexDirection="column" justifyContent="center">
-          <Typography variant="body1" sx={{ fontWeight: 800, color: 'text.primary', lineHeight: 1.2 }}>
-            {nodeData.code || selectedNode.id}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary', lineHeight: 1.2 }}>
             {t(`pidBuilder.devices.${nodeData.label}`, { defaultValue: nodeData.label })}
           </Typography>
-          <Box display="flex" alignItems="center" gap={1}>
-            <div className={`w-2.5 h-2.5 rounded-full ${currentStatus.bgClass} ${status === 'alarm' ? 'animate-pulse' : ''}`} />
-            <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.75rem' }} className={currentStatus.colorClass}>
+          {nodeData.code && String(nodeData.code).toLowerCase() !== String(nodeData.label).toLowerCase() && (
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5, fontWeight: 500 }}>
+              {nodeData.code}
+            </Typography>
+          )}
+          <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+            <div className={`w-2 h-2 rounded-full ${currentStatus.bgClass} ${status === 'alarm' ? 'animate-pulse' : ''}`} />
+            <Typography variant="caption" sx={{ fontWeight: 600 }} className={currentStatus.colorClass}>
               {currentStatus.text}
             </Typography>
           </Box>
@@ -165,7 +167,7 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
 
       {/* Genel Sekmesi */}
       <TabPanel value={tabIndex} index={0}>
-        <Box className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-3 shadow-sm">
+        <Box className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 shadow-sm">
           <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: 'text.primary', fontSize: '0.85rem' }}>
             Genel Bilgiler
           </Typography>
@@ -186,7 +188,7 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
         </Box>
 
         {Object.keys(staticData).length > 0 && (
-          <Box className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-3 shadow-sm">
+          <Box className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 shadow-sm">
             <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: 'text.primary', fontSize: '0.85rem' }}>
               Teknik Detaylar
             </Typography>
@@ -208,7 +210,7 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
           </Box>
         )}
 
-        <Box className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-3 shadow-sm">
+        <Box className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 shadow-sm">
           <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: 'text.primary', fontSize: '0.85rem' }}>
             Çalışma Bilgileri
           </Typography>
@@ -219,28 +221,36 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
 
       {/* Canlı Veri Sekmesi */}
       <TabPanel value={tabIndex} index={1}>
-        <Box className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-5 mt-2 flex flex-col items-center shadow-md">
-          <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 2, textTransform: 'uppercase', letterSpacing: 1 }}>
-            Anlık Okuma
+        <Box className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-6 mt-2 flex flex-col items-center justify-center relative overflow-hidden min-h-[240px] shadow-sm">
+          
+          {/* Arka plan parlaklığı */}
+          <div className={`absolute inset-0 opacity-[0.04] dark:opacity-[0.06] ${
+            status === 'alarm' ? 'bg-red-500' :
+            status === 'warning' ? 'bg-orange-500' :
+            'bg-green-500'
+          }`} />
+
+          <Typography variant="overline" sx={{ color: 'text.secondary', mb: 1.5, letterSpacing: 1.5, fontWeight: 700, zIndex: 1 }}>
+            Anlık Değer
           </Typography>
           
-          <Box display="flex" alignItems="baseline" gap={1} mb={3}>
-            <Typography variant="h2" sx={{ fontWeight: 900, color: 'primary.main', lineHeight: 1 }}>
+          <Box display="flex" alignItems="baseline" gap={1} mb={4} sx={{ zIndex: 1 }}>
+            <Typography variant="h1" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: '3.5rem', lineHeight: 1 }}>
               {liveValue}
             </Typography>
-            <Typography variant="h5" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 600 }}>
               {liveUnit}
             </Typography>
           </Box>
 
-          <Box className={`w-full py-2 rounded-md flex justify-center items-center gap-2 ${
-            status === 'alarm' ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800' :
-            status === 'warning' ? 'bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800' :
-            'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+          <Box sx={{ zIndex: 1 }} className={`px-5 py-2 rounded-full flex items-center gap-2.5 transition-all ${
+            status === 'alarm' ? 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-500/20' :
+            status === 'warning' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20' :
+            'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-500/20'
           }`}>
-            <div className={`w-3 h-3 rounded-full ${currentStatus.bgClass} ${status === 'alarm' ? 'animate-pulse' : ''}`} />
-            <Typography variant="body2" sx={{ fontWeight: 'bold' }} className={currentStatus.colorClass}>
-              Sistem Durumu: {currentStatus.text}
+            <div className={`w-2.5 h-2.5 rounded-full ${currentStatus.bgClass} ${status === 'alarm' ? 'animate-pulse' : ''}`} />
+            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+              {currentStatus.text}
             </Typography>
           </Box>
         </Box>

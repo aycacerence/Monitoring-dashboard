@@ -11,8 +11,9 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
 
     nodes.forEach((node) => {
       const status = liveData[node?.id]?.status;
+      const nodeDurum = node?.data?.durum;
       
-      if (status !== undefined) {
+      if (status === 'normal' || status === 'warning' || status === 'alarm') {
         active += 1;
       }
       
@@ -22,7 +23,7 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
         warning += 1;
       }
 
-      if (node?.data?.defaultData?.durum === 'Bakımda') {
+      if (status === 'bakımda' || nodeDurum === 'Bakımda') {
         maintenance += 1;
       }
     });

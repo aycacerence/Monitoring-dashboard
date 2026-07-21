@@ -23,8 +23,8 @@ const MonitoringContent = () => {
   // 1. PIDContext'ten gelen aktif diyagramı bul (sadece metadata için)
   const diagram = diagrams?.find((d) => d.id === activeDiagramId);
 
-  // 2. Aktif diyagramın cihazlarını (nodes) liveData hook'una bağla
-  const { liveData, alarms, lastUpdate } = useDummySocket(nodes || [], autoRefresh);
+  // 2. Aktif diyagramın cihazlarını (nodes) ve KPI'larını liveData hook'una bağla
+  const { liveData, alarms, lastUpdate } = useDummySocket(nodes || [], diagram?.kpiConfig || [], autoRefresh);
 
   // 3. Boş State (Diyagram bulunamazsa)
   if (!diagram) {

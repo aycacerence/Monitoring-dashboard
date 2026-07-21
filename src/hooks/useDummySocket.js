@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { getKpiById } from '../config/kpiDashboardConfig';
 
 // Cihaz kütüphanesindeki iconKey'lere uygun endüstriyel konfigürasyon
 const DEVICE_CONFIG = {
@@ -48,7 +49,7 @@ const DEVICE_CONFIG = {
 // Bilinmeyen veya tipi belirsiz cihazlar için varsayılan fallback konfigürasyonu
 const FALLBACK_CONFIG = { main: 'deger', unit: '', min: 0, max: 100 };
 
-export const useDummySocket = (nodes = [], autoRefresh = true) => {
+export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true) => {
   const [liveData, setLiveData] = useState({});
   const [alarms, setAlarms] = useState([]);
   
@@ -57,14 +58,23 @@ export const useDummySocket = (nodes = [], autoRefresh = true) => {
 
   // 1. Initial State Kurulumu
   useEffect(() => {
-    if (!nodes || nodes.length === 0) return;
+    if ((!nodes || nodes.length === 0) && (!kpiIds || kpiIds.length === 0)) return;
 
     const initialData = {};
     nodes.forEach(node => {
       const type = node.data?.iconKey || node.type;
       const config = DEVICE_CONFIG[type] || FALLBACK_CONFIG;
 
-      if (config.isDigital) {
+      const nodeDurum = node.data?.durum?.toLowerCase();
+      
+      if (nodeDurum === 'pasif' || nodeDurum === 'bakımda') {
+        initialData[node.id] = {
+          value: config.isDigital ? (config.states[1] || 'Kapalı') : 0,
+          unit: config.unit,
+          status: nodeDurum,
+          details: config.isDigital ? { state: config.states[1] || 'Kapalı' } : { [config.main]: 0 }
+        };
+      } else if (config.isDigital) {
         initialData[node.id] = {
           value: config.states[0],
           unit: '',
@@ -87,12 +97,27 @@ export const useDummySocket = (nodes = [], autoRefresh = true) => {
       prevStatusRef.current[node.id] = 'normal';
     });
 
+    if (kpiIds && kpiIds.length > 0) {
+      kpiIds.forEach(kpiId => {
+        const kpi = getKpiById(kpiId);
+        if (kpi) {
+          initialData[kpiId] = {
+            value: kpi.mockValue,
+            unit: kpi.unit,
+            status: 'normal',
+            details: { deger: kpi.mockValue }
+          };
+          prevStatusRef.current[kpiId] = 'normal';
+        }
+      });
+    }
+
     setLiveData(initialData);
-  }, [nodes]); // Sadece nodes listesi değiştiğinde sıfırla
+  }, [nodes, kpiIds]); // Sadece nodes veya kpiIds listesi değiştiğinde sıfırla
 
   // 2. Canlı Veri Simülasyon Döngüsü (Random Walk & Alarm Logic)
   useEffect(() => {
-    if (!autoRefresh || nodes.length === 0) return;
+    if (!autoRefresh || ((!nodes || nodes.length === 0) && (!kpiIds || kpiIds.length === 0))) return;
 
     const interval = setInterval(() => {
       setLiveData(prevData => {
@@ -103,8 +128,21 @@ export const useDummySocket = (nodes = [], autoRefresh = true) => {
           const type = node.data?.iconKey || node.type;
           const config = DEVICE_CONFIG[type] || FALLBACK_CONFIG;
           const currentData = prevData[node.id];
+          const nodeDurum = node.data?.durum?.toLowerCase();
 
           if (!currentData) return;
+
+          if (nodeDurum === 'pasif' || nodeDurum === 'bakımda') {
+            const staticValue = config.isDigital ? (config.states[1] || 'Kapalı') : 0;
+            newData[node.id] = {
+              value: staticValue,
+              unit: config.unit,
+              status: nodeDurum,
+              details: config.isDigital ? { state: staticValue } : { [config.main]: staticValue }
+            };
+            prevStatusRef.current[node.id] = nodeDurum;
+            return;
+          }
 
           let newValue;
           let newStatus = 'normal';
@@ -189,6 +227,53 @@ export const useDummySocket = (nodes = [], autoRefresh = true) => {
           prevStatusRef.current[node.id] = newStatus;
         });
 
+        if (kpiIds && kpiIds.length > 0) {
+          kpiIds.forEach(kpiId => {
+            const kpi = getKpiById(kpiId);
+            const currentData = prevData[kpiId];
+            if (!kpi || !currentData) return;
+
+            // Simple random walk for KPI values
+            const currentVal = typeof currentData.value === 'number' ? currentData.value : parseFloat(currentData.value);
+            if (isNaN(currentVal)) {
+               // For string KPIs like 'On', don't change
+               return;
+            }
+
+            // Vary by +/- 2% max per tick
+            const maxChange = currentVal === 0 ? 1 : Math.abs(currentVal * 0.02);
+            let step = (Math.random() * maxChange * 2) - maxChange;
+
+            // Add a tendency to return to the mockValue
+            const diffFromBase = currentVal - kpi.mockValue;
+            if (Math.abs(diffFromBase) > Math.abs(kpi.mockValue * 0.1)) {
+              step -= diffFromBase * 0.1;
+            }
+
+            let calculatedValue = currentVal + step;
+            if (calculatedValue < 0 && kpi.mockValue >= 0) calculatedValue = 0; // assuming positive KPIs
+
+            // Only use 1 or 2 decimals
+            const newValue = currentVal > 100 ? Math.round(calculatedValue) : parseFloat(calculatedValue.toFixed(1));
+
+            // Status is normal for KPIs here, unless it deviates by 20%
+            let newStatus = 'normal';
+            if (newValue > kpi.mockValue * 1.2 || newValue < kpi.mockValue * 0.8) {
+               newStatus = 'warning';
+            }
+            if (newValue > kpi.mockValue * 1.5 || newValue < kpi.mockValue * 0.5) {
+               newStatus = 'alarm';
+            }
+
+            newData[kpiId] = {
+              value: newValue,
+              unit: kpi.unit,
+              status: newStatus,
+              details: { deger: newValue }
+            };
+          });
+        }
+
         // Yeni alarmları mevcut alarmlara ekle ve sadece son 20 tanesini tut
         if (newAlarms.length > 0) {
           setAlarms(prev => [...newAlarms, ...prev].slice(0, 20));
@@ -199,7 +284,7 @@ export const useDummySocket = (nodes = [], autoRefresh = true) => {
     }, 1000); // Gerçekçi bir canlı yayın hissi için saniyede bir
 
     return () => clearInterval(interval);
-  }, [nodes, autoRefresh]);
+  }, [nodes, kpiIds, autoRefresh]);
 
   return { liveData, alarms };
 };
