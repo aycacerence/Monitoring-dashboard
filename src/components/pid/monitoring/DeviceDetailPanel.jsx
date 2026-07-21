@@ -26,7 +26,7 @@ const TabPanel = (props) => {
       style={{ height: '100%', overflowY: 'auto' }}
       className="bg-slate-50 dark:bg-slate-900"
     >
-      {value === index && <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 1.5, display: 'flex', flexDirection: 'column', gap: 1.5 }}>{children}</Box>}
     </div>
   );
 };
@@ -56,7 +56,7 @@ const MiniTrendGraph = React.memo(({ data }) => {
   const range = max - min === 0 ? 1 : max - min;
   
   const width = 100;
-  const height = 40;
+  const height = 30;
   
   const points = data.map((val, i) => {
     const x = (i / (data.length - 1)) * width;
@@ -66,12 +66,12 @@ const MiniTrendGraph = React.memo(({ data }) => {
   }).join(' ');
 
   return (
-    <Box sx={{ width: '100%', mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5, fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+    <Box sx={{ width: '100%', mt: 1, p: 1.5, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1, fontWeight: 600, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         Son {data.length} Veri Noktası
       </Typography>
-      <Box sx={{ width: '100%', height: '40px', position: 'relative' }}>
-        <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+      <Box sx={{ width: '100%', height: '30px', position: 'relative' }}>
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
           <polyline
             fill="none"
             stroke="#10B981"
@@ -124,8 +124,8 @@ const ThresholdInfo = React.memo(({ config, liveValue }) => {
   const isOutOfRange = val < min || val > max;
 
   return (
-    <Box sx={{ width: '100%', mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+    <Box sx={{ width: '100%', mt: 1, p: 1.5, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           Normal Aralık
         </Typography>
@@ -370,7 +370,7 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
 
       {/* Canlı Veri Sekmesi */}
       <TabPanel value={tabIndex} index={1}>
-        <Box className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-6 mt-2 flex flex-col items-center justify-center relative overflow-hidden min-h-[240px] shadow-sm">
+        <Box className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-4 mt-1 flex flex-col items-center justify-center relative overflow-hidden min-h-[140px] shadow-sm">
           
           {/* Arka plan parlaklığı */}
           <div className={`absolute inset-0 opacity-[0.04] dark:opacity-[0.06] ${
@@ -379,17 +379,17 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
             'bg-green-500'
           }`} />
 
-          <Box sx={{ display: 'flex', width: '100%', gap: 2, zIndex: 1, mb: 4 }}>
+          <Box sx={{ display: 'flex', width: '100%', gap: 2, zIndex: 1, mb: 2 }}>
             {/* Sol / Ana Değer */}
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: secondaryValue !== undefined ? '1px solid' : 'none', borderColor: 'divider' }}>
-              <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.5, letterSpacing: 1.5, fontWeight: 700, textTransform: 'uppercase' }}>
+              <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.25, letterSpacing: 1, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>
                 {paramLabel}
               </Typography>
-              <Box display="flex" alignItems="baseline" gap={1}>
-                <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: secondaryValue !== undefined ? '2.5rem' : '3.5rem', lineHeight: 1 }}>
+              <Box display="flex" alignItems="baseline" gap={0.5}>
+                <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: secondaryValue !== undefined ? '2rem' : '2.8rem', lineHeight: 1 }}>
                   {liveValue}
                 </Typography>
-                <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                   {liveUnit}
                 </Typography>
               </Box>
@@ -398,14 +398,14 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
             {/* Sağ / İkincil Değer */}
             {secondaryValue !== undefined && (
               <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.5, letterSpacing: 1.5, fontWeight: 700, textTransform: 'uppercase' }}>
+                <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.25, letterSpacing: 1, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>
                   {paramLabel2}
                 </Typography>
-                <Box display="flex" alignItems="baseline" gap={1}>
-                  <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: '2.5rem', lineHeight: 1 }}>
+                <Box display="flex" alignItems="baseline" gap={0.5}>
+                  <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: '2rem', lineHeight: 1 }}>
                     {secondaryValue}
                   </Typography>
-                  <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                     {secondaryUnit}
                   </Typography>
                 </Box>
