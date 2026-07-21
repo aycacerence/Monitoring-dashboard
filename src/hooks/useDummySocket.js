@@ -259,6 +259,13 @@ export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true, diag
               nodeId: node.id,
               deviceName: label,
               message: `${label} - ${paramName} kritik seviyeye ulaştı: ${newValue} ${config.unit || ''}`.trim(),
+              messageData: {
+                label,
+                paramKey: config.isDigital ? 'durum' : config.main,
+                paramName,
+                value: newValue,
+                unit: config.unit || ''
+              },
               severity: newStatus === 'alarm' ? 'error' : 'warning',
               timestamp: new Date().toISOString(),
               isResolved: false

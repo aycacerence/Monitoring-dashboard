@@ -16,11 +16,11 @@ const MonitoringDeviceNode = ({ id, data }) => {
   const currentStatus = data.status?.toLowerCase() || 'normal';
 
   const statusConfig = {
-    alarm: { text: t('pidBuilder.status.alarm', 'Alarm'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500', borderClass: 'border-red-500' },
-    warning: { text: t('pidBuilder.status.warning', 'Uyarı'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-400', borderClass: 'border-orange-400' },
-    normal: { text: t('pidBuilder.status.normal', 'Normal'), colorClass: 'text-green-600 dark:text-green-400', bgClass: 'bg-green-500', borderClass: 'border-green-500' },
-    pasif: { text: t('pidBuilder.status.pasif', 'Pasif'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500', borderClass: 'border-red-500' },
-    'bakımda': { text: t('pidBuilder.status.bakımda', 'Bakımda'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-500', borderClass: 'border-orange-500' },
+    alarm: { text: t('pidBuilder.propertyPanel.status.alarm', 'Alarm'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500', borderClass: 'border-red-500' },
+    warning: { text: t('pidBuilder.propertyPanel.status.warning', 'Uyarı'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-400', borderClass: 'border-orange-400' },
+    normal: { text: t('pidBuilder.propertyPanel.status.normal', 'Normal'), colorClass: 'text-green-600 dark:text-green-400', bgClass: 'bg-green-500', borderClass: 'border-green-500' },
+    pasif: { text: t('pidBuilder.propertyPanel.status.pasif', 'Pasif'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500', borderClass: 'border-red-500' },
+    'bakımda': { text: t('pidBuilder.propertyPanel.status.bakımda', 'Bakımda'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-500', borderClass: 'border-orange-500' },
   };
 
   const activeStatus = statusConfig[currentStatus] || statusConfig.normal;
@@ -36,6 +36,10 @@ const MonitoringDeviceNode = ({ id, data }) => {
   const hasSecondary = data.secondaryValue !== undefined && data.secondaryValue !== null;
   const paramLabel1 = config.paramLabel1 ? t(`pidBuilder.techKeys.${config.paramLabel1}`, config.paramLabel1) : paramLabel;
   const paramLabel2 = config.paramLabel2 ? t(`pidBuilder.techKeys.${config.paramLabel2}`, config.paramLabel2) : t('pidBuilder.techKeys.deger', 'Değer');
+
+  const displayLiveValue = typeof data.liveValue === 'string' 
+    ? t(`pidBuilder.propertyPanel.status.${data.liveValue}`, data.liveValue) 
+    : data.liveValue;
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -131,7 +135,7 @@ const MonitoringDeviceNode = ({ id, data }) => {
                     {paramLabel1}
                   </Typography>
                   <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                    {data.liveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
+                    {displayLiveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
                   </Typography>
                 </Box>
                 {/* Sağ Değer */}
@@ -150,7 +154,7 @@ const MonitoringDeviceNode = ({ id, data }) => {
                   {paramLabel}
                 </Typography>
                 <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                  {data.liveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
+                  {displayLiveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
                 </Typography>
               </Box>
             )}

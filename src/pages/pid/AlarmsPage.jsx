@@ -68,6 +68,25 @@ function AlarmsContent() {
 
   const selectedDiagramName = diagrams?.find(d => d.id === selectedDiagramId)?.name || '';
 
+  const getAlarmMessage = (alarm) => {
+    if (alarm.messageData) {
+      const translatedParam = t(`pidBuilder.techKeys.${alarm.messageData.paramKey}`, alarm.messageData.paramName);
+      
+      const rawValue = alarm.messageData.value;
+      const translatedValue = typeof rawValue === 'string' 
+        ? t(`pidBuilder.propertyPanel.status.${rawValue}`, rawValue) 
+        : rawValue;
+
+      return t('pidMonitoring.alarmMessage', '{{label}} - {{paramName}} kritik seviyeye ulaştı: {{value}} {{unit}}', {
+        label: alarm.messageData.label,
+        paramName: translatedParam,
+        value: translatedValue,
+        unit: alarm.messageData.unit
+      });
+    }
+    return alarm.message;
+  };
+
   return (
     <>
       <SplashScreen 
@@ -86,30 +105,30 @@ function AlarmsContent() {
               sx={{ fontWeight: 'bold', bgcolor: 'background.paper' }}
               startAdornment={<Settings2 size={16} className="text-slate-500 mr-2 ml-1" />}
             >
-              <MenuItem value="" disabled>Diyagram Seçin</MenuItem>
+              <MenuItem value="" disabled>{t('pidMonitoring.alarmHistory.selectDiagram', 'Diyagram Seçin')}</MenuItem>
               {diagrams.map((d) => (
                 <MenuItem key={d.id} value={d.id} sx={{ fontWeight: 600 }}>{d.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
-          <Chip label="Diyagram Alarmları" size="small" sx={{ fontWeight: 500, bgcolor: 'slate.100' }} className="dark:bg-slate-800" />
+          <Chip label={t('pidMonitoring.alarmHistory.diagramAlarms', 'Diyagram Alarmları')} size="small" sx={{ fontWeight: 500, bgcolor: 'slate.100' }} className="dark:bg-slate-800" />
         </Box>
       </Box>
       <TableContainer component={Paper} className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800">
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Zaman</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Seviye</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Cihaz</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Mesaj</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>{t('pidMonitoring.alarmHistory.time', 'Zaman')}</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>{t('pidMonitoring.alarmHistory.level', 'Seviye')}</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>{t('pidMonitoring.alarmHistory.device', 'Cihaz')}</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>{t('pidMonitoring.alarmHistory.message', 'Mesaj')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {alarms.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} align="center" sx={{ py: 6, color: 'text.secondary' }}>
-                  Gösterilecek alarm bulunmuyor.
+                  {t('pidMonitoring.alarmHistory.noAlarmsPage', 'Gösterilecek alarm bulunmuyor.')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -125,7 +144,7 @@ function AlarmsContent() {
                     {alarm.severity === 'alarm' ? (
                       <Chip 
                         icon={<AlertTriangle size={14} className="ml-1" />} 
-                        label="Kritik Alarm" 
+                        label={t('pidMonitoring.alarmHistory.criticalAlarm', 'Kritik Alarm')} 
                         color="error" 
                         size="small" 
                         variant="outlined" 
@@ -134,7 +153,7 @@ function AlarmsContent() {
                     ) : (
                       <Chip 
                         icon={<AlertCircle size={14} className="ml-1" />} 
-                        label="Uyarı" 
+                        label={t('pidMonitoring.alarmHistory.warning', 'Uyarı')} 
                         color="warning" 
                         size="small" 
                         variant="outlined" 
@@ -143,7 +162,7 @@ function AlarmsContent() {
                     )}
                   </TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>{alarm.deviceLabel}</TableCell>
-                  <TableCell>{alarm.message}</TableCell>
+                  <TableCell>{getAlarmMessage(alarm)}</TableCell>
                 </TableRow>
               ))
             )}

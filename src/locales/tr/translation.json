@@ -154,8 +154,18 @@
       "title": "Alarm Geçmişi",
       "viewAll": "Tümü",
       "noAlarms": "Aktif alarm yok",
-      "loadingMore": "Yükleniyor..."
+      "loadingMore": "Yükleniyor...",
+      "selectDiagram": "Diyagram Seçin",
+      "diagramAlarms": "Diyagram Alarmları",
+      "time": "Zaman",
+      "level": "Seviye",
+      "device": "Cihaz",
+      "message": "Mesaj",
+      "noAlarmsPage": "Gösterilecek alarm bulunmuyor.",
+      "criticalAlarm": "Kritik Alarm",
+      "warning": "Uyarı"
     },
+    "alarmMessage": "{{label}} - {{paramName}} kritik seviyeye ulaştı: {{value}} {{unit}}",
     "systemStatus": {
       "title": "Sistem Durumu",
       "activeDevices": "Aktif Cihazlar",
@@ -324,7 +334,12 @@
         "Kilitli": "Kilitli",
         "Bilinmiyor": "Bilinmiyor",
         "Run": "Çalışıyor",
-        "offline": "Veri Bekleniyor"
+        "offline": "Veri Bekleniyor",
+        "alarm": "Alarm",
+        "warning": "Uyarı",
+        "normal": "Normal",
+        "pasif": "Pasif",
+        "bakımda": "Bakımda"
       },
       "liveData": "Canlı Veri",
       "static": "Statik",
@@ -377,9 +392,13 @@
       "Supply": "Besleme",
       "RH": "Bağıl Nem",
       "T_supply": "T_Besleme",
+      "Supply": "Besleme",
+      "RH": "Bağıl Nem",
+      "T_supply": "T_Besleme",
       "ΔP": "ΔP",
       "T_out": "T_Çıkış",
-      "P_out": "P_Çıkış"
+      "P_out": "P_Çıkış",
+      "durum": "Durum"
     }
   }
 }

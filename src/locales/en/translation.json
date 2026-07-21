@@ -154,8 +154,18 @@
       "title": "Alarm History",
       "viewAll": "All",
       "noAlarms": "No active alarms",
-      "loadingMore": "Loading..."
+      "loadingMore": "Loading...",
+      "selectDiagram": "Select Diagram",
+      "diagramAlarms": "Diagram Alarms",
+      "time": "Time",
+      "level": "Level",
+      "device": "Device",
+      "message": "Message",
+      "noAlarmsPage": "No alarms to display.",
+      "criticalAlarm": "Critical Alarm",
+      "warning": "Warning"
     },
+    "alarmMessage": "{{label}} - {{paramName}} reached critical level: {{value}} {{unit}}",
     "systemStatus": {
       "title": "System Status",
       "activeDevices": "Active Devices",
@@ -325,7 +335,12 @@
         "Kilitli": "Locked",
         "Bilinmiyor": "Unknown",
         "Run": "Running",
-        "offline": "Waiting for Data"
+        "offline": "Waiting for Data",
+        "alarm": "Alarm",
+        "warning": "Warning",
+        "normal": "Normal",
+        "pasif": "Passive",
+        "bakımda": "Maintenance"
       },
       "liveData": "Live Data",
       "static": "Static",
@@ -378,9 +393,13 @@
       "Supply": "Supply",
       "RH": "RH",
       "T_supply": "T_Supply",
+      "Supply": "Supply",
+      "RH": "RH",
+      "T_supply": "T_Supply",
       "ΔP": "ΔP",
       "T_out": "T_Out",
-      "P_out": "P_Out"
+      "P_out": "P_Out",
+      "durum": "Status"
     }
   }
 }

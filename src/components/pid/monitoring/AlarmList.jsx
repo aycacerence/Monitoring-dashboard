@@ -9,8 +9,26 @@ const AlarmList = ({ alarms = [], diagramId = '' }) => {
   const navigate = useNavigate();
   const [visibleCount, setVisibleCount] = useState(10);
   const scrollRef = useRef(null);
-
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const getAlarmMessage = (alarm) => {
+    if (alarm.messageData) {
+      const translatedParam = t(`pidBuilder.techKeys.${alarm.messageData.paramKey}`, alarm.messageData.paramName);
+      
+      const rawValue = alarm.messageData.value;
+      const translatedValue = typeof rawValue === 'string' 
+        ? t(`pidBuilder.propertyPanel.status.${rawValue}`, rawValue) 
+        : rawValue;
+
+      return t('pidMonitoring.alarmMessage', '{{label}} - {{paramName}} kritik seviyeye ulaştı: {{value}} {{unit}}', {
+        label: alarm.messageData.label,
+        paramName: translatedParam,
+        value: translatedValue,
+        unit: alarm.messageData.unit
+      });
+    }
+    return alarm.message;
+  };
 
   const handleScroll = useCallback(() => {
     if (scrollRef.current && !isLoadingMore) {
@@ -95,7 +113,7 @@ const AlarmList = ({ alarms = [], diagramId = '' }) => {
                 }
                 secondary={
                   <span className="text-xs text-gray-500 dark:text-slate-400 block leading-tight mt-0.5">
-                    {alarm.message}
+                    {getAlarmMessage(alarm)}
                   </span>
                 }
               />
