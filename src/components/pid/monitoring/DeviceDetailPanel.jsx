@@ -43,10 +43,11 @@ const InfoRow = ({ label, value }) => (
 );
 
 const MiniTrendGraph = React.memo(({ data }) => {
+  const { t } = useTranslation();
   if (!data || data.length < 2) {
     return (
       <Box sx={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', mt: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>Veri birikiyor...</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>{t('pidBuilder.propertyPanel.accumulating', 'Veri birikiyor...')}</Typography>
       </Box>
     );
   }
@@ -68,7 +69,7 @@ const MiniTrendGraph = React.memo(({ data }) => {
   return (
     <Box sx={{ width: '100%', mt: 1, p: 1.5, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
       <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1, fontWeight: 600, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-        Son {data.length} Veri Noktası
+        {t('pidBuilder.propertyPanel.recentDataPoints', 'Son {{count}} Veri Noktası', { count: data.length })}
       </Typography>
       <Box sx={{ width: '100%', height: '30px', position: 'relative' }}>
         <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
@@ -87,6 +88,7 @@ const MiniTrendGraph = React.memo(({ data }) => {
 });
 
 const ThresholdInfo = React.memo(({ config, liveValue }) => {
+  const { t } = useTranslation();
   if (!config || config.min === undefined || config.max === undefined) return null;
   
   const { min, max, unit } = config;
@@ -127,7 +129,7 @@ const ThresholdInfo = React.memo(({ config, liveValue }) => {
     <Box sx={{ width: '100%', mt: 1, p: 1.5, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          Normal Aralık
+          {t('pidBuilder.propertyPanel.normalRange', 'Normal Aralık')}
         </Typography>
         <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 700, fontSize: '0.7rem' }}>
           {min}{unit} - {max}{unit}
@@ -212,12 +214,12 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
   const liveUnit = latestLiveData.unit || '';
 
   const statusConfig = {
-    aktif: { text: 'Aktif', colorClass: 'text-green-600 dark:text-green-400', bgClass: 'bg-green-500' },
-    pasif: { text: 'Pasif', colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500' },
-    bakımda: { text: 'Bakımda', colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-500' },
-    alarm: { text: 'Alarm', colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500' },
-    warning: { text: 'Uyarı', colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-400' },
-    normal: { text: 'Normal', colorClass: 'text-green-600 dark:text-green-400', bgClass: 'bg-green-500' },
+    aktif: { text: t('pidBuilder.propertyPanel.status.active', 'Aktif'), colorClass: 'text-green-600 dark:text-green-400', bgClass: 'bg-green-500' },
+    pasif: { text: t('pidBuilder.propertyPanel.status.pasif', 'Pasif'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500' },
+    bakımda: { text: t('pidBuilder.propertyPanel.status.bakımda', 'Bakımda'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-500' },
+    alarm: { text: t('pidBuilder.propertyPanel.status.alarm', 'Alarm'), colorClass: 'text-red-600 dark:text-red-400', bgClass: 'bg-red-500' },
+    warning: { text: t('pidBuilder.propertyPanel.status.warning', 'Uyarı'), colorClass: 'text-orange-600 dark:text-orange-400', bgClass: 'bg-orange-400' },
+    normal: { text: t('pidBuilder.propertyPanel.status.normal', 'Normal'), colorClass: 'text-green-600 dark:text-green-400', bgClass: 'bg-green-500' },
   };
   const currentStatus = statusConfig[status] || statusConfig.normal;
 
@@ -271,7 +273,7 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
     >
       <Box sx={{ p: 2.5, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem' }}>
-          Cihaz Detayı
+          {t('pidBuilder.propertyPanel.deviceDetail', 'Cihaz Detayı')}
         </Typography>
         <IconButton onClick={handleClose} size="small" sx={{ color: 'text.secondary', '&:hover': { bgcolor: 'action.hover' } }}>
           <CloseIcon fontSize="small" />
@@ -310,22 +312,22 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
         sx={{ borderBottom: 1, borderColor: 'divider', minHeight: 40 }}
         TabIndicatorProps={{ style: { height: 3, borderRadius: '3px 3px 0 0' } }}
       >
-        <Tab label="Genel" sx={{ textTransform: 'none', fontWeight: 600, minHeight: 40 }} />
-        <Tab label="Canlı Veri" sx={{ textTransform: 'none', fontWeight: 600, minHeight: 40 }} />
+        <Tab label={t('pidBuilder.propertyPanel.general', 'Genel')} sx={{ textTransform: 'none', fontWeight: 600, minHeight: 40 }} />
+        <Tab label={t('pidBuilder.propertyPanel.liveData', 'Canlı Veri')} sx={{ textTransform: 'none', fontWeight: 600, minHeight: 40 }} />
       </Tabs>
 
       {/* Genel Sekmesi */}
       <TabPanel value={tabIndex} index={0}>
         <Box className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 shadow-sm">
           <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: 'text.primary', fontSize: '0.85rem' }}>
-            Genel Bilgiler
+            {t('pidBuilder.propertyPanel.generalInfo', 'Genel Bilgiler')}
           </Typography>
-          <InfoRow label="Cihaz Adı" value={nodeData.label || nodeData.code} />
-          <InfoRow label="Cihaz Tipi" value={nodeData.type || selectedNode.type?.toUpperCase()} />
-          <InfoRow label="Açıklama" value={nodeData.aciklama || '-'} />
+          <InfoRow label={t('pidBuilder.propertyPanel.deviceName', 'Cihaz Adı')} value={nodeData.label || nodeData.code} />
+          <InfoRow label={t('pidBuilder.propertyPanel.deviceType', 'Cihaz Tipi')} value={nodeData.type || selectedNode.type?.toUpperCase()} />
+          <InfoRow label={t('pidBuilder.propertyPanel.description', 'Açıklama')} value={nodeData.aciklama || '-'} />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1.2 }}>
             <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0, mr: 2, fontSize: '0.8rem' }}>
-              Durum
+              {t('pidBuilder.propertyPanel.statusLabel', 'Durum')}
             </Typography>
             <Box display="flex" alignItems="center" gap={1}>
               <div className={`w-2 h-2 rounded-full ${currentStatus.bgClass}`} />
@@ -339,7 +341,7 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
         {Object.keys(staticData).length > 0 && (
           <Box className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 shadow-sm">
             <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: 'text.primary', fontSize: '0.85rem' }}>
-              Teknik Detaylar
+              {t('pidBuilder.propertyPanel.technicalDetails', 'Teknik Detaylar')}
             </Typography>
             {Object.entries(staticData).map(([key, val]) => {
               if (key === 'birim' || key === 'durum') return null;
@@ -361,10 +363,10 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
 
         <Box className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 shadow-sm">
           <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, color: 'text.primary', fontSize: '0.85rem' }}>
-            Çalışma Bilgileri
+            {t('pidBuilder.propertyPanel.operationalInfo', 'Çalışma Bilgileri')}
           </Typography>
-          <InfoRow label="Çalışma Süresi" value={nodeData.calismaSuresi ? `${nodeData.calismaSuresi} Saat` : '-'} />
-          <InfoRow label="Son Bakım Tarihi" value={nodeData.sonBakimTarihi || '-'} />
+          <InfoRow label={t('pidBuilder.propertyPanel.operatingTime', 'Çalışma Süresi')} value={nodeData.calismaSuresi ? `${nodeData.calismaSuresi} ${t('pidBuilder.propertyPanel.hours', 'Saat')}` : '-'} />
+          <InfoRow label={t('pidBuilder.propertyPanel.lastMaintenanceDate', 'Son Bakım Tarihi')} value={nodeData.sonBakimTarihi || '-'} />
         </Box>
       </TabPanel>
 
