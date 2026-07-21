@@ -42,26 +42,6 @@ const MonitoringContent = () => {
     }
   }, [alarms, diagram?.id]);
 
-  // 3. Boş State (Diyagram bulunamazsa)
-  if (!diagram) {
-    return (
-      <Box className="flex flex-col items-center justify-center w-full h-screen bg-slate-50 dark:bg-slate-900">
-        <Typography variant="h5" className="mb-4 text-slate-600 dark:text-slate-300">
-          İzlenecek bir diyagram seçilmedi veya bulunamadı.
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          startIcon={<ArrowLeft size={18} />}
-          onClick={() => navigate('/pid/builder')}
-          sx={{ textTransform: 'none', px: 3, py: 1 }}
-        >
-          Düzenleyiciye Dön
-        </Button>
-      </Box>
-    );
-  }
-
   // 4. Ana Yapı
   return (
     <>
@@ -77,7 +57,7 @@ const MonitoringContent = () => {
         onToggleAutoRefresh={setAutoRefresh}
         alarmCount={alarms?.length || 0}
         lastUpdate={lastUpdate}
-        diagramName={diagram.name}
+        diagramName={diagram?.name || ''}
         diagrams={diagrams}
         activeDiagramId={activeDiagramId}
         onSwitchDiagram={switchDiagram}
@@ -86,7 +66,7 @@ const MonitoringContent = () => {
 
       {/* KPI SATIRI (Canlı değerler) */}
       <KPILiveRow 
-        kpiIds={diagram.kpiConfig || []} 
+        kpiIds={diagram?.kpiConfig || []} 
         liveData={liveData} 
       />
 
