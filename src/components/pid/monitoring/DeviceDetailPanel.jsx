@@ -182,6 +182,12 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
   };
   const currentStatus = statusConfig[status] || statusConfig.normal;
 
+  // Cihaz tipine göre başlığı belirle (Debi, Basınç vb.)
+  const paramKey = config?.isDigital ? 'durum' : (config?.main || 'deger');
+  const paramLabel = config?.isDigital 
+    ? t('pidBuilder.propertyPanel.status.title', 'DURUM')
+    : t(`pidBuilder.techKeys.${paramKey}`, paramKey.toUpperCase());
+
   const unitMap = {
     debi: 'm³/h', basinc: 'bar', farkBasinc: 'bar',
     guc: 'kW', girisGucu: 'kW', cikisGucu: 'kW', nominalGuc: 'kW',
@@ -330,8 +336,8 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
             'bg-green-500'
           }`} />
 
-          <Typography variant="overline" sx={{ color: 'text.secondary', mb: 1.5, letterSpacing: 1.5, fontWeight: 700, zIndex: 1 }}>
-            Anlık Değer
+          <Typography variant="overline" sx={{ color: 'text.secondary', mb: 1.5, letterSpacing: 1.5, fontWeight: 700, zIndex: 1, textTransform: 'uppercase' }}>
+            {paramLabel}
           </Typography>
           
           <Box display="flex" alignItems="baseline" gap={1} mb={4} sx={{ zIndex: 1 }}>

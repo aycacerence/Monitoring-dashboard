@@ -3,6 +3,7 @@ import { Handle, Position } from 'reactflow';
 import { Box, Typography, Paper } from '@mui/material';
 import { iconMap } from '../../../data/pid/iconMap';
 import { useTranslation } from 'react-i18next';
+import { DEVICE_CONFIG } from '../../../hooks/useDummySocket';
 
 const MonitoringDeviceNode = ({ id, data, selected }) => {
   const { t } = useTranslation();
@@ -18,6 +19,15 @@ const MonitoringDeviceNode = ({ id, data, selected }) => {
   };
 
   const activeStatus = statusConfig[currentStatus] || statusConfig.normal;
+
+  // Cihaz tipine göre başlığı belirle (Debi, Basınç vb.)
+  const type = data.iconKey || data.type || 'generic';
+  const config = DEVICE_CONFIG[type] || { main: 'deger', unit: '' };
+  const paramKey = config.isDigital ? 'durum' : config.main;
+  
+  const paramLabel = config.isDigital 
+    ? t('pidBuilder.propertyPanel.status.title', 'DURUM')
+    : t(`pidBuilder.techKeys.${paramKey}`, paramKey.toUpperCase());
 
   return (
     <Box 
@@ -60,20 +70,48 @@ const MonitoringDeviceNode = ({ id, data, selected }) => {
           {/* Badge Kartı */}
           <Paper
             elevation={4}
-            className={`px-3 py-1.5 rounded-lg border-2 flex flex-col items-center justify-center min-w-[85px] shadow-lg bg-white dark:bg-slate-800 ${activeStatus.borderClass}`}
+            className={`px-2 py-1 rounded-md border-[1.5px] flex flex-col min-w-[70px] max-w-[90px] shadow-sm bg-white dark:bg-slate-800 ${activeStatus.borderClass}`}
           >
-            {/* Durum (Status) */}
-            <Box display="flex" alignItems="center" gap={0.75} mb={0.5}>
-              <div className={`w-2 h-2 rounded-full ${activeStatus.bgClass} ${currentStatus === 'alarm' ? 'animate-pulse' : ''}`} />
-              <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.65rem', letterSpacing: '0.02em', textTransform: 'uppercase' }} className={activeStatus.colorClass}>
+            {/* BAŞLIK (Örn: Debi, Sıcaklık) */}
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                fontSize: '0.55rem', 
+                color: 'text.secondary', 
+                fontWeight: 700, 
+                textTransform: 'uppercase', 
+                mb: 0.5, 
+                borderBottom: '1px solid', 
+                borderColor: 'divider', 
+                pb: 0.25, 
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {paramLabel}
+            </Typography>
+
+            {/* DEĞER + BİRİM */}
+            <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0.5, mb: 0.5 }}>
+              <Typography sx={{ fontWeight: 800, fontSize: '0.9rem', lineHeight: 1, color: 'text.primary' }}>
+                {data.liveValue}
+              </Typography>
+              {data.unit && (
+                <Typography sx={{ fontSize: '0.55rem', fontWeight: 600, color: 'text.secondary' }}>
+                  {data.unit}
+                </Typography>
+              )}
+            </Box>
+
+            {/* DURUM BİLGİSİ (Normal, Alarm vs.) */}
+            <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
+              <div className={`w-1.5 h-1.5 rounded-full ${activeStatus.bgClass} ${currentStatus === 'alarm' ? 'animate-pulse' : ''}`} />
+              <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.5rem', textTransform: 'uppercase' }} className={activeStatus.colorClass}>
                 {activeStatus.text}
               </Typography>
             </Box>
-            
-            {/* Değer (Live Value) */}
-            <Typography variant="body2" sx={{ fontWeight: 'bold', fontSize: '1.15rem', lineHeight: 1 }} className="text-slate-800 dark:text-slate-100 flex items-baseline gap-1">
-              {data.liveValue} <span className="text-slate-500 text-[0.70rem] font-medium">{data.unit || ''}</span>
-            </Typography>
           </Paper>
 
           {/* Kesik Çizgi */}
