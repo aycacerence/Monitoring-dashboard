@@ -11,6 +11,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { usePID } from '../../../context/pid/PIDContext';
 import { iconMap } from '../../../data/pid/iconMap';
 import { useTranslation } from 'react-i18next';
+import { useDeviceHistory } from '../../../hooks/useDeviceHistory';
+import { DEVICE_CONFIG } from '../../../hooks/useDummySocket';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -40,6 +42,101 @@ const InfoRow = ({ label, value }) => (
   </Box>
 );
 
+const MiniTrendGraph = React.memo(({ data }) => {
+  if (!data || data.length < 2) {
+    return (
+      <Box sx={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', mt: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>Veri birikiyor...</Typography>
+      </Box>
+    );
+  }
+
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min === 0 ? 1 : max - min;
+  
+  const width = 100;
+  const height = 40;
+  
+  const points = data.map((val, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const paddedHeight = height * 0.8;
+    const y = height * 0.9 - ((val - min) / range) * paddedHeight;
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <Box sx={{ width: '100%', mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5, fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        Son {data.length} Veri Noktası
+      </Typography>
+      <Box sx={{ width: '100%', height: '40px', position: 'relative' }}>
+        <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+          <polyline
+            fill="none"
+            stroke="#10B981"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            points={points}
+          />
+        </svg>
+      </Box>
+    </Box>
+  );
+});
+
+const ThresholdInfo = React.memo(({ config, liveValue }) => {
+  if (!config || config.min === undefined || config.max === undefined) return null;
+  
+  const { min, max, unit } = config;
+  const range = max - min;
+  
+  let percentage = 0;
+  if (typeof liveValue === 'number' && !isNaN(liveValue)) {
+    percentage = Math.max(0, Math.min(100, ((liveValue - min) / range) * 100));
+  } else if (typeof liveValue === 'string') {
+    const parsed = parseFloat(liveValue);
+    if (!isNaN(parsed)) {
+      percentage = Math.max(0, Math.min(100, ((parsed - min) / range) * 100));
+    }
+  }
+
+  return (
+    <Box sx={{ width: '100%', mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Normal Aralık
+        </Typography>
+        <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 700, fontSize: '0.7rem' }}>
+          {min}{unit} - {max}{unit}
+        </Typography>
+      </Box>
+      <Box sx={{ width: '100%', height: '6px', bgcolor: 'action.hover', borderRadius: '3px', position: 'relative' }}>
+        <Box sx={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, borderRadius: '3px', overflow: 'hidden' }}>
+          <Box sx={{ width: '100%', height: '100%', bgcolor: 'success.light', opacity: 0.3 }} />
+        </Box>
+        <Box 
+          sx={{ 
+            position: 'absolute', 
+            top: '50%', 
+            left: `${percentage}%`, 
+            transform: 'translate(-50%, -50%)', 
+            width: 12, 
+            height: 12, 
+            bgcolor: 'primary.main', 
+            borderRadius: '50%',
+            border: '2px solid white',
+            boxShadow: '0 0 4px rgba(0,0,0,0.2)',
+            zIndex: 1,
+            transition: 'left 0.3s ease'
+          }} 
+        />
+      </Box>
+    </Box>
+  );
+});
+
 const DeviceDetailPanel = ({ liveData = {} }) => {
   const { t } = useTranslation();
   const { selectedNode, setSelectedNode } = usePID();
@@ -50,6 +147,12 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
       setTabIndex(1);
     }
   }, [selectedNode]);
+
+  // Canlı veri zenginleştirmeleri için history hook'u (Hook kuralları gereği erken dönüşten önce çağrılmalı)
+  const nodeId = selectedNode?.id;
+  const latestLiveData = nodeId ? (liveData[nodeId] || {}) : {};
+  const liveValue = latestLiveData.value ?? '--';
+  const historyData = useDeviceHistory(nodeId, liveValue, 30);
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -63,13 +166,10 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
 
   const nodeData = selectedNode.data || {};
   const staticData = nodeData.defaultData || {};
+  const deviceType = nodeData.iconKey || nodeData.type;
+  const config = DEVICE_CONFIG[deviceType];
 
-  // Anlık veriyi selectedNode'dan değil, hook'tan gelen canlı 'liveData' objesinden okuyoruz
-  const latestLiveData = liveData[selectedNode.id] || {};
-  
-  // Eğer liveData'dan güncel değer gelmiyorsa node'daki son bilinen duruma dön, o da yoksa normal say
   const status = latestLiveData.status || nodeData.durum?.toLowerCase() || 'normal';
-  const liveValue = latestLiveData.value ?? '--';
   const liveUnit = latestLiveData.unit || '';
 
   const statusConfig = {
@@ -254,6 +354,16 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
             </Typography>
           </Box>
         </Box>
+
+        {/* Yeni Eklenen Canlı Veri Zenginleştirmeleri */}
+        {!config?.isDigital && <MiniTrendGraph data={historyData} />}
+        <ThresholdInfo config={config} liveValue={liveValue} />
+        
+        {/* TODO: Son durum değişikliği bilgisi state geçmişinde tutuluyorsa burada göster.
+            Örnek: "Son durum değişikliği: 14:32 (Normal -> Bakımda)"
+            Şu anki backend'de bu bilgi yok. İleride eklendiğinde aktif edilebilir.
+        */}
+
       </TabPanel>
     </Drawer>
   );

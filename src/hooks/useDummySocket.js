@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getKpiById } from '../config/kpiDashboardConfig';
 
 // Cihaz kütüphanesindeki iconKey'lere uygun endüstriyel konfigürasyon
-const DEVICE_CONFIG = {
+export const DEVICE_CONFIG = {
   // --- Sürekli (Continuous) Değer Üreten Cihazlar ---
   ahu: { main: 'verim', unit: '%', min: 60, max: 100 },
   hru: { main: 'verim', unit: '%', min: 60, max: 100 },
