@@ -298,9 +298,9 @@ export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true) => {
           });
         }
 
-        // Yeni alarmları mevcut alarmlara ekle ve sadece son 20 tanesini tut
+        // Yeni alarmları mevcut alarmlara ekle
         if (newAlarms.length > 0) {
-          setAlarms(prev => [...newAlarms, ...prev].slice(0, 20));
+          setAlarms(prev => [...newAlarms, ...prev].slice(0, 500));
         }
 
         return newData;
