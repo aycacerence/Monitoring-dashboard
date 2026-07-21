@@ -32,8 +32,8 @@ const GenericDeviceNode = ({ id, data, selected }) => {
     : t(`pidBuilder.techKeys.${paramKey}`, paramKey.toUpperCase());
 
   const hasSecondary = !!config.secondary;
-  const paramLabel1 = config.paramLabel1 || paramLabel;
-  const paramLabel2 = config.paramLabel2 || 'Değer';
+  const paramLabel1 = config.paramLabel1 ? t(`pidBuilder.techKeys.${config.paramLabel1}`, config.paramLabel1) : paramLabel;
+  const paramLabel2 = config.paramLabel2 ? t(`pidBuilder.techKeys.${config.paramLabel2}`, config.paramLabel2) : t('pidBuilder.techKeys.deger', 'Değer');
   
   // Placeholder değerler
   const placeholderValue = config.isDigital ? '---' : '0.0';
@@ -110,7 +110,7 @@ const GenericDeviceNode = ({ id, data, selected }) => {
         <Box display="flex" alignItems="center" gap={0.75} mt={0.5}>
           <div className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600" />
           <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', textTransform: 'capitalize' }} className="text-slate-400 dark:text-slate-500">
-            {t('pidBuilder.status.offline', 'Veri Bekleniyor')}
+            {t('pidBuilder.propertyPanel.status.offline', 'Veri Bekleniyor')}
           </Typography>
         </Box>
       </Box>

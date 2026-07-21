@@ -2,8 +2,10 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Button, CircularProgress } from '@mui/material';
 import { AlertTriangle, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const AlarmList = ({ alarms = [], diagramId = '' }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [visibleCount, setVisibleCount] = useState(10);
   const scrollRef = useRef(null);
@@ -30,7 +32,7 @@ const AlarmList = ({ alarms = [], diagramId = '' }) => {
     <Box className="flex-1 flex flex-col min-h-0">
       <Box className="flex items-center justify-between mb-2 px-1 shrink-0">
         <Typography variant="subtitle2" className="font-semibold text-slate-800 dark:text-slate-100">
-          Alarm Geçmişi ({alarms.length})
+          {t('pidMonitoring.alarmHistory.title', 'Alarm Geçmişi')} ({alarms.length})
         </Typography>
         <Button
           size="small"
@@ -38,14 +40,14 @@ const AlarmList = ({ alarms = [], diagramId = '' }) => {
           endIcon={<ArrowRight size={12} />}
           sx={{ textTransform: 'none', fontSize: '0.7rem', p: 0, minWidth: 'auto', fontWeight: 700 }}
         >
-          Tümü
+          {t('pidMonitoring.alarmHistory.viewAll', 'Tümü')}
         </Button>
       </Box>
 
       {alarms.length === 0 ? (
         <Box className="flex flex-col items-center justify-center py-6 text-slate-400 dark:text-slate-500">
           <CheckCircle className="w-8 h-8 mb-2 text-green-500 opacity-70" />
-          <Typography variant="body2">Aktif alarm yok</Typography>
+          <Typography variant="body2">{t('pidMonitoring.alarmHistory.noAlarms', 'Aktif alarm yok')}</Typography>
         </Box>
       ) : (
         <Box 
@@ -104,7 +106,7 @@ const AlarmList = ({ alarms = [], diagramId = '' }) => {
             <Box className="flex items-center justify-center py-3 text-slate-500">
               <CircularProgress size={14} thickness={5} color="inherit" />
               <Typography variant="caption" className="ml-2 font-medium">
-                Yükleniyor...
+                {t('pidMonitoring.alarmHistory.loadingMore', 'Yükleniyor...')}
               </Typography>
             </Box>
           )}

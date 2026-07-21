@@ -2,12 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography } from '@mui/material';
 import * as LucideIcons from 'lucide-react';
 import { getKpiById } from '../../../config/kpiDashboardConfig';
+import { useTranslation } from 'react-i18next';
 
 const KPILiveCard = ({ kpiId, liveData }) => {
+  const { i18n } = useTranslation();
   const kpi = getKpiById(kpiId);
   const data = liveData?.[kpiId];
 
   if (!kpi || !data) return null;
+
+  const kpiLabel = i18n.language === 'en' ? (kpi.labelEN || kpi.labelTR) : (kpi.labelTR || kpi.labelEN);
 
   const IconComponent = LucideIcons[kpi.icon] || LucideIcons.Activity;
 
@@ -31,9 +35,9 @@ const KPILiveCard = ({ kpiId, liveData }) => {
         <Typography 
           variant="caption" 
           className="font-semibold text-slate-500 dark:text-slate-400 line-clamp-1 mr-2" 
-          title={kpi.labelTR}
+          title={kpiLabel}
         >
-          {kpi.labelTR}
+          {kpiLabel}
         </Typography>
         <Box sx={{ color: kpi.iconColor || 'primary.main', display: 'flex', opacity: 0.9 }}>
           <IconComponent size={18} />

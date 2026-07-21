@@ -149,6 +149,24 @@
     },
     "editModePreviewDisabled": "Düzenleme modunda önizleme devre dışı"
   },
+  "pidMonitoring": {
+    "alarmHistory": {
+      "title": "Alarm Geçmişi",
+      "viewAll": "Tümü",
+      "noAlarms": "Aktif alarm yok",
+      "loadingMore": "Yükleniyor..."
+    },
+    "systemStatus": {
+      "title": "Sistem Durumu",
+      "activeDevices": "Aktif Cihazlar",
+      "alarms": "Alarmlar",
+      "warnings": "Uyarılar",
+      "maintenance": "Bakım Gereken"
+    },
+    "activeProcess": "Aktif Proses:",
+    "systemOnline": "Sistem Çevrimiçi",
+    "watching": "İZLENİYOR"
+  },
   "pidBuilder": {
     "saveModal": {
       "title": "Diyagramı Kaydet ve Dashboard'ı Yapılandır",
@@ -305,7 +323,8 @@
         "Hazır": "Hazır",
         "Kilitli": "Kilitli",
         "Bilinmiyor": "Bilinmiyor",
-        "Run": "Çalışıyor"
+        "Run": "Çalışıyor",
+        "offline": "Veri Bekleniyor"
       },
       "liveData": "Canlı Veri",
       "static": "Statik",
@@ -353,7 +372,14 @@
       "cpuKullanimi": "CPU Kullanımı",
       "parlaklik": "Parlaklık",
       "setDegeri": "Set Değeri",
-      "hiz": "Hız"
+      "hiz": "Hız",
+      "deger": "Değer",
+      "Supply": "Besleme",
+      "RH": "Bağıl Nem",
+      "T_supply": "T_Besleme",
+      "ΔP": "ΔP",
+      "T_out": "T_Çıkış",
+      "P_out": "P_Çıkış"
     }
   }
 }

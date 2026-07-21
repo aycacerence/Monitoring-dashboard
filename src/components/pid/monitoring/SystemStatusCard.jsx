@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, Typography, Box, Divider } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
+  const { t } = useTranslation();
   const { totalNodes, activeCount, alarmCount, warningCount, maintenanceCount } = useMemo(() => {
     let total = nodes.length;
     let active = 0;
@@ -61,7 +63,7 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
             }}
           />
           <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-            Sistem Durumu
+            {t('pidMonitoring.systemStatus.title', 'Sistem Durumu')}
           </Typography>
         </Box>
         
@@ -70,7 +72,7 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
         {/* İstatistik Satırları */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Typography variant="caption" color="text.secondary">
-            Aktif Cihazlar
+            {t('pidMonitoring.systemStatus.activeDevices', 'Aktif Cihazlar')}
           </Typography>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
             {activeCount} / {totalNodes}
@@ -79,7 +81,7 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Typography variant="caption" color="text.secondary">
-            Alarmlar
+            {t('pidMonitoring.systemStatus.alarms', 'Alarmlar')}
           </Typography>
           <Typography variant="subtitle1" sx={{ color: 'error.main', fontWeight: 'bold' }}>
             {alarmCount}
@@ -88,7 +90,7 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Typography variant="caption" color="text.secondary">
-            Uyarılar
+            {t('pidMonitoring.systemStatus.warnings', 'Uyarılar')}
           </Typography>
           <Typography variant="subtitle1" sx={{ color: 'warning.main', fontWeight: 'bold' }}>
             {warningCount}
@@ -97,7 +99,7 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="caption" color="text.secondary">
-            Bakım Gereken
+            {t('pidMonitoring.systemStatus.maintenance', 'Bakım Gereken')}
           </Typography>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 'bold' }}>
             {maintenanceCount}

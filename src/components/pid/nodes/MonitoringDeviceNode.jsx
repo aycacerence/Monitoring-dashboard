@@ -34,8 +34,8 @@ const MonitoringDeviceNode = ({ id, data }) => {
     : t(`pidBuilder.techKeys.${paramKey}`, paramKey.toUpperCase());
 
   const hasSecondary = data.secondaryValue !== undefined && data.secondaryValue !== null;
-  const paramLabel1 = config.paramLabel1 || paramLabel;
-  const paramLabel2 = config.paramLabel2 || 'Değer';
+  const paramLabel1 = config.paramLabel1 ? t(`pidBuilder.techKeys.${config.paramLabel1}`, config.paramLabel1) : paramLabel;
+  const paramLabel2 = config.paramLabel2 ? t(`pidBuilder.techKeys.${config.paramLabel2}`, config.paramLabel2) : t('pidBuilder.techKeys.deger', 'Değer');
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -63,7 +63,7 @@ const MonitoringDeviceNode = ({ id, data }) => {
           }}
           className="dark:border-slate-800"
         >
-          <Eye size={12} strokeWidth={3} /> İZLENİYOR
+          <Eye size={12} strokeWidth={3} /> {t('pidMonitoring.watching', 'İZLENİYOR')}
         </Box>
       )}
 
