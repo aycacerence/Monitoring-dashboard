@@ -92,15 +92,36 @@ const ThresholdInfo = React.memo(({ config, liveValue }) => {
   const { min, max, unit } = config;
   const range = max - min;
   
-  let percentage = 0;
-  if (typeof liveValue === 'number' && !isNaN(liveValue)) {
-    percentage = Math.max(0, Math.min(100, ((liveValue - min) / range) * 100));
-  } else if (typeof liveValue === 'string') {
-    const parsed = parseFloat(liveValue);
-    if (!isNaN(parsed)) {
-      percentage = Math.max(0, Math.min(100, ((parsed - min) / range) * 100));
-    }
+  // Barın görsel başlangıç ve bitiş noktalarını belirleyelim
+  let visualMin = 0;
+  let visualMax = max + (range * 0.2); // max'ın biraz ötesine gitsin
+
+  if (unit === '%') {
+    visualMin = 0;
+    visualMax = 100;
+  } else if (min < 0) {
+    visualMin = min - (range * 0.2);
+  } else if (min > 0 && min - (range * 0.5) > 0) {
+    visualMin = Math.max(0, min - (range * 0.5));
   }
+
+  const visualRange = visualMax - visualMin === 0 ? 1 : visualMax - visualMin;
+
+  // Normal aralığın (yeşil bölge) yüzdelik pozisyonları
+  const normalLeftPct = Math.max(0, Math.min(100, ((min - visualMin) / visualRange) * 100));
+  const normalRightPct = Math.max(0, Math.min(100, ((max - visualMin) / visualRange) * 100));
+  const normalWidthPct = normalRightPct - normalLeftPct;
+
+  // Anlık değerin (noktanın) pozisyonu
+  let val = 0;
+  if (typeof liveValue === 'number' && !isNaN(liveValue)) {
+    val = liveValue;
+  } else if (typeof liveValue === 'string') {
+    val = parseFloat(liveValue) || 0;
+  }
+  
+  const dotPercentage = Math.max(0, Math.min(100, ((val - visualMin) / visualRange) * 100));
+  const isOutOfRange = val < min || val > max;
 
   return (
     <Box sx={{ width: '100%', mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
@@ -112,26 +133,43 @@ const ThresholdInfo = React.memo(({ config, liveValue }) => {
           {min}{unit} - {max}{unit}
         </Typography>
       </Box>
-      <Box sx={{ width: '100%', height: '6px', bgcolor: 'action.hover', borderRadius: '3px', position: 'relative' }}>
-        <Box sx={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, borderRadius: '3px', overflow: 'hidden' }}>
-          <Box sx={{ width: '100%', height: '100%', bgcolor: 'success.light', opacity: 0.3 }} />
-        </Box>
+      <Box sx={{ width: '100%', height: '6px', bgcolor: 'action.hover', borderRadius: '3px', position: 'relative', overflow: 'visible' }}>
+        
+        {/* Yeşil (Normal) Bölge İndikatörü */}
+        <Box 
+          sx={{ 
+            position: 'absolute', 
+            top: 0, 
+            bottom: 0, 
+            left: `${normalLeftPct}%`, 
+            width: `${normalWidthPct}%`, 
+            bgcolor: 'success.main', 
+            opacity: 0.35,
+            borderRadius: '3px' 
+          }} 
+        />
+        
+        {/* Değer Noktası */}
         <Box 
           sx={{ 
             position: 'absolute', 
             top: '50%', 
-            left: `${percentage}%`, 
+            left: `${dotPercentage}%`, 
             transform: 'translate(-50%, -50%)', 
             width: 12, 
             height: 12, 
-            bgcolor: 'primary.main', 
+            bgcolor: isOutOfRange ? 'error.main' : 'primary.main', 
             borderRadius: '50%',
             border: '2px solid white',
             boxShadow: '0 0 4px rgba(0,0,0,0.2)',
-            zIndex: 1,
-            transition: 'left 0.3s ease'
+            zIndex: 2,
+            transition: 'left 0.3s ease, background-color 0.3s ease'
           }} 
         />
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+        <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.55rem', fontWeight: 600 }}>{visualMin === 0 ? 0 : visualMin.toFixed(0)}</Typography>
+        <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.55rem', fontWeight: 600 }}>{visualMax.toFixed(0)}</Typography>
       </Box>
     </Box>
   );
