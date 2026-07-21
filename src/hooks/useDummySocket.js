@@ -5,10 +5,10 @@ import { getKpiById } from '../config/kpiDashboardConfig';
 // Cihaz kütüphanesindeki iconKey'lere uygun endüstriyel konfigürasyon
 export const DEVICE_CONFIG = {
   // --- Sürekli (Continuous) Değer Üreten Cihazlar ---
-  ahu: { main: 'verim', unit: '%', min: 60, max: 100 },
-  hru: { main: 'verim', unit: '%', min: 60, max: 100 },
-  heat_exchanger: { main: 'verim', unit: '%', min: 60, max: 100 },
-  collector: { main: 'verim', unit: '%', min: 60, max: 100 },
+  ahu: { main: 'sicaklik', unit: '°C', min: 18, max: 30, secondary: 'nem', secondaryUnit: '%', secondaryMin: 30, secondaryMax: 60, paramLabel1: 'Supply', paramLabel2: 'RH' },
+  hru: { main: 'sicaklik', unit: '°C', min: 18, max: 30, secondary: 'farkBasinc', secondaryUnit: 'Pa', secondaryMin: 100, secondaryMax: 250, paramLabel1: 'T_supply', paramLabel2: 'ΔP' },
+  heat_exchanger: { main: 'sicaklik', unit: '°C', min: 40, max: 90, secondary: 'basinc', secondaryUnit: 'bar', secondaryMin: 1, secondaryMax: 5, paramLabel1: 'T_out', paramLabel2: 'P_out' },
+  collector: { main: 'basinc', unit: 'bar', min: 1, max: 10 },
   
   fan: { main: 'devir', unit: 'rpm', min: 800, max: 1600 },
   motor: { main: 'devir', unit: 'rpm', min: 800, max: 1600 },
@@ -92,6 +92,14 @@ export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true) => {
           status: 'normal',
           details: { [config.main]: parseFloat(startValue.toFixed(1)) }
         };
+
+        if (config.secondary) {
+          const sRange = config.secondaryMax - config.secondaryMin;
+          const sStartValue = config.secondaryMin + (sRange * 0.5) + (Math.random() * sRange * 0.2);
+          initialData[node.id].secondaryValue = parseFloat(sStartValue.toFixed(1));
+          initialData[node.id].secondaryUnit = config.secondaryUnit;
+          initialData[node.id].details[config.secondary] = initialData[node.id].secondaryValue;
+        }
       }
       
       prevStatusRef.current[node.id] = 'normal';
@@ -203,6 +211,22 @@ export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true) => {
               status: newStatus,
               details: { [config.main]: newValue }
             };
+
+            // Secondary value random walk
+            if (config.secondary) {
+              const sRange = config.secondaryMax - config.secondaryMin;
+              const sCurrentVal = currentData.secondaryValue !== undefined ? parseFloat(currentData.secondaryValue) : config.secondaryMin + sRange * 0.5;
+              const sMaxChange = sRange * 0.05;
+              let sStep = (Math.random() * sMaxChange * 2) - sMaxChange;
+              
+              if (sCurrentVal > config.secondaryMax - (sRange * 0.1)) sStep -= sMaxChange * 0.5;
+              else if (sCurrentVal < config.secondaryMin + (sRange * 0.1)) sStep += sMaxChange * 0.5;
+              
+              let sNewValue = parseFloat((sCurrentVal + sStep).toFixed(1));
+              newData[node.id].secondaryValue = sNewValue;
+              newData[node.id].secondaryUnit = config.secondaryUnit;
+              newData[node.id].details[config.secondary] = sNewValue;
+            }
           }
 
           // Akıllı Alarm Üretimi (Debounce/Throttle mantığı)

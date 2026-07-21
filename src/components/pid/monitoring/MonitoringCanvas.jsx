@@ -16,6 +16,8 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         ...n.data,
         liveValue: liveData[n.id]?.value ?? null,
         unit: liveData[n.id]?.unit ?? '',
+        secondaryValue: liveData[n.id]?.secondaryValue ?? null,
+        secondaryUnit: liveData[n.id]?.secondaryUnit ?? '',
         status: liveData[n.id]?.status ?? 'normal'
       }
     }));

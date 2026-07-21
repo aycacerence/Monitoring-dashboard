@@ -20,7 +20,6 @@ const MonitoringDeviceNode = ({ id, data, selected }) => {
 
   const activeStatus = statusConfig[currentStatus] || statusConfig.normal;
 
-  // Cihaz tipine göre başlığı belirle (Debi, Basınç vb.)
   const type = data.iconKey || data.type || 'generic';
   const config = DEVICE_CONFIG[type] || { main: 'deger', unit: '' };
   const paramKey = config.isDigital ? 'durum' : config.main;
@@ -29,134 +28,88 @@ const MonitoringDeviceNode = ({ id, data, selected }) => {
     ? t('pidBuilder.propertyPanel.status.title', 'DURUM')
     : t(`pidBuilder.techKeys.${paramKey}`, paramKey.toUpperCase());
 
+  const hasSecondary = data.secondaryValue !== undefined && data.secondaryValue !== null;
+  const paramLabel1 = config.paramLabel1 || paramLabel;
+  const paramLabel2 = config.paramLabel2 || 'Değer';
+
   return (
     <Box 
-      className="bg-white dark:bg-slate-800 rounded-lg"
+      className="bg-white dark:bg-slate-800 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-2 border-slate-200 dark:border-slate-700"
       sx={{ 
-        width: 100, 
-        height: 85, 
+        width: 150, 
+        height: 'auto', 
+        p: 1.5,
         display: 'flex', 
         flexDirection: 'column', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        gap: 1,
-        position: 'relative'
+        position: 'relative',
+        transition: 'transform 0.2s',
+        '&:hover': { transform: 'translateY(-2px)' }
       }}
     >
-      {/* 
-        React Flow'un fitView hesaplamasında bu node'un bounding box'ını yukarı doğru 
-        genişletmek için görünmez bir blok ekliyoruz. Böylece absolute badge'ler 
-        hesaplamaya dahil olur ve ekranın üstünden kesilmez.
-      */}
+      <Handle type="target" position={Position.Left} style={{ opacity: 0, pointerEvents: 'none', left: -10, top: '50%' }} />
+      
+      {/* Başlık ve Durum */}
+      <Box sx={{ mb: 1, display: 'flex', flexDirection: 'column' }}>
+        <Typography sx={{ fontWeight: 800, fontSize: '0.85rem', color: 'text.primary', lineHeight: 1.2 }}>
+          {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
+        </Typography>
+        {data.code && String(data.code).toLowerCase() !== String(data.label).toLowerCase() && (
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.65rem' }}>
+            {data.code}
+          </Typography>
+        )}
+        <Box display="flex" alignItems="center" gap={0.75} mt={0.5}>
+          <div className={`w-2 h-2 rounded-full ${activeStatus.bgClass} ${currentStatus === 'alarm' ? 'animate-pulse' : ''}`} />
+          <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', textTransform: 'capitalize' }} className={activeStatus.colorClass}>
+            {activeStatus.text}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* İkon */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 1.5 }}>
+        <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="h-16 object-contain drop-shadow-md" />
+      </Box>
+
+      {/* Değer Alanı */}
       {(data.liveValue !== undefined && data.liveValue !== null && data.liveValue !== '') && (
-        <div style={{ width: '100%', height: '90px', marginTop: '-90px', pointerEvents: 'none' }} />
-      )}
-
-      {/* CANLI VERİ BADGE KUTUSU (Oklu Callout) */}
-      {(data.liveValue !== undefined && data.liveValue !== null && data.liveValue !== '') && (
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 50,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            pointerEvents: 'none' // Tıklamayı engellememesi için
-          }}
-        >
-          {/* Badge Kartı */}
-          <Paper
-            elevation={4}
-            className={`px-2 py-1 rounded-md border-[1.5px] flex flex-col w-[85px] shadow-sm bg-white dark:bg-slate-800 ${activeStatus.borderClass}`}
-          >
-            {/* BAŞLIK (Örn: Debi, Sıcaklık) */}
-            <Typography 
-              variant="caption" 
-              sx={{ 
-                fontSize: '0.55rem', 
-                color: 'text.secondary', 
-                fontWeight: 700, 
-                textTransform: 'uppercase', 
-                mb: 0.5, 
-                borderBottom: '1px solid', 
-                borderColor: 'divider', 
-                pb: 0.25, 
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
-            >
-              {paramLabel}
-            </Typography>
-
-            {/* DEĞER + BİRİM */}
-            <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0.5, mb: 0.5 }}>
-              <Typography sx={{ fontWeight: 800, fontSize: '0.9rem', lineHeight: 1, color: 'text.primary' }}>
-                {data.liveValue}
-              </Typography>
-              {data.unit && (
-                <Typography sx={{ fontSize: '0.55rem', fontWeight: 600, color: 'text.secondary' }}>
-                  {data.unit}
-                </Typography>
-              )}
-            </Box>
-
-            {/* DURUM BİLGİSİ (Normal, Alarm vs.) */}
-            <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
-              <div className={`w-1.5 h-1.5 rounded-full ${activeStatus.bgClass} ${currentStatus === 'alarm' ? 'animate-pulse' : ''}`} />
-              <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.5rem', textTransform: 'uppercase' }} className={activeStatus.colorClass}>
-                {activeStatus.text}
-              </Typography>
-            </Box>
-          </Paper>
-
-          {/* Kesik Çizgi */}
-          <div className="h-6 border-l-[2.5px] border-dashed border-slate-400 dark:border-slate-500" />
+        <Box sx={{ display: 'flex', borderTop: '1px solid', borderColor: 'divider', pt: 1.5, mt: 'auto' }}>
           
-          {/* Cihaza Değen Nokta */}
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-500 dark:bg-slate-400" style={{ marginTop: '-2px' }} />
+          {hasSecondary ? (
+            <>
+              {/* Sol Değer */}
+              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pr: 1, borderRight: '1px solid', borderColor: 'divider' }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                  {paramLabel1}
+                </Typography>
+                <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                  {data.liveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
+                </Typography>
+              </Box>
+              {/* Sağ Değer */}
+              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pl: 1 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                  {paramLabel2}
+                </Typography>
+                <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                  {data.secondaryValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.secondaryUnit || ''}</span>
+                </Typography>
+              </Box>
+            </>
+          ) : (
+            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                {paramLabel}
+              </Typography>
+              <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                {data.liveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
+              </Typography>
+            </Box>
+          )}
         </Box>
       )}
 
-      {/* --- CİHAZIN KENDİSİ (Sadece Görsel) --- */}
-      {/* Edge'lerin (boruların) çizilebilmesi için Handle'lar zorunludur. Görünmez yapıldı. */}
-      <Handle 
-        type="target" 
-        position={Position.Left} 
-        style={{ opacity: 0, pointerEvents: 'none', left: -20 }} 
-      />
-      
-      <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-10 h-10 object-contain" />
-      
-      <Typography 
-        variant="caption" 
-        sx={{ 
-          textAlign: 'center', 
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          fontSize: '0.75rem',
-          lineHeight: 1.2,
-          fontWeight: 'medium',
-          textTransform: 'uppercase',
-          px: 1
-        }}
-        className="text-gray-700 dark:text-slate-200"
-      >
-        {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
-      </Typography>
-
-      <Handle 
-        type="source" 
-        position={Position.Right} 
-        style={{ opacity: 0, pointerEvents: 'none', right: -20 }} 
-      />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0, pointerEvents: 'none', right: -10, top: '50%' }} />
     </Box>
   );
 };

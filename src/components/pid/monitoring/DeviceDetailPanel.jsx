@@ -186,10 +186,11 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
     }
   }, [selectedNode]);
 
-  // Canlı veri zenginleştirmeleri için history hook'u (Hook kuralları gereği erken dönüşten önce çağrılmalı)
   const nodeId = selectedNode?.id;
   const latestLiveData = nodeId ? (liveData[nodeId] || {}) : {};
   const liveValue = latestLiveData.value ?? '--';
+  const secondaryValue = latestLiveData.secondaryValue;
+  const secondaryUnit = latestLiveData.secondaryUnit || '';
   const historyData = useDeviceHistory(nodeId, liveValue, 30);
 
   const handleTabChange = (event, newValue) => {
@@ -224,7 +225,11 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
   const paramKey = config?.isDigital ? 'durum' : (config?.main || 'deger');
   const paramLabel = config?.isDigital 
     ? t('pidBuilder.propertyPanel.status.title', 'DURUM')
-    : t(`pidBuilder.techKeys.${paramKey}`, paramKey.toUpperCase());
+    : t(`pidBuilder.techKeys.${paramKey}`, config?.paramLabel1 || paramKey.toUpperCase());
+
+  const paramLabel2 = config?.secondary
+    ? t(`pidBuilder.techKeys.${config.secondary}`, config?.paramLabel2 || config.secondary.toUpperCase())
+    : null;
 
   const unitMap = {
     debi: 'm³/h', basinc: 'bar', farkBasinc: 'bar',
@@ -374,17 +379,38 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
             'bg-green-500'
           }`} />
 
-          <Typography variant="overline" sx={{ color: 'text.secondary', mb: 1.5, letterSpacing: 1.5, fontWeight: 700, zIndex: 1, textTransform: 'uppercase' }}>
-            {paramLabel}
-          </Typography>
-          
-          <Box display="flex" alignItems="baseline" gap={1} mb={4} sx={{ zIndex: 1 }}>
-            <Typography variant="h1" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: '3.5rem', lineHeight: 1 }}>
-              {liveValue}
-            </Typography>
-            <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-              {liveUnit}
-            </Typography>
+          <Box sx={{ display: 'flex', width: '100%', gap: 2, zIndex: 1, mb: 4 }}>
+            {/* Sol / Ana Değer */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: secondaryValue !== undefined ? '1px solid' : 'none', borderColor: 'divider' }}>
+              <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.5, letterSpacing: 1.5, fontWeight: 700, textTransform: 'uppercase' }}>
+                {paramLabel}
+              </Typography>
+              <Box display="flex" alignItems="baseline" gap={1}>
+                <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: secondaryValue !== undefined ? '2.5rem' : '3.5rem', lineHeight: 1 }}>
+                  {liveValue}
+                </Typography>
+                <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                  {liveUnit}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Sağ / İkincil Değer */}
+            {secondaryValue !== undefined && (
+              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.5, letterSpacing: 1.5, fontWeight: 700, textTransform: 'uppercase' }}>
+                  {paramLabel2}
+                </Typography>
+                <Box display="flex" alignItems="baseline" gap={1}>
+                  <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: '2.5rem', lineHeight: 1 }}>
+                    {secondaryValue}
+                  </Typography>
+                  <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                    {secondaryUnit}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
           </Box>
 
           <Box sx={{ zIndex: 1 }} className={`px-5 py-2 rounded-full flex items-center gap-2.5 transition-all ${
