@@ -16,7 +16,7 @@ import DeviceDetailPanel from '../../components/pid/monitoring/DeviceDetailPanel
 
 const MonitoringContent = () => {
   const navigate = useNavigate();
-  const { diagrams, activeDiagramId, nodes, edges } = usePID();
+  const { diagrams, activeDiagramId, nodes, edges, switchDiagram } = usePID();
   
   const [autoRefresh, setAutoRefresh] = useState(true);
 
@@ -56,6 +56,9 @@ const MonitoringContent = () => {
         alarmCount={alarms?.length || 0}
         lastUpdate={lastUpdate}
         diagramName={diagram.name}
+        diagrams={diagrams}
+        activeDiagramId={activeDiagramId}
+        onSwitchDiagram={switchDiagram}
         onBackToBuilder={() => navigate('/pid/builder')}
       />
 

@@ -49,6 +49,17 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
     };
   }, [reactFlowInstance]);
 
+  // Diyagram (nodes) değiştiğinde (örn: diyagramlar arası geçiş yapıldığında) ortala
+  useEffect(() => {
+    if (reactFlowInstance && nodes.length > 0) {
+      // Çizimin bitmesini beklemek için küçük bir gecikme
+      const timeoutId = setTimeout(() => {
+        reactFlowInstance.fitView({ duration: 600, padding: 0.1 });
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [reactFlowInstance, nodes]);
+
   return (
     <div ref={wrapperRef} style={{ width: '100%', height: '100%' }}>
       <ReactFlow
