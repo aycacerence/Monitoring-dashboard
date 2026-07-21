@@ -162,7 +162,14 @@ function AlarmsContent() {
                     )}
                   </TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>{alarm.deviceLabel}</TableCell>
-                  <TableCell>{getAlarmMessage(alarm)}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {getAlarmMessage(alarm)}
+                      {alarm.count > 1 && (
+                        <Chip label={`×${alarm.count}`} size="small" sx={{ height: '20px', fontSize: '0.7rem', fontWeight: 'bold' }} />
+                      )}
+                    </Box>
+                  </TableCell>
                 </TableRow>
               ))
             )}

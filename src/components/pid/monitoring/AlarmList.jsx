@@ -112,8 +112,13 @@ const AlarmList = ({ alarms = [], diagramId = '' }) => {
                   </div>
                 }
                 secondary={
-                  <span className="text-xs text-gray-500 dark:text-slate-400 block leading-tight mt-0.5">
-                    {getAlarmMessage(alarm)}
+                  <span className="text-xs text-gray-500 dark:text-slate-400 flex items-center leading-tight mt-0.5">
+                    <span className="block">{getAlarmMessage(alarm)}</span>
+                    {alarm.count > 1 && (
+                      <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 shadow-sm border border-slate-300 dark:border-slate-600">
+                        ×{alarm.count}
+                      </span>
+                    )}
                   </span>
                 }
               />

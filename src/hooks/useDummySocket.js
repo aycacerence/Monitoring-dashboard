@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getKpiById } from '../config/kpiDashboardConfig';
+import { mergeOrAppendAlarm } from '../utils/alarmDeduplication';
 
 // Cihaz kütüphanesindeki iconKey'lere uygun endüstriyel konfigürasyon
 export const DEVICE_CONFIG = {
@@ -325,7 +326,13 @@ export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true, diag
 
         // Yeni alarmları mevcut alarmlara ekle
         if (newAlarms.length > 0) {
-          setAlarms(prev => [...newAlarms, ...prev].slice(0, 500));
+          setAlarms(prev => {
+            let nextAlarms = [...prev];
+            newAlarms.forEach(alarm => {
+              nextAlarms = mergeOrAppendAlarm(nextAlarms, alarm);
+            });
+            return nextAlarms.slice(0, 500);
+          });
         }
 
         return newData;
