@@ -4,6 +4,7 @@ import { Box, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { iconMap } from '../../../data/pid/iconMap';
 import { useTranslation } from 'react-i18next';
+import { DEVICE_CONFIG } from '../../../hooks/useDummySocket';
 
 const GenericDeviceNode = ({ id, data, selected }) => {
   const { t } = useTranslation();
@@ -22,18 +23,34 @@ const GenericDeviceNode = ({ id, data, selected }) => {
     }
   };
 
+  const type = data.iconKey || data.type || 'generic';
+  const config = DEVICE_CONFIG[type] || { main: 'deger', unit: '' };
+  const paramKey = config.isDigital ? 'durum' : config.main;
+  
+  const paramLabel = config.isDigital 
+    ? t('pidBuilder.propertyPanel.status.title', 'DURUM')
+    : t(`pidBuilder.techKeys.${paramKey}`, paramKey.toUpperCase());
+
+  const hasSecondary = !!config.secondary;
+  const paramLabel1 = config.paramLabel1 || paramLabel;
+  const paramLabel2 = config.paramLabel2 || 'Değer';
+  
+  // Placeholder değerler
+  const placeholderValue = config.isDigital ? '---' : '0.0';
+  const placeholderSecondary = '0.0';
+
   return (
     <Box 
-      className={selected ? 'ring-2 ring-blue-500 rounded-lg bg-white dark:bg-slate-800' : 'bg-white dark:bg-slate-800'}
+      className={`bg-white dark:bg-slate-800 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-2 ${selected ? 'border-blue-500' : 'border-slate-200 dark:border-slate-700'}`}
       sx={{ 
-        width: 100, 
-        height: 85, 
+        width: 150, 
+        height: 'auto', 
+        p: 1.5,
         display: 'flex', 
         flexDirection: 'column', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        gap: 1,
-        position: 'relative'
+        position: 'relative',
+        transition: 'transform 0.2s',
+        '&:hover': { transform: 'translateY(-2px)' }
       }}
     >
       {selected && (
@@ -57,7 +74,8 @@ const GenericDeviceNode = ({ id, data, selected }) => {
           <CloseIcon sx={{ fontSize: 16 }} />
         </IconButton>
       )}
-      
+
+      {/* Target Handle */}
       <Handle 
         type="target" 
         position={Position.Left} 
@@ -72,34 +90,72 @@ const GenericDeviceNode = ({ id, data, selected }) => {
           cursor: 'crosshair',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          zIndex: 5
         }}
       >
         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', pointerEvents: 'none' }} />
       </Handle>
       
-      <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="w-10 h-10 object-contain" />
-      
-      <Typography 
-        variant="caption" 
-        sx={{ 
-          textAlign: 'center', 
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          fontSize: '0.75rem',
-          lineHeight: 1.2,
-          fontWeight: 'medium',
-          textTransform: 'uppercase',
-          px: 1
-        }}
-        className="text-gray-700 dark:text-slate-200"
-      >
-        {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
-      </Typography>
-      
+      {/* Başlık ve Durum (Yer tutucu) */}
+      <Box sx={{ mb: 1, display: 'flex', flexDirection: 'column' }}>
+        <Typography sx={{ fontWeight: 800, fontSize: '0.85rem', color: 'text.primary', lineHeight: 1.2 }}>
+          {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
+        </Typography>
+        {data.code && String(data.code).toLowerCase() !== String(data.label).toLowerCase() && (
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.65rem' }}>
+            {data.code}
+          </Typography>
+        )}
+        <Box display="flex" alignItems="center" gap={0.75} mt={0.5}>
+          <div className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600" />
+          <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', textTransform: 'capitalize' }} className="text-slate-400 dark:text-slate-500">
+            {t('pidBuilder.status.offline', 'Veri Bekleniyor')}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* İkon */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 1.5 }}>
+        <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="h-16 object-contain drop-shadow-md opacity-80" />
+      </Box>
+
+      {/* Değer Alanı (Yer tutucu) */}
+      <Box sx={{ display: 'flex', borderTop: '1px solid', borderColor: 'divider', pt: 1.5, mt: 'auto', opacity: 0.6 }}>
+        {hasSecondary ? (
+          <>
+            {/* Sol Değer */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pr: 1, borderRight: '1px solid', borderColor: 'divider' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                {paramLabel1}
+              </Typography>
+              <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                {placeholderValue} <span className="text-slate-500 text-[0.6rem] font-bold">{config.unit || ''}</span>
+              </Typography>
+            </Box>
+            {/* Sağ Değer */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pl: 1 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                {paramLabel2}
+              </Typography>
+              <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                {placeholderSecondary} <span className="text-slate-500 text-[0.6rem] font-bold">{config.secondaryUnit || ''}</span>
+              </Typography>
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+              {paramLabel}
+            </Typography>
+            <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+              {placeholderValue} <span className="text-slate-500 text-[0.6rem] font-bold">{config.unit || ''}</span>
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      {/* Source Handle */}
       <Handle 
         type="source" 
         position={Position.Right} 
@@ -114,7 +170,8 @@ const GenericDeviceNode = ({ id, data, selected }) => {
           cursor: 'crosshair',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          zIndex: 5
         }}
       >
         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', pointerEvents: 'none' }} />
