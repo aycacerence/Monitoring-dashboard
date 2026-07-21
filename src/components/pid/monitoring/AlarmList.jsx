@@ -3,7 +3,7 @@ import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Button, Ci
 import { AlertTriangle, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const AlarmList = ({ alarms = [] }) => {
+const AlarmList = ({ alarms = [], diagramId = '' }) => {
   const navigate = useNavigate();
   const [visibleCount, setVisibleCount] = useState(10);
   const scrollRef = useRef(null);
@@ -34,7 +34,7 @@ const AlarmList = ({ alarms = [] }) => {
         </Typography>
         <Button
           size="small"
-          onClick={() => navigate('/alarms', { state: { alarms } })}
+          onClick={() => navigate('/pid/alarms', { state: { alarms, diagramId } })}
           endIcon={<ArrowRight size={12} />}
           sx={{ textTransform: 'none', fontSize: '0.7rem', p: 0, minWidth: 'auto', fontWeight: 700 }}
         >

@@ -31,6 +31,7 @@ import FlashOnIcon from '@mui/icons-material/FlashOn';
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { useTranslation } from 'react-i18next';
 
 function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onCloseWidgetSidebar }) {
@@ -240,6 +241,20 @@ function MainSidebar({ activePanelSection = 'panel', onOpenWidgetSidebar, onClos
                     <TimelineOutlinedIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText primary={t('mainSidebar.pidMonitoring', 'Canlı İzleme')} primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                </ListItemButton>
+
+                <ListItemButton 
+                  selected={location.pathname === '/pid/alarms'}
+                  onClick={() => handleNavigate('/pid/alarms', () => {
+                    navigate('/pid/alarms');
+                    if (isMobile) setIsCollapsed(true);
+                  })}
+                  sx={subItemStyle}
+                >
+                  <ListItemIcon sx={navIconStyle}>
+                    <NotificationsNoneOutlinedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={t('mainSidebar.pidAlarms', 'Alarmlar')} primaryTypographyProps={{ fontSize: '0.875rem' }} />
                 </ListItemButton>
               </List>
             </Collapse>

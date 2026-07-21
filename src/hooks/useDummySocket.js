@@ -49,12 +49,30 @@ export const DEVICE_CONFIG = {
 // Bilinmeyen veya tipi belirsiz cihazlar için varsayılan fallback konfigürasyonu
 const FALLBACK_CONFIG = { main: 'deger', unit: '', min: 0, max: 100 };
 
-export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true) => {
+export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true, diagramId = null) => {
   const [liveData, setLiveData] = useState({});
   const [alarms, setAlarms] = useState([]);
   
   // Alarmların sürekli tetiklenmesini önlemek için önceki durumları tuttuğumuz referans
   const prevStatusRef = useRef({});
+
+  // Diyagram değiştiğinde o diyagramın eski alarmlarını yükle (veya sıfırla)
+  useEffect(() => {
+    if (diagramId) {
+      const savedAlarms = localStorage.getItem(`pid_alarms_data_${diagramId}`);
+      if (savedAlarms) {
+        try {
+          setAlarms(JSON.parse(savedAlarms) || []);
+        } catch {
+          setAlarms([]);
+        }
+      } else {
+        setAlarms([]);
+      }
+    } else {
+      setAlarms([]);
+    }
+  }, [diagramId]);
 
   // 1. Initial State Kurulumu
   useEffect(() => {

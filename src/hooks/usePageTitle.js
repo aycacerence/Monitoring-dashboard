@@ -9,6 +9,7 @@ export function usePageTitle() {
     '/settings': { title: t('pageTitles.settings'),  subtitle: t('pageSubtitles.settings')  },
     '/pid/builder': { title: t('pageTitles.pidBuilder'), subtitle: t('pageSubtitles.pidBuilder') },
     '/pid/monitoring': { title: t('pageTitles.pidMonitoring'), subtitle: t('pageSubtitles.pidMonitoring') },
+    '/pid/alarms': { title: t('pageTitles.pidAlarms'), subtitle: t('pageSubtitles.pidAlarms') },
     '/':         { title: t('pageTitles.dashboard'), subtitle: t('pageSubtitles.dashboard') },
   };
 

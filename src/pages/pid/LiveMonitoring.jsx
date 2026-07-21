@@ -24,7 +24,14 @@ const MonitoringContent = () => {
   const diagram = diagrams?.find((d) => d.id === activeDiagramId);
 
   // 2. Aktif diyagramın cihazlarını (nodes) ve KPI'larını liveData hook'una bağla
-  const { liveData, alarms, lastUpdate } = useDummySocket(nodes || [], diagram?.kpiConfig || [], autoRefresh);
+  const { liveData, alarms, lastUpdate } = useDummySocket(nodes || [], diagram?.kpiConfig || [], autoRefresh, diagram?.id);
+
+  // Alarmları localStorage'a kaydet (Her diyagram için ayrı ayrı)
+  React.useEffect(() => {
+    if (alarms && alarms.length > 0 && diagram?.id) {
+      localStorage.setItem(`pid_alarms_data_${diagram.id}`, JSON.stringify(alarms));
+    }
+  }, [alarms, diagram?.id]);
 
   // 3. Boş State (Diyagram bulunamazsa)
   if (!diagram) {
@@ -74,7 +81,7 @@ const MonitoringContent = () => {
         {/* SOL PANEL: Sistem Durumu & Alarmlar */}
         <Box className="w-64 p-4 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-4 overflow-y-auto">
           <SystemStatusCard nodes={nodes} liveData={liveData} />
-          <AlarmList alarms={alarms} />
+          <AlarmList alarms={alarms} diagramId={diagram?.id} />
         </Box>
 
         {/* ORTA PANEL: React Flow Canvas */}

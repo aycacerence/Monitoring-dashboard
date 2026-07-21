@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Box, 
@@ -12,33 +12,74 @@ import {
   TableHead, 
   TableRow,
   Chip,
-  IconButton
+  MenuItem,
+  Select,
+  FormControl
 } from '@mui/material';
-import { ArrowLeft, AlertTriangle, AlertCircle } from 'lucide-react';
+import { AlertTriangle, AlertCircle, BellRing, Settings2 } from 'lucide-react';
+import { PIDProvider, usePID } from '../../context/pid/PIDContext';
 
-export default function AlarmsPage() {
+function AlarmsContent() {
   const location = useLocation();
-  const navigate = useNavigate();
-  
-  // Alarmları router state üzerinden alıyoruz. Yoksa boş dizi.
-  const alarms = location.state?.alarms || [];
+  const { diagrams, activeDiagramId } = usePID();
+
+  const [selectedDiagramId, setSelectedDiagramId] = useState(
+    location.state?.diagramId || activeDiagramId || ''
+  );
+
+  const [alarms, setAlarms] = useState([]);
+
+  useEffect(() => {
+    if (!selectedDiagramId && activeDiagramId) {
+      setSelectedDiagramId(activeDiagramId);
+    }
+  }, [activeDiagramId, selectedDiagramId]);
+
+  useEffect(() => {
+    if (!selectedDiagramId) return;
+    
+    // Eğer router üzerinden geldiysek ve id uyuşuyorsa router state'ini kullan
+    if (location.state?.diagramId === selectedDiagramId && location.state?.alarms) {
+      setAlarms(location.state.alarms);
+    } else {
+      // Değilse, localStorage'dan bu diyagramın alarmlarını getir
+      const savedData = localStorage.getItem(`pid_alarms_data_${selectedDiagramId}`);
+      if (savedData) {
+        try {
+          setAlarms(JSON.parse(savedData) || []);
+        } catch (e) {
+          console.error("Alarms parse error", e);
+          setAlarms([]);
+        }
+      } else {
+        setAlarms([]);
+      }
+    }
+  }, [selectedDiagramId, location.state]);
+
+  const selectedDiagramName = diagrams?.find(d => d.id === selectedDiagramId)?.name || '';
 
   return (
     <Box className="p-6 h-full flex flex-col">
-      <Box className="flex items-center gap-4 mb-6">
-        <IconButton onClick={() => navigate(-1)} className="bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
-          <ArrowLeft size={20} />
-        </IconButton>
-        <div>
-          <Typography variant="h5" className="font-bold text-slate-800 dark:text-slate-100">
-            Tüm Alarmlar
-          </Typography>
-          <Typography variant="body2" className="text-slate-500">
-            Sistemdeki tüm aktif uyarı ve alarmların detaylı listesi
-          </Typography>
-        </div>
+      <Box className="mb-4 flex items-center justify-between">
+        <Box className="flex items-center gap-4">
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <Select
+              value={selectedDiagramId}
+              onChange={(e) => setSelectedDiagramId(e.target.value)}
+              displayEmpty
+              sx={{ fontWeight: 'bold', bgcolor: 'background.paper' }}
+              startAdornment={<Settings2 size={16} className="text-slate-500 mr-2 ml-1" />}
+            >
+              <MenuItem value="" disabled>Diyagram Seçin</MenuItem>
+              {diagrams.map((d) => (
+                <MenuItem key={d.id} value={d.id} sx={{ fontWeight: 600 }}>{d.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Chip label="Diyagram Alarmları" size="small" sx={{ fontWeight: 500, bgcolor: 'slate.100' }} className="dark:bg-slate-800" />
+        </Box>
       </Box>
-
       <TableContainer component={Paper} className="flex-1 overflow-auto rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800">
         <Table stickyHeader>
           <TableHead>
@@ -95,5 +136,13 @@ export default function AlarmsPage() {
         </Table>
       </TableContainer>
     </Box>
+  );
+}
+
+export default function AlarmsPage() {
+  return (
+    <PIDProvider>
+      <AlarmsContent />
+    </PIDProvider>
   );
 }

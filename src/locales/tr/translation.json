@@ -3,13 +3,15 @@
     "dashboard": "İzleme Paneli",
     "settings": "Panel Ayarları",
     "pidBuilder": "P&ID Tasarım Modülü",
-    "pidMonitoring": "Canlı Proses İzleme"
+    "pidMonitoring": "Canlı Proses İzleme",
+    "pidAlarms": "Alarm Yönetimi"
   },
   "pageSubtitles": {
     "dashboard": "Sistem genel durumu ve istatistikler",
     "settings": "Pano kişiselleştirme",
     "pidBuilder": "Akış diyagramı ve sistem tasarımı oluşturun",
-    "pidMonitoring": "Gerçek zamanlı sensör ve cihaz değerleri"
+    "pidMonitoring": "Gerçek zamanlı sensör ve cihaz değerleri",
+    "pidAlarms": "Sistemdeki tüm aktif uyarı ve kritik alarmların geçmişi"
   },
   "header": {
     "title": "İzleme Paneli",
