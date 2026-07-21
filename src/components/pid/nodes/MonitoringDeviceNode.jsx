@@ -33,6 +33,15 @@ const MonitoringDeviceNode = ({ id, data, selected }) => {
         position: 'relative'
       }}
     >
+      {/* 
+        React Flow'un fitView hesaplamasında bu node'un bounding box'ını yukarı doğru 
+        genişletmek için görünmez bir blok ekliyoruz. Böylece absolute badge'ler 
+        hesaplamaya dahil olur ve ekranın üstünden kesilmez.
+      */}
+      {(data.liveValue !== undefined && data.liveValue !== null && data.liveValue !== '') && (
+        <div style={{ width: '100%', height: '90px', marginTop: '-90px', pointerEvents: 'none' }} />
+      )}
+
       {/* CANLI VERİ BADGE KUTUSU (Oklu Callout) */}
       {(data.liveValue !== undefined && data.liveValue !== null && data.liveValue !== '') && (
         <Box

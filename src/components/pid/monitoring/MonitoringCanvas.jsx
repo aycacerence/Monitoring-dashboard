@@ -37,7 +37,7 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
     const observer = new ResizeObserver(() => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        reactFlowInstance.fitView({ duration: 600, padding: 0.1 });
+        reactFlowInstance.fitView({ duration: 600, padding: 0.4, maxZoom: 1 });
       }, 100);
     });
 
@@ -54,7 +54,7 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
     if (reactFlowInstance && nodes.length > 0) {
       // Çizimin bitmesini beklemek için küçük bir gecikme
       const timeoutId = setTimeout(() => {
-        reactFlowInstance.fitView({ duration: 600, padding: 0.1 });
+        reactFlowInstance.fitView({ duration: 600, padding: 0.4, maxZoom: 1 });
       }, 50);
       return () => clearTimeout(timeoutId);
     }
@@ -73,9 +73,11 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         nodesConnectable={false}
         elementsSelectable={true}
         fitView
+        fitViewOptions={{ padding: 0.4, maxZoom: 1, duration: 600 }}
+        minZoom={0.1}
+        maxZoom={2}
         proOptions={{ hideAttribution: true }}
       >
-        <Background />
         <Controls />
 
         {/* Özel ok işaretleri (Custom Markers) - Builder ile aynı */}
