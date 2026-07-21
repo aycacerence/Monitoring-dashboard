@@ -70,7 +70,7 @@ const MonitoringDeviceNode = ({ id, data, selected }) => {
           {/* Badge Kartı */}
           <Paper
             elevation={4}
-            className={`px-2 py-1 rounded-md border-[1.5px] flex flex-col min-w-[70px] max-w-[90px] shadow-sm bg-white dark:bg-slate-800 ${activeStatus.borderClass}`}
+            className={`px-2 py-1 rounded-md border-[1.5px] flex flex-col w-[85px] shadow-sm bg-white dark:bg-slate-800 ${activeStatus.borderClass}`}
           >
             {/* BAŞLIK (Örn: Debi, Sıcaklık) */}
             <Typography 
