@@ -175,7 +175,7 @@
     },
     "activeProcess": "Active Process:",
     "systemOnline": "System Online",
-    "watching": "MONITORING"
+    "watching": "DETAIL"
   },
   "pidBuilder": {
     "editDiagram": "Edit Diagram",

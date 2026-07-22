@@ -67,7 +67,7 @@ const MonitoringDeviceNode = ({ id, data }) => {
           }}
           className="dark:border-slate-800"
         >
-          <Eye size={12} strokeWidth={3} /> {t('pidMonitoring.watching', 'İZLENİYOR')}
+          <Eye size={12} strokeWidth={3} /> {t('pidMonitoring.watching', 'DETAY')}
         </Box>
       )}
 
