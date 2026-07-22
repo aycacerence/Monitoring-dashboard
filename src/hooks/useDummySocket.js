@@ -331,7 +331,7 @@ export const useDummySocket = (nodes = [], kpiIds = [], autoRefresh = true, diag
             newAlarms.forEach(alarm => {
               nextAlarms = mergeOrAppendAlarm(nextAlarms, alarm);
             });
-            return nextAlarms.slice(0, 500);
+            return nextAlarms.slice(0, 200);
           });
         }
 

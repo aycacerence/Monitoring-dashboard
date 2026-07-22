@@ -165,9 +165,7 @@ function AlarmsContent() {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       {getAlarmMessage(alarm)}
-                      {alarm.count > 1 && (
-                        <Chip label={`×${alarm.count}`} size="small" sx={{ height: '20px', fontSize: '0.7rem', fontWeight: 'bold' }} />
-                      )}
+                      {/* Removed count badge here as requested by user */}
                     </Box>
                   </TableCell>
                 </TableRow>
