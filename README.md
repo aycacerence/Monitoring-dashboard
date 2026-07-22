@@ -119,6 +119,39 @@ Uygulama varsayılan olarak `http://localhost:5173` portu üzerinden hızlı yen
 
 ---
 
+## Docker ile Çalıştırma
+
+Projeyi Node.js kurmadan, doğrudan Docker ortamında çalıştırabilirsiniz. Multi-stage build kullanılarak uygulama Vite üzerinden derlenir (build) ve yüksek performanslı Nginx web sunucusu ile sunulur.
+
+### Seçenek 1: Docker Compose ile 
+
+En kolay yöntem `docker-compose` kullanmaktır. Proje kök dizininde şu komutu çalıştırın:
+
+```bash
+docker-compose up -d
+```
+
+Uygulama `http://localhost:8080` adresinde çalışmaya başlayacaktır.
+Konteyneri durdurmak için: `docker-compose down`
+
+### Seçenek 2: Manuel Docker Komutları ile
+
+Eğer sadece Docker kullanıyorsanız aşağıdaki adımları izleyebilirsiniz:
+
+1. İmajı oluşturun:
+```bash
+docker build -t monitoring-dashboard .
+```
+
+2. Konteyneri başlatın:
+```bash
+docker run -d -p 8080:80 --name monitoring-dashboard-app monitoring-dashboard
+```
+
+Yine `http://localhost:8080` adresinden uygulamaya erişebilirsiniz.
+
+---
+
 ## Projeyi Geliştirme
 
 Bu proje gelecekte geliştirilmeye açık olarak esnek tasarlanmıştır:
