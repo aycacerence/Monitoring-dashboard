@@ -97,59 +97,53 @@ const GenericDeviceNode = ({ id, data, selected }) => {
         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', pointerEvents: 'none' }} />
       </Handle>
       
-      {/* Başlık ve Durum (Yer tutucu) */}
-      <Box sx={{ mb: 1, display: 'flex', flexDirection: 'column' }}>
-        <Typography sx={{ fontWeight: 800, fontSize: '0.85rem', color: 'text.primary', lineHeight: 1.2 }}>
+      {/* Başlık */}
+      <Box sx={{ mb: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+        <Typography sx={{ fontWeight: 800, fontSize: '1rem', color: 'text.primary', lineHeight: 1.2 }}>
           {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
         </Typography>
         {data.code && String(data.code).toLowerCase() !== String(data.label).toLowerCase() && (
-          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.65rem' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.75rem' }}>
             {data.code}
           </Typography>
         )}
-        <Box display="flex" alignItems="center" gap={0.75} mt={0.5}>
-          <div className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600" />
-          <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', textTransform: 'capitalize' }} className="text-slate-400 dark:text-slate-500">
-            {t('pidBuilder.propertyPanel.status.offline', 'Veri Bekleniyor')}
-          </Typography>
-        </Box>
       </Box>
 
       {/* İkon */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 1.5 }}>
-        <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="h-16 object-contain drop-shadow-md opacity-80" />
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+        <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="h-20 object-contain drop-shadow-md" />
       </Box>
 
       {/* Değer Alanı (Yer tutucu) */}
-      <Box sx={{ display: 'flex', borderTop: '1px solid', borderColor: 'divider', pt: 1.5, mt: 'auto', opacity: 0.6 }}>
+      <Box sx={{ display: 'flex', borderTop: '1px solid', borderColor: 'divider', pt: 1.5, mt: 'auto', opacity: 0.35 }}>
         {hasSecondary ? (
           <>
             {/* Sol Değer */}
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pr: 1, borderRight: '1px solid', borderColor: 'divider' }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6rem', fontWeight: 600 }}>
                 {paramLabel1}
               </Typography>
-              <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                {placeholderValue} <span className="text-slate-500 text-[0.6rem] font-bold">{config.unit || ''}</span>
+              <Typography sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                {placeholderValue} <span className="text-slate-500 text-[0.55rem] font-bold">{config.unit || ''}</span>
               </Typography>
             </Box>
             {/* Sağ Değer */}
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pl: 1 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6rem', fontWeight: 600 }}>
                 {paramLabel2}
               </Typography>
-              <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                {placeholderSecondary} <span className="text-slate-500 text-[0.6rem] font-bold">{config.secondaryUnit || ''}</span>
+              <Typography sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                {placeholderSecondary} <span className="text-slate-500 text-[0.55rem] font-bold">{config.secondaryUnit || ''}</span>
               </Typography>
             </Box>
           </>
         ) : (
           <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6rem', fontWeight: 600 }}>
               {paramLabel}
             </Typography>
-            <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-              {placeholderValue} <span className="text-slate-500 text-[0.6rem] font-bold">{config.unit || ''}</span>
+            <Typography sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+              {placeholderValue} <span className="text-slate-500 text-[0.55rem] font-bold">{config.unit || ''}</span>
             </Typography>
           </Box>
         )}

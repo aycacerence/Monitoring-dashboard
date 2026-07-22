@@ -101,16 +101,16 @@ const MonitoringDeviceNode = ({ id, data }) => {
         <Handle type="target" position={Position.Left} style={{ opacity: 0, pointerEvents: 'none', left: -10, top: '50%' }} />
         
         {/* Başlık ve Durum */}
-        <Box sx={{ mb: 1, display: 'flex', flexDirection: 'column' }}>
-          <Typography sx={{ fontWeight: 800, fontSize: '0.85rem', color: 'text.primary', lineHeight: 1.2 }}>
+        <Box sx={{ mb: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <Typography sx={{ fontWeight: 800, fontSize: '1rem', color: 'text.primary', lineHeight: 1.2 }}>
             {t(`pidBuilder.devices.${data.label}`, { defaultValue: data.label || data.code })}
           </Typography>
           {data.code && String(data.code).toLowerCase() !== String(data.label).toLowerCase() && (
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.65rem' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '0.75rem' }}>
               {data.code}
             </Typography>
           )}
-          <Box display="flex" alignItems="center" gap={0.75} mt={0.5}>
+          <Box display="flex" alignItems="center" justifyContent="center" gap={0.75} mt={0.5}>
             <div className={`w-2 h-2 rounded-full ${activeStatus.bgClass} ${currentStatus === 'alarm' ? 'animate-pulse' : ''}`} />
             <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', textTransform: 'capitalize' }} className={activeStatus.colorClass}>
               {activeStatus.text}
@@ -119,42 +119,42 @@ const MonitoringDeviceNode = ({ id, data }) => {
         </Box>
 
         {/* İkon */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 1.5 }}>
-          <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="h-16 object-contain drop-shadow-md" />
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+          <img src={iconMap[data.iconKey]} alt={data.label || 'icon'} className="h-20 object-contain drop-shadow-md" />
         </Box>
 
         {/* Değer Alanı */}
         {(data.liveValue !== undefined && data.liveValue !== null && data.liveValue !== '') && (
-          <Box sx={{ display: 'flex', borderTop: '1px solid', borderColor: 'divider', pt: 1.5, mt: 'auto' }}>
+          <Box sx={{ display: 'flex', borderTop: '1px solid', borderColor: 'divider', pt: 1.5, mt: 'auto', opacity: 0.45 }}>
             
             {hasSecondary ? (
               <>
                 {/* Sol Değer */}
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pr: 1, borderRight: '1px solid', borderColor: 'divider' }}>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6rem', fontWeight: 600 }}>
                     {paramLabel1}
                   </Typography>
-                  <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                    {displayLiveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                    {displayLiveValue} <span className="text-slate-500 text-[0.55rem] font-bold">{data.unit || ''}</span>
                   </Typography>
                 </Box>
                 {/* Sağ Değer */}
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', pl: 1 }}>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6rem', fontWeight: 600 }}>
                     {paramLabel2}
                   </Typography>
-                  <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                    {data.secondaryValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.secondaryUnit || ''}</span>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                    {data.secondaryValue} <span className="text-slate-500 text-[0.55rem] font-bold">{data.secondaryUnit || ''}</span>
                   </Typography>
                 </Box>
               </>
             ) : (
               <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem', fontWeight: 600 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6rem', fontWeight: 600 }}>
                   {paramLabel}
                 </Typography>
-                <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                  {displayLiveValue} <span className="text-slate-500 text-[0.6rem] font-bold">{data.unit || ''}</span>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.primary', mt: 0.2, display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                  {displayLiveValue} <span className="text-slate-500 text-[0.55rem] font-bold">{data.unit || ''}</span>
                 </Typography>
               </Box>
             )}
