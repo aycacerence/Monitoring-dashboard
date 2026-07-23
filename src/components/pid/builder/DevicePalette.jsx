@@ -77,12 +77,11 @@ const DevicePalette = () => {
   return (
     <Box 
       sx={{ 
-        width: 256, 
+        width: '100%',
         height: '100%', 
         flexShrink: 0, 
-        overflowY: 'auto', 
-        borderRight: 1, 
-        borderColor: 'divider', 
+        overflowY: 'auto',
+        overflowX: 'hidden',
         bgcolor: 'background.paper', 
         display: 'flex', 
         flexDirection: 'column', 
@@ -144,7 +143,11 @@ const DevicePalette = () => {
                     color: 'text.primary', 
                     fontWeight: 500, 
                     lineHeight: 1.2, 
-                    textTransform: 'uppercase' 
+                    textTransform: 'uppercase',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    width: '100%',
                   }}
                 >
                   {t(`pidBuilder.devices.${device.label}`, { defaultValue: device.label })}
@@ -235,7 +238,15 @@ const DevicePalette = () => {
               >
                 <img src={iconMap[f.type]} alt={f.label} className="w-10 h-6 object-contain pointer-events-none" />
               </Box>
-              <Typography sx={{ fontSize: '10px', fontWeight: 'bold', color: 'text.secondary', lineHeight: 1, textTransform: 'uppercase' }}>
+              <Typography sx={{ 
+                fontSize: '10px', 
+                fontWeight: 'bold', 
+                color: 'text.secondary', 
+                lineHeight: 1,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
                 {t(`pidBuilder.flows.${f.label}`, { defaultValue: f.label })}
               </Typography>
             </Box>

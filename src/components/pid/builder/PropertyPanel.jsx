@@ -16,7 +16,6 @@ import {
   RadioGroup,
   FormControlLabel,
   InputAdornment,
-  Dialog
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
@@ -26,7 +25,7 @@ import { useSelector } from 'react-redux';
 import { selectRole } from '../../../features/auth/authSlice';
 import { useTranslation } from 'react-i18next';
 
-const PropertyPanel = ({ variant }) => {
+const PropertyPanel = () => {
   const { t } = useTranslation();
   const { selectedNode, updateNodeData, setSelectedNode, saveFlow } = usePID();
   const role = useSelector(selectRole);
@@ -79,7 +78,7 @@ const PropertyPanel = ({ variant }) => {
     return selectedNode.data?.defaultData?.birim || unitMap[key] || '';
   };
 
-  const isTemporary = variant === 'temporary';
+  const isTemporary = false; // Artık parent Box ile kontrol ediliyor
 
   const panelContent = (
       <Box 
@@ -87,10 +86,10 @@ const PropertyPanel = ({ variant }) => {
           display: 'flex', 
           flexDirection: 'column', 
           height: '100%', 
+          width: '100%',
           bgcolor: 'background.paper',
           color: 'text.primary',
-          textTransform: 'uppercase',
-          '& input, & textarea, & .MuiSelect-select': { textTransform: 'uppercase' } 
+          overflow: 'hidden',
         }}
       >
         {/* Üst Bar */}
@@ -133,9 +132,12 @@ const PropertyPanel = ({ variant }) => {
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 'bold', color: 'text.primary', fontSize: '0.875rem' }}>
-                {selectedNode.data?.label || selectedNode.data?.code || t('pidBuilder.propertyPanel.device')}
+            <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 'bold', color: 'text.primary', fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {selectedNode.data?.iconKey
+                  ? t(`pidBuilder.devices.${selectedNode.data.iconKey}`, { defaultValue: selectedNode.data?.label || selectedNode.data?.code || t('pidBuilder.propertyPanel.device') })
+                  : (selectedNode.data?.label || selectedNode.data?.code || t('pidBuilder.propertyPanel.device'))
+                }
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -339,47 +341,18 @@ const PropertyPanel = ({ variant }) => {
       </Box>
   );
 
-  if (isTemporary) {
-    return (
-      <Dialog 
-        open={!!selectedNode} 
-        onClose={() => setSelectedNode(null)}
-        fullWidth
-        maxWidth="xs"
-        PaperProps={{
-          sx: { 
-            height: '80vh', 
-            borderRadius: 2,
-            bgcolor: 'background.paper'
-          }
-        }}
-      >
-        {panelContent}
-      </Dialog>
-    );
-  }
-
+  // Artık her zaman inline panel olarak render edilir — aç/kapa parent Box tarafından yönetilir
   return (
-    <Drawer
-      anchor="right"
-      variant="persistent"
-      open={!!selectedNode}
+    <Box
       sx={{
-        width: 320,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 320,
-          position: 'absolute',
-          right: 0,
-          height: '100%',
-          borderLeft: '1px solid',
-          borderColor: 'divider',
-          boxSizing: 'border-box'
-        }
+        width: '100%',
+        height: '100%',
+        overflowY: 'auto',
+        overflowX: 'hidden',
       }}
     >
       {panelContent}
-    </Drawer>
+    </Box>
   );
 };
 
