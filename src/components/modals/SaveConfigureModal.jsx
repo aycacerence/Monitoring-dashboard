@@ -12,18 +12,22 @@ import {
   Divider,
   IconButton,
   Box,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
-import { X, Image as ImageIcon, Search } from 'lucide-react';
+import { X, Image as ImageIcon, Search, Info } from 'lucide-react';
 import { KPI_CATEGORIES, kpiDashboardConfig } from '../../config/kpiDashboardConfig';
 import KPIPreviewCard from '../pid/kpi/KPIPreviewCard';
 import { useTranslation } from 'react-i18next';
 import ReactFlow, { Background, ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import MonitoringDeviceNode from '../pid/nodes/MonitoringDeviceNode';
+import TextNode from '../pid/nodes/TextNode';
 import { edgeTypes } from '../pid/registry';
 
-const previewNodeTypes = { monitoringPreview: MonitoringDeviceNode };
+const previewNodeTypes = { 
+  monitoringPreview: MonitoringDeviceNode,
+  textNode: TextNode 
+};
 
 function SaveConfigureModal({
   open,
@@ -49,7 +53,7 @@ function SaveConfigureModal({
     return diagramNodes.map(n => ({
       ...n,
       id: `preview-${n.id}`,
-      type: 'monitoringPreview',
+      type: n.type === 'textNode' ? 'textNode' : 'monitoringPreview',
       position: {
         x: n.position.x * SCALE_FACTOR_X,
         y: n.position.y * SCALE_FACTOR_Y
@@ -235,7 +239,6 @@ function SaveConfigureModal({
                       preventScrolling={false}
                       proOptions={{ hideAttribution: true }}
                     >
-                      <Background color="#ccc" gap={16} />
                     </ReactFlow>
                   </ReactFlowProvider>
                 </Box>
@@ -252,6 +255,31 @@ function SaveConfigureModal({
               aria-label="KPI kartları seçimi"
             >
               
+              {/* Bilgilendirme Metni */}
+              <Box className="p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 flex items-start gap-2.5">
+                <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  {t('pidBuilder.saveModal.kpiInfo', 'Canlı İzleme ekranında bu diyagrama özel olarak görmek istediğiniz KPI kartlarını aşağıdan seçebilirsiniz.')}
+                </Typography>
+              </Box>
+
+              {/* Seçili KPI Sayısı Bilgisi (Arama Barının Üstü) */}
+              <Box className="p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 text-center md:text-left">
+                <Typography variant="body2" color="text.secondary" className="font-medium">
+                  {t('pidBuilder.saveModal.selectedKpiCount', 'Seçilen KPI sayısı:')} <span className="text-blue-600 dark:text-blue-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
+                </Typography>
+                
+                {recommendedCount > 0 && (
+                  <Typography 
+                    variant="caption" 
+                    className="block mt-2 text-blue-600 dark:text-blue-400 cursor-pointer hover:underline font-semibold"
+                    onClick={handleSelectAllRecommended}
+                  >
+                    {t('pidBuilder.saveModal.recommendedCount', { count: recommendedCount, defaultValue: `Diyagramınıza göre ${recommendedCount} kart öneriliyor. Tümünü Seç.` })}
+                  </Typography>
+                )}
+              </Box>
+
               {/* Arama Kutusu */}
               <TextField
                 placeholder={t('pidBuilder.saveModal.searchPlaceholder', 'KPI ara... (örn. Fan, Basınç)')}
@@ -269,23 +297,6 @@ function SaveConfigureModal({
                 }}
                 sx={{ mb: 0 }}
               />
-
-              {/* Seçili KPI Sayısı Bilgisi (Arama Barının Altı) */}
-              <Box className="p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30 text-center md:text-left mb-2">
-                <Typography variant="body2" color="text.secondary" className="font-medium">
-                  {t('pidBuilder.saveModal.selectedKpiCount', 'Seçilen KPI sayısı:')} <span className="text-blue-600 dark:text-blue-400 font-bold ml-1">{selectedKpiIds.length}</span> / {totalKpis}
-                </Typography>
-                
-                {recommendedCount > 0 && (
-                  <Typography 
-                    variant="caption" 
-                    className="block mt-2 text-blue-600 dark:text-blue-400 cursor-pointer hover:underline font-semibold"
-                    onClick={handleSelectAllRecommended}
-                  >
-                    {t('pidBuilder.saveModal.recommendedCount', { count: recommendedCount, defaultValue: `Diyagramınıza göre ${recommendedCount} kart öneriliyor. Tümünü Seç.` })}
-                  </Typography>
-                )}
-              </Box>
 
               {filteredTotalKpis === 0 ? (
                 <Box className="flex flex-col items-center justify-center py-10 text-slate-500">
