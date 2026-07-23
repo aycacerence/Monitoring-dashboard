@@ -528,6 +528,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
         initialDiagramName={diagrams.find(d => d.id === activeDiagramId)?.name || ''}
         initialSelectedKpiIds={diagrams.find(d => d.id === activeDiagramId)?.kpiConfig || []}
         diagramNodes={nodes}
+        diagramEdges={edges}
         onConfirm={({ name, screenshot, selectedKpiIds }, shouldNavigate) => {
           // Güncel çizim verilerini al
           const currentNodes = getNodes();

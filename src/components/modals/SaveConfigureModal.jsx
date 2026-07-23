@@ -18,6 +18,12 @@ import { X, Image as ImageIcon, Search } from 'lucide-react';
 import { KPI_CATEGORIES, kpiDashboardConfig } from '../../config/kpiDashboardConfig';
 import KPIPreviewCard from '../pid/kpi/KPIPreviewCard';
 import { useTranslation } from 'react-i18next';
+import ReactFlow, { Background, ReactFlowProvider } from 'reactflow';
+import 'reactflow/dist/style.css';
+import MonitoringDeviceNode from '../pid/nodes/MonitoringDeviceNode';
+import { edgeTypes } from '../pid/registry';
+
+const previewNodeTypes = { monitoringPreview: MonitoringDeviceNode };
 
 function SaveConfigureModal({
   open,
@@ -26,6 +32,7 @@ function SaveConfigureModal({
   initialDiagramName = '',
   initialSelectedKpiIds = [],
   diagramNodes = [],
+  diagramEdges = [],
   onConfirm
 }) {
   const { t, i18n } = useTranslation();
@@ -33,6 +40,39 @@ function SaveConfigureModal({
   const [selectedKpiIds, setSelectedKpiIds] = useState(initialSelectedKpiIds);
   const [searchQuery, setSearchQuery] = useState('');
   const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  // Asimetrik Ölçeklendirme (MonitoringCanvas ile aynı)
+  const SCALE_FACTOR_X = 1.8;
+  const SCALE_FACTOR_Y = 2.8;
+
+  const previewNodes = React.useMemo(() => {
+    return diagramNodes.map(n => ({
+      ...n,
+      id: `preview-${n.id}`,
+      type: 'monitoringPreview',
+      position: {
+        x: n.position.x * SCALE_FACTOR_X,
+        y: n.position.y * SCALE_FACTOR_Y
+      },
+      data: {
+        ...n.data,
+        status: 'normal',
+        liveValue: '---',
+        secondaryValue: '---',
+        isPreview: true
+      },
+      selected: false
+    }));
+  }, [diagramNodes]);
+
+  const previewEdges = React.useMemo(() => {
+    return diagramEdges.map(e => ({
+      ...e,
+      id: `preview-${e.id}`,
+      source: `preview-${e.source}`,
+      target: `preview-${e.target}`
+    }));
+  }, [diagramEdges]);
 
   // Modal her açıldığında (veya initial proplar değiştiğinde) state'i resetle
   useEffect(() => {
@@ -168,20 +208,36 @@ function SaveConfigureModal({
                 </Typography>
                 <Box 
                   className="flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden"
-                  sx={{ width: '100%', height: 'calc(100vh - 350px)', minHeight: 400, p: 2 }}
+                  sx={{ 
+                    width: '100%', 
+                    height: 'calc(100vh - 350px)', 
+                    minHeight: 400, 
+                    position: 'relative',
+                    pointerEvents: 'none' // Tamamen etkileşimsiz, resim gibi
+                  }}
                 >
-                {screenshotBase64 ? (
-                  <img 
-                    src={screenshotBase64} 
-                    alt="Diagram Preview" 
-                    style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '4px' }}
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-slate-400">
-                    <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                    <Typography variant="body2">{t('pidBuilder.saveModal.noImage', 'Görsel bulunamadı')}</Typography>
-                  </div>
-                )}
+                  <ReactFlowProvider>
+                    <ReactFlow
+                      nodes={previewNodes}
+                      edges={previewEdges}
+                      nodeTypes={previewNodeTypes}
+                      edgeTypes={edgeTypes}
+                      fitView
+                      fitViewOptions={{ padding: 0.15, minZoom: 0.1 }}
+                      nodesDraggable={false}
+                      nodesConnectable={false}
+                      elementsSelectable={false}
+                      zoomOnDoubleClick={false}
+                      zoomOnScroll={false}
+                      zoomOnPinch={false}
+                      panOnDrag={false}
+                      panOnScroll={false}
+                      preventScrolling={false}
+                      proOptions={{ hideAttribution: true }}
+                    >
+                      <Background color="#ccc" gap={16} />
+                    </ReactFlow>
+                  </ReactFlowProvider>
                 </Box>
               </Box>
             </Box>
@@ -368,6 +424,7 @@ SaveConfigureModal.propTypes = {
   initialDiagramName: PropTypes.string,
   initialSelectedKpiIds: PropTypes.arrayOf(PropTypes.string),
   diagramNodes: PropTypes.array,
+  diagramEdges: PropTypes.array,
   onConfirm: PropTypes.func.isRequired
 };
 
