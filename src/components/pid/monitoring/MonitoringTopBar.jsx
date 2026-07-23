@@ -65,7 +65,7 @@ const MonitoringTopBar = ({
                 onClick={onBackToBuilder}
                 startIcon={<Edit size={16} />}
                 disableElevation
-                sx={{ ml: 2, fontWeight: 600, px: { xs: 1.5, sm: 2 }, py: 0.5, borderRadius: 2, height: 32 }}
+                sx={{ ml: { xs: 1, sm: 2 }, fontWeight: 600, px: { xs: 1.5, sm: 2 }, py: 0.5, borderRadius: 2, height: 32, whiteSpace: 'nowrap', flexShrink: 0 }}
               >
                 {t('pidBuilder.editDiagram', 'Diyagramı Düzenle')}
               </Button>
@@ -85,7 +85,7 @@ const MonitoringTopBar = ({
                   onClick={onBackToBuilder}
                   startIcon={<Edit size={16} />}
                   disableElevation
-                  sx={{ fontWeight: 600, px: { xs: 1.5, sm: 2 }, py: 0.5, borderRadius: 2, height: 32 }}
+                  sx={{ fontWeight: 600, px: { xs: 1.5, sm: 2 }, py: 0.5, borderRadius: 2, height: 32, whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
                   {t('pidBuilder.editDiagram', 'Diyagramı Düzenle')}
                 </Button>
