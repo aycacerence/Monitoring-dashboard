@@ -32,6 +32,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
   const { pathname } = useLocation();
   const isSettingsPage = pathname === '/settings';
   const hideTimeAndRefresh = isSettingsPage || pathname === '/pid/builder';
+  const hideTimeRange = hideTimeAndRefresh || pathname === '/pid/monitoring' || pathname === '/pid/alarms';
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -124,7 +125,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
           </Box>
 
           {/* Mobil İçin Zaman Aralığı Menüsü */}
-          <Box sx={{ display: hideTimeAndRefresh ? 'none' : { xs: 'block', sm: 'none' } }}>
+          <Box sx={{ display: hideTimeRange ? 'none' : { xs: 'block', sm: 'none' } }}>
             <IconButton 
               onClick={handleTimeClick}
               sx={{ 
@@ -171,7 +172,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
               <CalendarTodayIcon sx={{ fontSize: 14, mr: 0.5, color: 'primary.main' }} />
             }
             sx={{
-              display: hideTimeAndRefresh ? 'none' : { xs: 'none', sm: 'inline-flex' },
+              display: hideTimeRange ? 'none' : { xs: 'none', sm: 'inline-flex' },
               backgroundColor: '#ffffff',
               color: '#1e293b',
               fontWeight: 500,
@@ -198,25 +199,22 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
 
           {/* Rol Seçici */}
           <Box className="flex items-center">
-            <Button
-              onClick={handleClick}
-              sx={{
-                color: 'white',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.8125rem',
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' },
-                borderRadius: '8px',
-                px: { xs: 1, sm: 2 },
-                minWidth: 'auto'
-              }}
-            >
-              <AccountCircleIcon sx={{ mr: { xs: 0, sm: 1 } }} />
-              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                {role === 'admin' ? t('auth.admin', 'Admin') : t('auth.user', 'Kullanıcı')}
-              </Box>
-            </Button>
+            <Tooltip title={role === 'admin' ? t('auth.admin', 'Admin') : t('auth.user', 'Kullanıcı')} arrow>
+              <IconButton
+                onClick={handleClick}
+                size="small"
+                sx={{
+                  color: 'white',
+                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  '&:hover': { backgroundColor: 'rgba(255,255,255,0.25)' },
+                  borderRadius: '8px',
+                  width: 32,
+                  height: 32,
+                }}
+              >
+                <AccountCircleIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
             <Menu
               anchorEl={anchorEl}
               open={open}
@@ -306,34 +304,26 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
           </Tooltip>
 
           {/* Yenile butonu */}
-          <Button
-            variant="contained"
-            size="small"
-            onClick={onRefresh}
-            aria-label="Verileri Yenile"
-            sx={{
-              display: hideTimeAndRefresh ? 'none' : 'flex',
-              backgroundColor: '#ffffff',
-              color: '#000000',
-              '&:hover': { backgroundColor: '#f1f1f1' },
-              boxShadow: 'none',
-              fontWeight: 600,
-              fontSize: { xs: '0.75rem', sm: '0.8125rem' },
-              textTransform: 'none',
-              borderRadius: '8px',
-              minWidth: 'auto',
-              px: { xs: 1, sm: 2 },
-            }}
-          >
-            <RefreshIcon
-              fontSize="small"
-              className={isRefreshing ? 'animate-spin' : ''}
-              sx={{ mr: { xs: 0, sm: 1 } }}
-            />
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-              {t('header.refresh')}
-            </Box>
-          </Button>
+          <Tooltip title={t('header.refresh')} arrow>
+            <IconButton
+              onClick={onRefresh}
+              size="small"
+              sx={{
+                display: hideTimeAndRefresh ? 'none' : 'flex',
+                backgroundColor: '#ffffff',
+                color: '#1e293b',
+                '&:hover': { backgroundColor: '#f1f5f9' },
+                width: 32,
+                height: 32,
+                borderRadius: '8px',
+              }}
+            >
+              <RefreshIcon
+                sx={{ fontSize: 18 }}
+                className={isRefreshing ? 'animate-spin' : ''}
+              />
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
 
