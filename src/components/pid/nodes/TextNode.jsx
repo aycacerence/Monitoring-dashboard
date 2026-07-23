@@ -119,11 +119,11 @@ const TextNode = ({ id, data, selected }) => {
 
       <Box
         component="div"
-        contentEditable
+        contentEditable={!data.isMonitoring}
         suppressContentEditableWarning
         onBlur={handleBlur}
         onFocus={handleFocus}
-        className={isEditing ? 'nodrag' : ''}
+        className={isEditing && !data.isMonitoring ? 'nodrag' : ''}
         sx={{
           width: '100%',
           height: '100%',
@@ -135,7 +135,7 @@ const TextNode = ({ id, data, selected }) => {
           textAlign: 'center',
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
-          cursor: isEditing ? 'text' : 'grab',
+          cursor: data.isMonitoring ? 'default' : (isEditing ? 'text' : 'grab'),
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

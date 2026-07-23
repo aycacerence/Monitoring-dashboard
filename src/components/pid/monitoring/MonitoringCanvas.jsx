@@ -19,6 +19,7 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
   const mergedNodes = useMemo(() => {
     return nodes.map(n => ({
       ...n,
+      selectable: n.type !== 'textNode',
       position: {
         x: n.position.x * SCALE_FACTOR_X,
         y: n.position.y * SCALE_FACTOR_Y
@@ -30,13 +31,15 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         unit: liveData[n.id]?.unit ?? '',
         secondaryValue: liveData[n.id]?.secondaryValue ?? null,
         secondaryUnit: liveData[n.id]?.secondaryUnit ?? '',
-        status: liveData[n.id]?.status ?? 'normal'
+        status: liveData[n.id]?.status ?? 'normal',
+        isMonitoring: true
       }
     }));
   }, [nodes, liveData, selectedNode]);
 
   // Node seçimi için useCallback kullanımı
   const handleNodeClick = useCallback((e, node) => {
+    if (node.type === 'textNode') return;
     setSelectedNode(node);
   }, [setSelectedNode]);
 
