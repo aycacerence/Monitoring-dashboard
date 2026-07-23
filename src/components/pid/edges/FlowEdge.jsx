@@ -130,9 +130,11 @@ const FlowEdge = ({
   data,
   markerEnd,
   selected,
+  sourceHandleId,
+  targetHandleId,
 }) => {
   const theme = useTheme();
-  const { setEdges, screenToFlowPosition } = useReactFlow();
+  const { setEdges, screenToFlowPosition, getEdges, getNodes } = useReactFlow();
 
   const handleDelete = (e) => {
     e.stopPropagation();
@@ -142,22 +144,77 @@ const FlowEdge = ({
   const [hoveredHandle, setHoveredHandle] = useState(null);
   const [draggingHandle, setDraggingHandle] = useState(null);
 
+  // -- Çoklu Bağlantı (Overlap) Önleme Mantığı --
+  const allEdges = getEdges();
+  const allNodes = getNodes();
+
+  // Aynı hedefe giren çizgileri bul ve geldikleri kaynağın konumuna göre sırala (çizgilerin kesişmesini önler)
+  const sharedTargetEdges = allEdges
+    .filter(e => e.target === target && (e.targetHandle || null) === (targetHandleId || null))
+    .sort((a, b) => {
+      const nodeA = allNodes.find(n => n.id === a.source);
+      const nodeB = allNodes.find(n => n.id === b.source);
+      if (!nodeA || !nodeB) return a.id.localeCompare(b.id);
+      
+      if (['left', 'right'].includes(targetPosition)) {
+        return nodeA.position.y - nodeB.position.y;
+      } else {
+        return nodeA.position.x - nodeB.position.x;
+      }
+    });
+  const sharedTargetIndex = sharedTargetEdges.findIndex(e => e.id === id);
+  const targetOffsetVal = sharedTargetEdges.length > 1 ? (sharedTargetIndex - (sharedTargetEdges.length - 1) / 2) * 12 : 0;
+
+  let adjTargetX = targetX;
+  let adjTargetY = targetY;
+  if (['left', 'right'].includes(targetPosition)) {
+      adjTargetY += targetOffsetVal;
+  } else {
+      adjTargetX += targetOffsetVal;
+  }
+
+  // Aynı kaynaktan çıkan çizgileri bul ve gittikleri hedefin konumuna göre sırala
+  const sharedSourceEdges = allEdges
+    .filter(e => e.source === source && (e.sourceHandle || null) === (sourceHandleId || null))
+    .sort((a, b) => {
+      const nodeA = allNodes.find(n => n.id === a.target);
+      const nodeB = allNodes.find(n => n.id === b.target);
+      if (!nodeA || !nodeB) return a.id.localeCompare(b.id);
+      
+      if (['left', 'right'].includes(sourcePosition)) {
+        return nodeA.position.y - nodeB.position.y;
+      } else {
+        return nodeA.position.x - nodeB.position.x;
+      }
+    });
+  const sharedSourceIndex = sharedSourceEdges.findIndex(e => e.id === id);
+  const sourceOffsetVal = sharedSourceEdges.length > 1 ? (sharedSourceIndex - (sharedSourceEdges.length - 1) / 2) * 12 : 0;
+
+  let adjSourceX = sourceX;
+  let adjSourceY = sourceY;
+  if (['left', 'right'].includes(sourcePosition)) {
+      adjSourceY += sourceOffsetVal;
+  } else {
+      adjSourceX += sourceOffsetVal;
+  }
+  // ----------------------------------------------
+
   const isSelfLoop = source === target;
   const isReversed = id.includes('reverse') || (source > target) || isSelfLoop;
   // İlk çizginin (ana hattın) dümdüz olması için offset 0. Dönüş/Ters hattın etrafından dolanması için offset 60.
-  // Kendi kendine bağlanan (self-loop) oklarda da node'un içinden geçmemesi için offset (Örn: 130) uyguluyoruz.
-  const offset = isSelfLoop ? 130 : isReversed ? 75 : 0;
+  // Kendi kendine bağlanan (self-loop) oklarda da node'un içinden geçmemesi için offset (Örn: 150) uyguluyoruz.
+  const offset = isSelfLoop ? 150 : isReversed ? 75 : 0;
 
   const getInitialPoints = useCallback(() => {
-    let pts = [{ x: sourceX, y: sourceY }];
+    let pts = [{ x: adjSourceX, y: adjSourceY }];
 
     const startMarginX = sourcePosition === 'left' ? -40 : sourcePosition === 'right' ? 40 : 0;
     const startMarginY = sourcePosition === 'top' ? -40 : sourcePosition === 'bottom' ? 40 : 0;
     const endMarginX = targetPosition === 'left' ? -40 : targetPosition === 'right' ? 40 : 0;
     const endMarginY = targetPosition === 'top' ? -40 : targetPosition === 'bottom' ? 40 : 0;
 
-    const p1 = { x: sourceX + startMarginX, y: sourceY + startMarginY };
-    const p2 = { x: targetX + endMarginX, y: targetY + endMarginY };
+    const p1 = { x: adjSourceX + startMarginX, y: adjSourceY + startMarginY };
+    const p2 = { x: adjTargetX + endMarginX, y: adjTargetY + endMarginY };
     pts.push(p1);
 
     if (['left', 'right'].includes(sourcePosition) && ['left', 'right'].includes(targetPosition)) {
@@ -219,28 +276,28 @@ const FlowEdge = ({
     }
 
     pts.push(p2);
-    pts.push({ x: targetX, y: targetY });
+    pts.push({ x: adjTargetX, y: adjTargetY });
 
     return cleanPoints(pts);
-  }, [sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, offset]);
+  }, [adjSourceX, adjSourceY, adjTargetX, adjTargetY, sourcePosition, targetPosition, offset]);
 
   const activePoints = data?.points ? JSON.parse(JSON.stringify(data.points)) : getInitialPoints();
   
   // Düğüm taşınırsa uç noktaları düğüme tekrar dik açıyla kilitle
   if (data?.points && activePoints.length >= 2) {
-      activePoints[0] = { x: sourceX, y: sourceY };
+      activePoints[0] = { x: adjSourceX, y: adjSourceY };
       const startMarginX = sourcePosition === 'left' ? -40 : sourcePosition === 'right' ? 40 : 0;
       const startMarginY = sourcePosition === 'top' ? -40 : sourcePosition === 'bottom' ? 40 : 0;
       
       // İlk segment kırılma noktasını her zaman 40px marjinde tut
-      activePoints[1] = { x: sourceX + startMarginX, y: sourceY + startMarginY };
+      activePoints[1] = { x: adjSourceX + startMarginX, y: adjSourceY + startMarginY };
       
-      activePoints[activePoints.length - 1] = { x: targetX, y: targetY };
+      activePoints[activePoints.length - 1] = { x: adjTargetX, y: adjTargetY };
       const endMarginX = targetPosition === 'left' ? -40 : targetPosition === 'right' ? 40 : 0;
       const endMarginY = targetPosition === 'top' ? -40 : targetPosition === 'bottom' ? 40 : 0;
       
       // Son segment kırılma noktasını her zaman 40px marjinde tut
-      activePoints[activePoints.length - 2] = { x: targetX + endMarginX, y: targetY + endMarginY };
+      activePoints[activePoints.length - 2] = { x: adjTargetX + endMarginX, y: adjTargetY + endMarginY };
   }
 
   const onHandlePointerDown = (event, segmentIndex) => {
@@ -392,9 +449,9 @@ const FlowEdge = ({
     }
   }
 
-  const midIndex = Math.floor((activePoints.length - 1) / 2);
-  const pA = activePoints[midIndex];
-  const pB = activePoints[midIndex+1];
+  const midIndex = Math.max(0, Math.floor((activePoints.length - 1) / 2));
+  const pA = activePoints[midIndex] || { x: sourceX, y: sourceY };
+  const pB = activePoints[midIndex+1] || pA;
   const labelX = (pA.x + pB.x) / 2;
   const labelY = (pA.y + pB.y) / 2;
 

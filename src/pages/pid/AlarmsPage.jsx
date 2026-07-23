@@ -99,7 +99,7 @@ function AlarmsContent() {
         <Box className="flex items-center gap-4">
           <FormControl size="small" sx={{ minWidth: 200 }}>
             <Select
-              value={selectedDiagramId}
+              value={selectedDiagramId && diagrams.some(d => d.id === selectedDiagramId) ? selectedDiagramId : ''}
               onChange={(e) => setSelectedDiagramId(e.target.value)}
               displayEmpty
               sx={{ fontWeight: 'bold', bgcolor: 'background.paper' }}

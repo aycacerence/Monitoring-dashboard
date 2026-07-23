@@ -59,66 +59,80 @@ const getHelperLines = (draggedNode, allNodes) => {
 // AABB ve Matematiksel SVG Path Çarpışma Algılama ve Çözümleme Fonksiyonu
 const resolveNodeCollision = (targetNode, allNodes) => {
   const PADDING = 10; // Cihazlar ve borular arası zorunlu minimum boşluk
-  let { x, y } = targetNode.position;
-  let hasCollision = true;
-  let safetyLimit = 0; // Sonsuz döngüyü önlemek için
+  const originalX = targetNode.position.x;
+  const originalY = targetNode.position.y;
+  
+  const w1 = targetNode.width || 48; 
+  const h1 = targetNode.height || 48;
 
   // DOM'daki mevcut boruların (edges) SVG yollarını al
   const edgePaths = Array.from(document.querySelectorAll('.react-flow__edge-path'));
 
-  while (hasCollision && safetyLimit < 100) {
-    hasCollision = false;
-    const w1 = targetNode.width || 48; const h1 = targetNode.height || 48;
-
+  const checkCollision = (testX, testY) => {
     // 1. Düğüm (Node) Çarpışma Testi
     for (const node of allNodes) {
       if (node.id === targetNode.id) continue;
       
-      const w2 = node.width || 48; const h2 = node.height || 48;
+      const w2 = node.width || 48; 
+      const h2 = node.height || 48;
 
       const isIntersecting = 
-        x < node.position.x + w2 + PADDING &&
-        x + w1 + PADDING > node.position.x &&
-        y < node.position.y + h2 + PADDING &&
-        y + h1 + PADDING > node.position.y;
+        testX < node.position.x + w2 + PADDING &&
+        testX + w1 + PADDING > node.position.x &&
+        testY < node.position.y + h2 + PADDING &&
+        testY + h1 + PADDING > node.position.y;
 
-      if (isIntersecting) {
-        hasCollision = true;
-        // Üst üste bindiği cihazın hemen sağına it
-        x = node.position.x + w2 + PADDING; 
-        break; 
-      }
+      if (isIntersecting) return true;
     }
 
-    // 2. Boru (Edge) Çarpışma Testi (Eğer düğümle çarpışma yoksa test et)
-    if (!hasCollision) {
-      for (const path of edgePaths) {
-        // Borunun görünürlüğünü kontrol et (silinmiş/gizli borularla çarpışmayı önle)
-        if (!path.getTotalLength) continue; 
+    // 2. Boru (Edge) Çarpışma Testi
+    for (const path of edgePaths) {
+      if (!path.getTotalLength) continue; 
+      
+      const length = path.getTotalLength();
+      // Performans için 15px aralıklarla örnekleme yapıyoruz
+      for (let i = 0; i <= length; i += 15) {
+        const point = path.getPointAtLength(i);
         
-        const length = path.getTotalLength();
-        for (let i = 0; i <= length; i += 15) {
-          const point = path.getPointAtLength(i);
-          
-          if (
-            point.x >= x - PADDING &&
-            point.x <= x + w1 + PADDING &&
-            point.y >= y - PADDING &&
-            point.y <= y + h1 + PADDING
-          ) {
-            hasCollision = true;
-            // Borunun hemen sağına/aşağısına itmek yerine basitçe X'i kaydır
-            x += 20; 
-            break;
-          }
+        if (
+          point.x >= testX - PADDING &&
+          point.x <= testX + w1 + PADDING &&
+          point.y >= testY - PADDING &&
+          point.y <= testY + h1 + PADDING
+        ) {
+          return true;
         }
-        if (hasCollision) break;
       }
     }
+    return false;
+  };
 
+  // İlk konumda çarpışma yoksa direkt dön
+  if (!checkCollision(originalX, originalY)) {
+    return { x: originalX, y: originalY };
+  }
+
+  // Spiral arama (nearest empty space)
+  let radius = 20;
+  let safetyLimit = 0;
+  // 8 yön (sağ, sağ-alt, alt, sol-alt, sol, sol-üst, üst, sağ-üst)
+  const angleStep = Math.PI / 4; 
+
+  while (safetyLimit < 100) {
+    for (let angle = 0; angle < Math.PI * 2; angle += angleStep) {
+      const testX = originalX + Math.cos(angle) * radius;
+      const testY = originalY + Math.sin(angle) * radius;
+      
+      if (!checkCollision(testX, testY)) {
+        return { x: testX, y: testY };
+      }
+    }
+    radius += 20; // Bulamazsa yarıçapı genişlet
     safetyLimit++;
   }
-  return { x, y };
+
+  // Çok yoğun bir alansa veya boşluk bulunamazsa son çare orijinal konuma dön
+  return { x: originalX, y: originalY };
 };
 
 import { Button } from '@mui/material';

@@ -320,7 +320,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1, justifyContent: { xs: 'center', md: 'flex-start' } }}>
                 <FormControl size="small" sx={{ minWidth: { xs: 100, sm: 180 }, flex: { xs: 1, md: 'none' } }}>
                   <Select
-                    value={activeDiagramId || ''}
+                    value={activeDiagramId && diagrams.some(d => d.id === activeDiagramId) ? activeDiagramId : ''}
                     onChange={handleSwitch}
                     displayEmpty
                     sx={{ height: 36, bgcolor: 'background.default' }}

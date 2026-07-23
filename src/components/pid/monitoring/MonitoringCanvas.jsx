@@ -8,10 +8,19 @@ import { monitoringNodeTypes, edgeTypes } from '../registry';
 const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
   const { selectedNode, setSelectedNode } = usePID();
 
-  // Performans dostu veri birleştirme
+  // Node koordinatlarını dinamik olarak ölçeklendirmek için kullanılacak katsayılar.
+  // Y ekseninde cihazlar daha uzun olduğu için asimetrik ölçeklendirme uygulanır.
+  const SCALE_FACTOR_X = 1.8;
+  const SCALE_FACTOR_Y = 2.8;
+
+  // Performans dostu veri birleştirme ve ölçekleme
   const mergedNodes = useMemo(() => {
     return nodes.map(n => ({
       ...n,
+      position: {
+        x: n.position.x * SCALE_FACTOR_X,
+        y: n.position.y * SCALE_FACTOR_Y
+      },
       selected: selectedNode?.id === n.id,
       data: {
         ...n.data,

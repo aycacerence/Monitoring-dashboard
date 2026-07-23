@@ -87,6 +87,12 @@ export const PIDProvider = ({ children }) => {
     setDiagrams(list);
     
     let activeId = localStorage.getItem(`pid_active_diagram_${role}`);
+    
+    // Fix string 'null' bug from localStorage
+    if (activeId === 'null' || activeId === 'undefined') {
+      activeId = null;
+    }
+
     if (!activeId && list.length > 0) {
       activeId = list[0].id;
     } else if (list.length === 0) {
@@ -98,7 +104,11 @@ export const PIDProvider = ({ children }) => {
     }
     
     setActiveDiagramId(activeId);
-    localStorage.setItem(`pid_active_diagram_${role}`, activeId);
+    if (activeId) {
+      localStorage.setItem(`pid_active_diagram_${role}`, activeId);
+    } else {
+      localStorage.removeItem(`pid_active_diagram_${role}`);
+    }
     
     const content = loadDiagramContent(activeId);
     setNodes(content.nodes || []);
@@ -345,7 +355,11 @@ export const PIDProvider = ({ children }) => {
     }
     
     setActiveDiagramId(id);
-    localStorage.setItem(`pid_active_diagram_${role}`, id);
+    if (id) {
+      localStorage.setItem(`pid_active_diagram_${role}`, id);
+    } else {
+      localStorage.removeItem(`pid_active_diagram_${role}`);
+    }
     
     const content = loadDiagramContent(id);
     setNodes(content.nodes || []);

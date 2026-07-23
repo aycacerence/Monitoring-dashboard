@@ -29,7 +29,7 @@ const MonitoringTopBar = ({
               </Typography>
               <FormControl size="small" variant="outlined" sx={{ minWidth: 150 }}>
                 <Select
-                  value={activeDiagramId || ''}
+                  value={activeDiagramId && diagrams.some(d => d.id === activeDiagramId) ? activeDiagramId : ''}
                   onChange={(e) => onSwitchDiagram && onSwitchDiagram(e.target.value)}
                   displayEmpty
                   sx={{ 
@@ -45,6 +45,11 @@ const MonitoringTopBar = ({
                     '.MuiSvgIcon-root': { color: 'primary.700' }
                   }}
                 >
+                  {!activeDiagramId && (
+                    <MenuItem value="" disabled>
+                      {t('pidMonitoring.selectDiagram', 'Diyagram Seçin')}
+                    </MenuItem>
+                  )}
                   {diagrams.map((d) => (
                     <MenuItem key={d.id} value={d.id} sx={{ fontWeight: 500 }}>
                       {d.name}

@@ -164,7 +164,7 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
           {/* Masaüstü İçin Zaman Aralığı Seçici */}
           <Select
             size="small"
-            value={timeRange}
+            value={timeRange || ''}
             onChange={(e) => onTimeRangeChange(e.target.value)}
             aria-label="Zaman aralığı filtresi"
             startAdornment={
@@ -184,6 +184,11 @@ function Header({ lastUpdated, timeRange, onTimeRangeChange, onRefresh, isRefres
               '& .MuiSelect-select': { paddingLeft: '6px', paddingRight: '28px !important' },
             }}
           >
+            {!timeRange && (
+              <MenuItem value="" sx={{ display: 'none' }}>
+                <em>Seçiniz</em>
+              </MenuItem>
+            )}
             {timeRangeOptions.map((opt) => (
               <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.8125rem' }}>
                 {opt.label}
