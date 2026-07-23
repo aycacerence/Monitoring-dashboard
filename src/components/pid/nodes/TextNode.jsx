@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useReactFlow, NodeToolbar, Position } from 'reactflow';
+import { useReactFlow, NodeToolbar, Position, NodeResizer } from 'reactflow';
 import { Box, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -46,7 +46,24 @@ const TextNode = ({ id, data, selected }) => {
   };
 
   return (
-    <Box sx={{ position: 'relative', display: 'inline-block' }}>
+    <Box sx={{ position: 'relative', width: '100%', height: '100%', minWidth: '100px', minHeight: '40px' }}>
+      <NodeResizer 
+        color="#3b82f6" 
+        isVisible={selected} 
+        minWidth={100} 
+        minHeight={40}
+        handleStyle={{
+          width: 10,
+          height: 10,
+          backgroundColor: '#ef4444',
+          border: '1px solid white',
+          borderRadius: '50%'
+        }}
+        lineStyle={{
+          borderWidth: 1,
+          borderColor: '#3b82f6'
+        }}
+      />
       {selected && (
         <IconButton
           size="small"
@@ -108,9 +125,9 @@ const TextNode = ({ id, data, selected }) => {
         onFocus={handleFocus}
         className={isEditing ? 'nodrag' : ''}
         sx={{
+          width: '100%',
+          height: '100%',
           padding: '8px 16px',
-          minWidth: '100px',
-          minHeight: '40px',
           fontSize: `${fontSize}px`,
           fontWeight: 600,
           color: 'inherit',
@@ -121,18 +138,17 @@ const TextNode = ({ id, data, selected }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: selected ? 'rgba(164, 35, 80, 0.05)' : 'transparent',
+          backgroundColor: selected ? 'rgba(59, 130, 246, 0.05)' : 'transparent',
           lineHeight: 1.2,
           transition: 'all 0.2s ease',
           fontFamily: 'inherit',
           borderRadius: '8px',
           outline: 'none',
-          border: '2px',
-          borderStyle: selected ? 'solid' : 'dashed',
-          borderColor: selected ? '#a42350' : 'transparent',
+          border: '1px solid',
+          borderColor: selected ? '#3b82f6' : '#cbd5e1', // Hafif gri, sabit border
           '&:hover': {
-            borderColor: selected ? '#a42350' : 'text.disabled',
-            backgroundColor: !selected ? 'action.hover' : 'rgba(164, 35, 80, 0.05)',
+            borderColor: selected ? '#3b82f6' : '#94a3b8',
+            backgroundColor: !selected ? 'action.hover' : 'rgba(59, 130, 246, 0.05)',
           }
         }}
       >
