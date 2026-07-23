@@ -157,13 +157,15 @@ const FlowEdge = ({
       if (!nodeA || !nodeB) return a.id.localeCompare(b.id);
       
       if (['left', 'right'].includes(targetPosition)) {
+        if (Math.abs(nodeA.position.y - nodeB.position.y) < 1) return a.id.localeCompare(b.id);
         return nodeA.position.y - nodeB.position.y;
       } else {
+        if (Math.abs(nodeA.position.x - nodeB.position.x) < 1) return a.id.localeCompare(b.id);
         return nodeA.position.x - nodeB.position.x;
       }
     });
   const sharedTargetIndex = sharedTargetEdges.findIndex(e => e.id === id);
-  const targetOffsetVal = sharedTargetEdges.length > 1 ? (sharedTargetIndex - (sharedTargetEdges.length - 1) / 2) * 12 : 0;
+  const targetOffsetVal = sharedTargetEdges.length > 1 ? (sharedTargetIndex - (sharedTargetEdges.length - 1) / 2) * 20 : 0;
 
   let adjTargetX = targetX;
   let adjTargetY = targetY;
@@ -182,13 +184,15 @@ const FlowEdge = ({
       if (!nodeA || !nodeB) return a.id.localeCompare(b.id);
       
       if (['left', 'right'].includes(sourcePosition)) {
+        if (Math.abs(nodeA.position.y - nodeB.position.y) < 1) return a.id.localeCompare(b.id);
         return nodeA.position.y - nodeB.position.y;
       } else {
+        if (Math.abs(nodeA.position.x - nodeB.position.x) < 1) return a.id.localeCompare(b.id);
         return nodeA.position.x - nodeB.position.x;
       }
     });
   const sharedSourceIndex = sharedSourceEdges.findIndex(e => e.id === id);
-  const sourceOffsetVal = sharedSourceEdges.length > 1 ? (sharedSourceIndex - (sharedSourceEdges.length - 1) / 2) * 12 : 0;
+  const sourceOffsetVal = sharedSourceEdges.length > 1 ? (sharedSourceIndex - (sharedSourceEdges.length - 1) / 2) * 20 : 0;
 
   let adjSourceX = sourceX;
   let adjSourceY = sourceY;
