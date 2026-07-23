@@ -30,7 +30,7 @@ describe('Header', () => {
   test('Yenile butonu tıklanabilir', () => {
     const onRefresh = vi.fn();
     renderWithProviders(<Header onRefresh={onRefresh} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Verileri Yenile' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Yenile' }));
     expect(onRefresh).toHaveBeenCalled();
   });
 
@@ -43,7 +43,7 @@ describe('Header', () => {
   test('Admin/Kullanıcı rol seçici görünüyor', () => {
     renderWithProviders(<Header />);
     expect(
-      screen.getByText(/admin|kullanıcı|user/i)
+      screen.getByRole('button', { name: 'auth.admin' })
     ).toBeInTheDocument();
   });
 });
