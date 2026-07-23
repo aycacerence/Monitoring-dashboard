@@ -54,15 +54,15 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
           <Box
             sx={{
-              width: 10,
-              height: 10,
+              width: 8,
+              height: 8,
               borderRadius: '50%',
               backgroundColor: 'success.main',
               mr: 1,
               boxShadow: '0 0 8px rgba(76, 175, 80, 0.6)' // Çevrimiçi hissi veren hafif parlama
             }}
           />
-          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="subtitle2" component="div" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>
             {t('pidMonitoring.systemStatus.title', 'Sistem Durumu')}
           </Typography>
         </Box>
@@ -70,38 +70,38 @@ const SystemStatusCard = ({ nodes = [], liveData = {} }) => {
         <Divider sx={{ mb: 2 }} />
 
         {/* İstatistik Satırları */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="caption" color="text.secondary">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
             {t('pidMonitoring.systemStatus.activeDevices', 'Aktif Cihazlar')}
           </Typography>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
             {activeCount} / {totalNodes}
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="caption" color="text.secondary">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
             {t('pidMonitoring.systemStatus.alarms', 'Alarmlar')}
           </Typography>
-          <Typography variant="subtitle1" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+          <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
             {alarmCount}
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="caption" color="text.secondary">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
             {t('pidMonitoring.systemStatus.warnings', 'Uyarılar')}
           </Typography>
-          <Typography variant="subtitle1" sx={{ color: 'warning.main', fontWeight: 'bold' }}>
+          <Typography variant="body2" sx={{ color: 'warning.main', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
             {warningCount}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
             {t('pidMonitoring.systemStatus.maintenance', 'Bakım Gereken')}
           </Typography>
-          <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 'bold' }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
             {maintenanceCount}
           </Typography>
         </Box>

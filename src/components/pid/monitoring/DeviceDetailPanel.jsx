@@ -255,12 +255,14 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
       variant="persistent"
       open={Boolean(selectedNode)}
       sx={{
-        width: selectedNode ? 340 : 0,
+        width: selectedNode ? { xs: '100%', sm: '25vw', md: '28vw', lg: '340px' } : 0,
+        minWidth: selectedNode ? { xs: '100%', sm: '200px', md: '260px', lg: '340px' } : 0,
         flexShrink: 0,
         zIndex: 1200,
         transition: 'width 0.3s ease',
         '& .MuiDrawer-paper': { 
-          width: 340, 
+          width: { xs: '100%', sm: '25vw', md: '28vw', lg: '340px' },
+          minWidth: { xs: '100%', sm: '200px', md: '260px', lg: '340px' },
           boxSizing: 'border-box',
           position: 'absolute',
           height: '100%',
@@ -384,14 +386,14 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
           <Box sx={{ display: 'flex', width: '100%', gap: 2, zIndex: 1, mb: 2 }}>
             {/* Sol / Ana Değer */}
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: secondaryValue !== undefined ? '1px solid' : 'none', borderColor: 'divider' }}>
-              <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.25, letterSpacing: 1, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>
+              <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.25, letterSpacing: 0.5, fontWeight: 600, textTransform: 'uppercase', fontSize: '0.65rem' }}>
                 {paramLabel}
               </Typography>
               <Box display="flex" alignItems="baseline" gap={0.5}>
-                <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: secondaryValue !== undefined ? '2rem' : '2.8rem', lineHeight: 1 }}>
+                <Typography sx={{ fontWeight: 600, color: 'text.primary', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontSize: secondaryValue !== undefined ? 'clamp(1.2rem, 2vw, 1.5rem)' : 'clamp(1.5rem, 2.5vw, 2rem)', lineHeight: 1 }}>
                   {liveValue}
                 </Typography>
-                <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                   {liveUnit}
                 </Typography>
               </Box>
@@ -400,14 +402,14 @@ const DeviceDetailPanel = ({ liveData = {} }) => {
             {/* Sağ / İkincil Değer */}
             {secondaryValue !== undefined && (
               <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.25, letterSpacing: 1, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem' }}>
+                <Typography variant="overline" sx={{ color: 'text.secondary', mb: 0.25, letterSpacing: 0.5, fontWeight: 600, textTransform: 'uppercase', fontSize: '0.65rem' }}>
                   {paramLabel2}
                 </Typography>
                 <Box display="flex" alignItems="baseline" gap={0.5}>
-                  <Typography variant="h2" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', fontSize: '2rem', lineHeight: 1 }}>
+                  <Typography sx={{ fontWeight: 600, color: 'text.primary', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.01em', fontSize: 'clamp(1.2rem, 2vw, 1.5rem)', lineHeight: 1 }}>
                     {secondaryValue}
                   </Typography>
-                  <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                     {secondaryUnit}
                   </Typography>
                 </Box>

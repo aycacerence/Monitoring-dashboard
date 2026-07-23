@@ -74,7 +74,14 @@ const MonitoringContent = () => {
       <Box className="flex flex-1 overflow-hidden relative border-t border-slate-200 dark:border-slate-800">
         
         {/* SOL PANEL: Sistem Durumu & Alarmlar */}
-        <Box className="w-64 p-4 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-4 overflow-y-auto">
+        <Box 
+          sx={{ 
+            width: { xs: '100%', sm: '25vw', md: '22vw', lg: '256px' },
+            minWidth: { xs: '100%', sm: '190px', md: '220px', lg: '256px' },
+            flexShrink: 0
+          }}
+          className="p-4 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-4 overflow-y-auto"
+        >
           <SystemStatusCard nodes={nodes} liveData={liveData} />
           <AlarmList alarms={alarms} diagramId={diagram?.id} />
         </Box>
