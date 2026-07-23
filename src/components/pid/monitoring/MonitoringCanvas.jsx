@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
-import ReactFlow, { Background } from 'reactflow';
+import ReactFlow, { Controls } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import { usePID } from '../../../context/pid/PIDContext';
 import { monitoringNodeTypes, edgeTypes } from '../registry';
+
+/* ─── Serbest gezinme kilidi kaldırıldı ─────────────────────────────────── */
 
 const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
   const { selectedNode, setSelectedNode } = usePID();
@@ -49,7 +51,7 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
     const observer = new ResizeObserver(() => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        reactFlowInstance.fitView({ duration: 600, padding: 0.1, maxZoom: 1.5 });
+        reactFlowInstance.fitView({ duration: 600, padding: 0.12, maxZoom: 1.5 });
       }, 100);
     });
 
@@ -66,7 +68,7 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
     if (reactFlowInstance && nodes.length > 0) {
       // Çizimin bitmesini beklemek için küçük bir gecikme
       const timeoutId = setTimeout(() => {
-        reactFlowInstance.fitView({ duration: 600, padding: 0.1, maxZoom: 1.5 });
+        reactFlowInstance.fitView({ duration: 600, padding: 0.12, maxZoom: 1.5 });
       }, 50);
       return () => clearTimeout(timeoutId);
     }
@@ -86,17 +88,33 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         nodesConnectable={false}
         elementsSelectable={true}
         fitView
-        fitViewOptions={{ padding: 0.1, maxZoom: 1.5, duration: 600 }}
-        zoomOnScroll={false}
-        zoomOnPinch={false}
-        zoomOnDoubleClick={false}
-        panOnDrag={false}
+        fitViewOptions={{ padding: 0.12, maxZoom: 1.5, duration: 600 }}
+        /* ── Gezinme kilitleri kaldırıldı ── */
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={true}
+        panOnDrag={true}
         panOnScroll={false}
-        preventScrolling={false}
+        preventScrolling={true}
         minZoom={0.1}
-        maxZoom={1.5}
+        maxZoom={4}
         proOptions={{ hideAttribution: true }}
       >
+        {/* Zoom In / Zoom Out / Fit View kontrol butonları */}
+        <Controls
+          showZoom={true}
+          showFitView={true}
+          showInteractive={false}
+          position="bottom-right"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+            bottom: '16px',
+            right: '16px',
+          }}
+        />
+
 
         {/* Özel ok işaretleri (Custom Markers) - Builder ile aynı */}
         <svg className="custom-markers-svg" style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }}>
@@ -116,10 +134,43 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
           </defs>
         </svg>
 
-        {/* Grab cursor'ını engellemek için */}
+        {/* İzleme ekranına özel cursor ve Controls stilleri */}
         <style>{`
           .monitoring-flow .react-flow__pane {
-            cursor: default !important;
+            cursor: grab !important;
+          }
+          .monitoring-flow .react-flow__pane:active {
+            cursor: grabbing !important;
+          }
+          .monitoring-flow .react-flow__controls {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.08);
+          }
+          .monitoring-flow .react-flow__controls-button {
+            width: 28px;
+            height: 28px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            background: var(--monitoring-ctrl-bg, #ffffff);
+            color: var(--monitoring-ctrl-color, #475569);
+            transition: background 0.15s, color 0.15s;
+          }
+          .monitoring-flow .react-flow__controls-button:hover {
+            background: var(--monitoring-ctrl-hover, #f1f5f9);
+            color: #0f172a;
+          }
+          .monitoring-flow .react-flow__controls-button:last-child {
+            border-bottom: none;
+          }
+          html.dark .monitoring-flow .react-flow__controls {
+            --monitoring-ctrl-bg: #1e293b;
+            --monitoring-ctrl-color: #94a3b8;
+            --monitoring-ctrl-hover: #334155;
+            border-color: rgba(255,255,255,0.08);
+          }
+          html.dark .monitoring-flow .react-flow__controls-button {
+            border-bottom-color: rgba(255,255,255,0.06);
           }
         `}</style>
       </ReactFlow>
