@@ -87,6 +87,9 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={true}
+        edgesSelectable={false}
+        edgesFocusable={false}
+        deleteKeyCode={null}
         fitView
         fitViewOptions={{ padding: 0.12, maxZoom: 1.5, duration: 600 }}
         /* ── Gezinme kilitleri kaldırıldı ── */
@@ -141,6 +144,14 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
           }
           .monitoring-flow .react-flow__pane:active {
             cursor: grabbing !important;
+          }
+          /* Edge seçimi ve tıklaması tamamen engellendi */
+          .monitoring-flow .react-flow__edge {
+            pointer-events: none !important;
+          }
+          .monitoring-flow .react-flow__edge.selected .react-flow__edge-path,
+          .monitoring-flow .react-flow__edge:focus .react-flow__edge-path {
+            stroke: inherit !important;
           }
           .monitoring-flow .react-flow__controls {
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
