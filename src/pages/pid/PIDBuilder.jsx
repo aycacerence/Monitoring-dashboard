@@ -29,7 +29,7 @@ const PIDBuilderContent = () => {
   const propertyWidth = isTabletOrMobile ? 240 : 320;
 
   const leftOpen = isTabletOrMobile ? mobilePaletteOpen : true;
-  const rightOpen = !!selectedNode;
+  const rightOpen = !!selectedNode && selectedNode.type !== 'textNode';
 
   return (
     <>
