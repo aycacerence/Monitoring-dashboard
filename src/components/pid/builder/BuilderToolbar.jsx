@@ -221,6 +221,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
       id: `text-${Date.now()}`,
       type: 'textNode',
       position: position,
+      selected: true,
       data: { text: t('pidBuilder.canvas.newText', 'Yeni Metin') },
       style: { 
         zIndex: 10,
@@ -231,7 +232,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
       }
     };
 
-    setNodes((nds) => nds.concat(newNode));
+    setNodes((nds) => nds.map(n => ({ ...n, selected: false })).concat(newNode));
     toast.success(t('pidBuilder.toolbar.textAdded', 'Metin alanı eklendi'));
   };
 

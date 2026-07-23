@@ -196,9 +196,10 @@ export const PIDProvider = ({ children }) => {
       id: `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       type: 'device',
       position,
+      selected: true,
       data: { ...device }
     };
-    setNodes((nds) => [...nds, newNode]);
+    setNodes((nds) => nds.map(n => ({ ...n, selected: false })).concat(newNode));
   }, [pushHistory]);
 
   const updateNodeData = useCallback((nodeId, newData) => {
