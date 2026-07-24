@@ -102,7 +102,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
     deleteDiagram,
   } = usePID();
 
-  const { fitView, getNodes, getEdges, screenToFlowPosition, project, setNodes } = useReactFlow();
+  const { fitView, getNodes, getEdges, screenToFlowPosition, project, setNodes, setCenter, getZoom } = useReactFlow();
   const [selectedItemCount, setSelectedItemCount] = useState(0);
   
   // Çoklu Diyagram State
@@ -206,7 +206,13 @@ const BuilderToolbar = ({ onMenuClick }) => {
   const handleAddText = () => {
     let position;
     if (screenToFlowPosition) {
-       position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+       const flowEl = document.querySelector('.react-flow');
+       if (flowEl) {
+         const rect = flowEl.getBoundingClientRect();
+         position = screenToFlowPosition({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+       } else {
+         position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+       }
     } else if (project) {
        position = project({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     } else {
@@ -214,8 +220,20 @@ const BuilderToolbar = ({ onMenuClick }) => {
     }
     
     // Eğer üst üste binerse kaydır
-    const existingTexts = getNodes().filter(n => n.type === 'textNode');
-    position.y += existingTexts.length * 30;
+    let hasCollision = true;
+    let attempts = 0;
+    while(hasCollision && attempts < 20) {
+      hasCollision = false;
+      for (const node of getNodes()) {
+         if (Math.abs(node.position.x - position.x) < 50 && Math.abs(node.position.y - position.y) < 50) {
+            position.x += 40;
+            position.y += 40;
+            hasCollision = true;
+            break;
+         }
+      }
+      attempts++;
+    }
 
     const newNode = {
       id: `text-${Date.now()}`,
@@ -233,6 +251,7 @@ const BuilderToolbar = ({ onMenuClick }) => {
     };
 
     setNodes((nds) => nds.map(n => ({ ...n, selected: false })).concat(newNode));
+    setCenter(position.x, position.y, { zoom: getZoom(), duration: 800 });
     toast.success(t('pidBuilder.toolbar.textAdded', 'Metin alanı eklendi'));
   };
 

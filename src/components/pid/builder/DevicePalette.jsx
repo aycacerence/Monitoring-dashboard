@@ -22,7 +22,7 @@ const getCategoryTranslation = (category, t) => {
 const DevicePalette = () => {
   const { t } = useTranslation();
   const { activeFlowType, setActiveFlowType, selectedEdge, updateEdgeData, addNode } = usePID();
-  const { screenToFlowPosition, project, getNodes, setEdges } = useReactFlow();
+  const { screenToFlowPosition, project, getNodes, setEdges, setCenter, getZoom } = useReactFlow();
 
   const [isEdgeSelected, setIsEdgeSelected] = useState(false);
   const pipesSectionRef = useRef(null);
@@ -42,7 +42,13 @@ const DevicePalette = () => {
   const handleDeviceClick = (device) => {
     let position;
     if (screenToFlowPosition) {
-       position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+       const flowEl = document.querySelector('.react-flow');
+       if (flowEl) {
+         const rect = flowEl.getBoundingClientRect();
+         position = screenToFlowPosition({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+       } else {
+         position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+       }
     } else if (project) {
        position = project({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     } else {
@@ -65,6 +71,7 @@ const DevicePalette = () => {
     }
     
     addNode(device, position);
+    setCenter(position.x, position.y, { zoom: getZoom(), duration: 800 });
     toast.success(`${t(`pidBuilder.devices.${device.label}`, { defaultValue: device.label })} eklendi!`);
   };
 
