@@ -34,16 +34,36 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
         }
       }
 
+      let finalX, finalY;
+      if (n.parentNode) {
+        finalX = n.position.x * 1.5; // Genişlik oranına göre (100 -> 150)
+        finalY = n.position.y * textScale;
+        
+        // Monitoring cihaz kartı ortalama 150x220 boyutlarındadır.
+        // Metin bu alanın içine düşüyorsa, okunaklılığı bozmamak için dışarı (üste veya alta) itilir.
+        const isHorizontallyOverlapping = finalX > -100 && finalX < 140;
+        const isVerticallyOverlapping = finalY > -60 && finalY < 220;
+        
+        if (isHorizontallyOverlapping && isVerticallyOverlapping) {
+           // Builder'daki orta nokta (y=42.5) baz alınarak en yakın kenara itilir
+           if (n.position.y < 42.5) {
+              finalY = -60; // Üste it
+           } else {
+              finalY = 220; // Alta it
+           }
+        }
+      } else {
+        finalX = n.position.x * SCALE_FACTOR_X;
+        finalY = n.position.y * SCALE_FACTOR_Y;
+      }
+
       return {
         ...n,
         width: scaledWidth,
         height: scaledHeight,
         style: scaledStyle,
         selectable: !isText,
-        position: {
-          x: n.position.x * SCALE_FACTOR_X,
-          y: n.position.y * SCALE_FACTOR_Y
-        },
+        position: { x: finalX, y: finalY },
         selected: selectedNode?.id === n.id,
         data: {
           ...n.data,

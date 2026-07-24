@@ -67,17 +67,35 @@ function SaveConfigureModal({
         }
       }
 
+      let finalX, finalY;
+      if (n.parentNode) {
+        finalX = n.position.x * 1.5;
+        finalY = n.position.y * textScale;
+        
+        const isHorizontallyOverlapping = finalX > -100 && finalX < 140;
+        const isVerticallyOverlapping = finalY > -60 && finalY < 220;
+        
+        if (isHorizontallyOverlapping && isVerticallyOverlapping) {
+           if (n.position.y < 42.5) {
+              finalY = -60;
+           } else {
+              finalY = 220;
+           }
+        }
+      } else {
+        finalX = n.position.x * SCALE_FACTOR_X;
+        finalY = n.position.y * SCALE_FACTOR_Y;
+      }
+
       return {
         ...n,
         width: scaledWidth,
         height: scaledHeight,
         style: scaledStyle,
         id: `preview-${n.id}`,
+        ...(n.parentNode ? { parentNode: `preview-${n.parentNode}` } : {}),
         type: isText ? 'textNode' : 'monitoringPreview',
-        position: {
-          x: n.position.x * SCALE_FACTOR_X,
-          y: n.position.y * SCALE_FACTOR_Y
-        },
+        position: { x: finalX, y: finalY },
         data: {
           ...n.data,
           fontSize: isText ? (n.data.fontSize || 24) * textScale : n.data.fontSize,

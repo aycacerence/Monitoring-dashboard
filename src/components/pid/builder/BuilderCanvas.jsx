@@ -58,6 +58,11 @@ const getHelperLines = (draggedNode, allNodes) => {
 
 // AABB ve Matematiksel SVG Path Çarpışma Algılama ve Çözümleme Fonksiyonu
 const resolveNodeCollision = (targetNode, allNodes) => {
+  // Alt düğümler (child nodes) göreceli konuma sahip olduğu için çarpışma testine sokulmaz.
+  if (targetNode.parentNode) {
+    return { x: targetNode.position.x, y: targetNode.position.y };
+  }
+
   const PADDING = 10; // Cihazlar ve borular arası zorunlu minimum boşluk
   const originalX = targetNode.position.x;
   const originalY = targetNode.position.y;
@@ -72,8 +77,9 @@ const resolveNodeCollision = (targetNode, allNodes) => {
     // 1. Düğüm (Node) Çarpışma Testi
     for (const node of allNodes) {
       if (node.id === targetNode.id) continue;
+      if (node.parentNode) continue; // Alt düğümleri çarpışma testinden çıkar
       
-      const w2 = node.width || 48; 
+      const w2 = node.width || 48;  
       const h2 = node.height || 48;
 
       const isIntersecting = 

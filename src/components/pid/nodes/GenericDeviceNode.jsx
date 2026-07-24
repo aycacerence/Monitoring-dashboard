@@ -2,6 +2,7 @@ import React from 'react';
 import { Handle, Position, useReactFlow, getConnectedEdges } from 'reactflow';
 import { Box, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 import { iconMap } from '../../../data/pid/iconMap';
 import { useTranslation } from 'react-i18next';
 
@@ -20,6 +21,26 @@ const GenericDeviceNode = ({ id, data, selected }) => {
       const connectedEdges = getConnectedEdges([node], edges);
       setEdges((eds) => eds.filter((edge) => !connectedEdges.find((c) => c.id === edge.id)));
     }
+  };
+
+  const handleAddNote = (e) => {
+    e.stopPropagation();
+    const newTextNode = {
+      id: `text-${Date.now()}`,
+      type: 'textNode',
+      position: { x: 0, y: -30 }, // Relative position to the device
+      parentNode: id,
+      data: { 
+        text: data.code || 'Not',
+        fontSize: 16,
+        color: '#475569',
+        fontWeight: 600,
+        backgroundColor: 'transparent',
+        padding: '0px'
+      },
+      zIndex: 100
+    };
+    setNodes((nds) => [...nds, newTextNode]);
   };
 
   return (
@@ -55,6 +76,28 @@ const GenericDeviceNode = ({ id, data, selected }) => {
           }}
         >
           <CloseIcon sx={{ fontSize: 16 }} />
+        </IconButton>
+      )}
+
+      {selected && (
+        <IconButton
+          size="small"
+          onClick={handleAddNote}
+          sx={{
+            position: 'absolute',
+            top: -10,
+            left: -10,
+            bgcolor: 'primary.main',
+            color: 'white',
+            width: 24,
+            height: 24,
+            '&:hover': {
+              bgcolor: 'primary.dark',
+            },
+            zIndex: 10,
+          }}
+        >
+          <EditIcon sx={{ fontSize: 14 }} />
         </IconButton>
       )}
       
