@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { useReactFlow, NodeToolbar, Position, NodeResizer } from 'reactflow';
+import { PIDContext } from '../../../context/pid/PIDContext';
 import { Box, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -7,7 +8,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 
 const TextNode = ({ id, data, selected }) => {
-  const { updateNodeData, setNodes } = useReactFlow();
+  const { setNodes } = useReactFlow();
+  const pidContext = useContext(PIDContext);
   const { t } = useTranslation();
   const fontSize = data.fontSize || 24;
   const textRef = useRef(data.text || t('pidBuilder.canvas.newText', 'Yeni Metin'));
@@ -20,8 +22,8 @@ const TextNode = ({ id, data, selected }) => {
     
     // Defer the node data update to avoid race conditions with ReactFlow's selection state
     setTimeout(() => {
-      if (updateNodeData) {
-        updateNodeData(id, { text: newText });
+      if (pidContext && pidContext.updateNodeData) {
+        pidContext.updateNodeData(id, { text: newText });
       } else {
         setNodes((nds) => nds.map((n) => (n.id === id ? { ...n, data: { ...n.data, text: newText } } : n)));
       }
@@ -34,8 +36,8 @@ const TextNode = ({ id, data, selected }) => {
 
   const handleFontSizeChange = (delta) => {
     const newSize = Math.max(10, Math.min(100, fontSize + delta));
-    if (updateNodeData) {
-      updateNodeData(id, { fontSize: newSize });
+    if (pidContext && pidContext.updateNodeData) {
+      pidContext.updateNodeData(id, { fontSize: newSize });
     } else {
       setNodes((nds) => nds.map((n) => (n.id === id ? { ...n, data: { ...n.data, fontSize: newSize } } : n)));
     }

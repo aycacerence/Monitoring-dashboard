@@ -17,24 +17,46 @@ const MonitoringCanvas = ({ nodes = [], edges = [], liveData = {} }) => {
 
   // Performans dostu veri birleştirme ve ölçekleme
   const mergedNodes = useMemo(() => {
-    return nodes.map(n => ({
-      ...n,
-      selectable: n.type !== 'textNode',
-      position: {
-        x: n.position.x * SCALE_FACTOR_X,
-        y: n.position.y * SCALE_FACTOR_Y
-      },
-      selected: selectedNode?.id === n.id,
-      data: {
-        ...n.data,
-        liveValue: liveData[n.id]?.value ?? null,
-        unit: liveData[n.id]?.unit ?? '',
-        secondaryValue: liveData[n.id]?.secondaryValue ?? null,
-        secondaryUnit: liveData[n.id]?.secondaryUnit ?? '',
-        status: liveData[n.id]?.status ?? 'normal',
-        isMonitoring: true
+    return nodes.map(n => {
+      const isText = n.type === 'textNode';
+      const textScale = (SCALE_FACTOR_X + SCALE_FACTOR_Y) / 2;
+
+      let scaledWidth = n.width;
+      let scaledHeight = n.height;
+      let scaledStyle = n.style ? { ...n.style } : undefined;
+
+      if (isText) {
+        if (n.width) scaledWidth = n.width * textScale;
+        if (n.height) scaledHeight = n.height * textScale;
+        if (scaledStyle) {
+          if (scaledStyle.width) scaledStyle.width = (parseFloat(scaledStyle.width) * textScale) + 'px';
+          if (scaledStyle.height) scaledStyle.height = (parseFloat(scaledStyle.height) * textScale) + 'px';
+        }
       }
-    }));
+
+      return {
+        ...n,
+        width: scaledWidth,
+        height: scaledHeight,
+        style: scaledStyle,
+        selectable: !isText,
+        position: {
+          x: n.position.x * SCALE_FACTOR_X,
+          y: n.position.y * SCALE_FACTOR_Y
+        },
+        selected: selectedNode?.id === n.id,
+        data: {
+          ...n.data,
+          fontSize: isText ? (n.data.fontSize || 24) * textScale : n.data.fontSize,
+          liveValue: liveData[n.id]?.value ?? null,
+          unit: liveData[n.id]?.unit ?? '',
+          secondaryValue: liveData[n.id]?.secondaryValue ?? null,
+          secondaryUnit: liveData[n.id]?.secondaryUnit ?? '',
+          status: liveData[n.id]?.status ?? 'normal',
+          isMonitoring: true
+        }
+      };
+    });
   }, [nodes, liveData, selectedNode]);
 
   // Node seçimi için useCallback kullanımı

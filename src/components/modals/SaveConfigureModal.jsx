@@ -50,23 +50,45 @@ function SaveConfigureModal({
   const SCALE_FACTOR_Y = 2.8;
 
   const previewNodes = React.useMemo(() => {
-    return diagramNodes.map(n => ({
-      ...n,
-      id: `preview-${n.id}`,
-      type: n.type === 'textNode' ? 'textNode' : 'monitoringPreview',
-      position: {
-        x: n.position.x * SCALE_FACTOR_X,
-        y: n.position.y * SCALE_FACTOR_Y
-      },
-      data: {
-        ...n.data,
-        status: 'normal',
-        liveValue: '---',
-        secondaryValue: '---',
-        isPreview: true
-      },
-      selected: false
-    }));
+    return diagramNodes.map(n => {
+      const isText = n.type === 'textNode';
+      const textScale = (SCALE_FACTOR_X + SCALE_FACTOR_Y) / 2;
+
+      let scaledWidth = n.width;
+      let scaledHeight = n.height;
+      let scaledStyle = n.style ? { ...n.style } : undefined;
+
+      if (isText) {
+        if (n.width) scaledWidth = n.width * textScale;
+        if (n.height) scaledHeight = n.height * textScale;
+        if (scaledStyle) {
+          if (scaledStyle.width) scaledStyle.width = (parseFloat(scaledStyle.width) * textScale) + 'px';
+          if (scaledStyle.height) scaledStyle.height = (parseFloat(scaledStyle.height) * textScale) + 'px';
+        }
+      }
+
+      return {
+        ...n,
+        width: scaledWidth,
+        height: scaledHeight,
+        style: scaledStyle,
+        id: `preview-${n.id}`,
+        type: isText ? 'textNode' : 'monitoringPreview',
+        position: {
+          x: n.position.x * SCALE_FACTOR_X,
+          y: n.position.y * SCALE_FACTOR_Y
+        },
+        data: {
+          ...n.data,
+          fontSize: isText ? (n.data.fontSize || 24) * textScale : n.data.fontSize,
+          status: 'normal',
+          liveValue: '---',
+          secondaryValue: '---',
+          isPreview: true
+        },
+        selected: false
+      };
+    });
   }, [diagramNodes]);
 
   const previewEdges = React.useMemo(() => {

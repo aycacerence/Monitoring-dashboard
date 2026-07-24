@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectRole } from '../../features/auth/authSlice';
 import { setIsDirty as setGlobalIsDirty } from '../../features/ui/uiSlice';
 
-const PIDContext = createContext();
+export const PIDContext = createContext();
 
 export const usePID = () => {
   const context = useContext(PIDContext);
