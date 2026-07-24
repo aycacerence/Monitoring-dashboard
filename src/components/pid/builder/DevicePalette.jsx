@@ -113,7 +113,7 @@ const DevicePalette = () => {
           >
             {getCategoryTranslation(category.category, t)}
           </Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, px: 2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 1.5, px: 2 }}>
             {category.items.map((device, devIndex) => (
               <Box
                 key={devIndex}
@@ -121,6 +121,7 @@ const DevicePalette = () => {
                 onDragStart={(e) => e.dataTransfer.setData('application/reactflow', JSON.stringify(device))}
                 onClick={() => handleDeviceClick(device)}
                 sx={{
+                  minWidth: 0,
                   cursor: 'grab',
                   bgcolor: 'background.default',
                   p: 1,
@@ -152,8 +153,9 @@ const DevicePalette = () => {
                     lineHeight: 1.2, 
                     textTransform: 'uppercase',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
                     width: '100%',
                   }}
                 >
