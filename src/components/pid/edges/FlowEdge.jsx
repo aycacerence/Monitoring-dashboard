@@ -116,6 +116,48 @@ const getParallelPoints = (pts, offset) => {
   return newPts;
 };
 
+const getDynamicMargins = (sourcePos, targetPos, sx, sy, tx, ty, isSelf) => {
+  let smX = sourcePos === 'left' ? -40 : sourcePos === 'right' ? 40 : 0;
+  let smY = sourcePos === 'top' ? -40 : sourcePos === 'bottom' ? 40 : 0;
+  let emX = targetPos === 'left' ? -40 : targetPos === 'right' ? 40 : 0;
+  let emY = targetPos === 'top' ? -40 : targetPos === 'bottom' ? 40 : 0;
+
+  if (!isSelf) {
+    if (sourcePos === 'right' && tx > sx && tx - sx < 80) {
+      let space = tx - sx;
+      if (targetPos === 'left') { smX = space / 2; emX = -space / 2; }
+      else { smX = Math.min(40, space); }
+    } else if (sourcePos === 'left' && sx > tx && sx - tx < 80) {
+      let space = sx - tx;
+      if (targetPos === 'right') { smX = -space / 2; emX = space / 2; }
+      else { smX = Math.max(-40, -space); }
+    }
+    
+    if (sourcePos === 'bottom' && ty > sy && ty - sy < 80) {
+      let space = ty - sy;
+      if (targetPos === 'top') { smY = space / 2; emY = -space / 2; }
+      else { smY = Math.min(40, space); }
+    } else if (sourcePos === 'top' && sy > ty && sy - ty < 80) {
+      let space = sy - ty;
+      if (targetPos === 'bottom') { smY = -space / 2; emY = space / 2; }
+      else { smY = Math.max(-40, -space); }
+    }
+
+    if (targetPos === 'right' && sx > tx && sx - tx < 80 && sourcePos !== 'left') {
+      emX = Math.min(40, sx - tx);
+    } else if (targetPos === 'left' && tx > sx && tx - sx < 80 && sourcePos !== 'right') {
+      emX = Math.max(-40, -(tx - sx));
+    }
+    
+    if (targetPos === 'bottom' && sy > ty && sy - ty < 80 && sourcePos !== 'top') {
+      emY = Math.min(40, sy - ty);
+    } else if (targetPos === 'top' && ty > sy && ty - sy < 80 && sourcePos !== 'bottom') {
+      emY = Math.max(-40, -(ty - sy));
+    }
+  }
+  return { smX, smY, emX, emY };
+};
+
 const FlowEdge = ({
   id,
   source,
@@ -212,13 +254,10 @@ const FlowEdge = ({
   const getInitialPoints = useCallback(() => {
     let pts = [{ x: adjSourceX, y: adjSourceY }];
 
-    const startMarginX = sourcePosition === 'left' ? -40 : sourcePosition === 'right' ? 40 : 0;
-    const startMarginY = sourcePosition === 'top' ? -40 : sourcePosition === 'bottom' ? 40 : 0;
-    const endMarginX = targetPosition === 'left' ? -40 : targetPosition === 'right' ? 40 : 0;
-    const endMarginY = targetPosition === 'top' ? -40 : targetPosition === 'bottom' ? 40 : 0;
+    const { smX, smY, emX, emY } = getDynamicMargins(sourcePosition, targetPosition, adjSourceX, adjSourceY, adjTargetX, adjTargetY, isSelfLoop);
 
-    const p1 = { x: adjSourceX + startMarginX, y: adjSourceY + startMarginY };
-    const p2 = { x: adjTargetX + endMarginX, y: adjTargetY + endMarginY };
+    const p1 = { x: adjSourceX + smX, y: adjSourceY + smY };
+    const p2 = { x: adjTargetX + emX, y: adjTargetY + emY };
     pts.push(p1);
 
     if (['left', 'right'].includes(sourcePosition) && ['left', 'right'].includes(targetPosition)) {
@@ -228,7 +267,8 @@ const FlowEdge = ({
         pts.push({ x: farX, y: p1.y });
         pts.push({ x: farX, y: p2.y });
       } else {
-        if ((sourcePosition === 'right' && p1.x >= p2.x) || (sourcePosition === 'left' && p1.x <= p2.x)) {
+        const isBackward = sourcePosition === 'right' ? p1.x > p2.x + 1 : sourcePosition === 'left' ? p1.x < p2.x - 1 : false;
+        if (isBackward) {
           // S Şekli (Geri dönüş)
           const midY = (p1.y + p2.y) / 2 + offset;
           pts.push({ x: p1.x, y: midY });
@@ -254,7 +294,8 @@ const FlowEdge = ({
         pts.push({ x: p1.x, y: farY });
         pts.push({ x: p2.x, y: farY });
       } else {
-        if ((sourcePosition === 'bottom' && p1.y >= p2.y) || (sourcePosition === 'top' && p1.y <= p2.y)) {
+        const isBackward = sourcePosition === 'bottom' ? p1.y > p2.y + 1 : sourcePosition === 'top' ? p1.y < p2.y - 1 : false;
+        if (isBackward) {
           // S Şekli
           const midX = (p1.x + p2.x) / 2 + offset;
           pts.push({ x: midX, y: p1.y });
@@ -290,18 +331,15 @@ const FlowEdge = ({
   // Düğüm taşınırsa uç noktaları düğüme tekrar dik açıyla kilitle
   if (data?.points && activePoints.length >= 2) {
       activePoints[0] = { x: adjSourceX, y: adjSourceY };
-      const startMarginX = sourcePosition === 'left' ? -40 : sourcePosition === 'right' ? 40 : 0;
-      const startMarginY = sourcePosition === 'top' ? -40 : sourcePosition === 'bottom' ? 40 : 0;
+      const { smX, smY, emX, emY } = getDynamicMargins(sourcePosition, targetPosition, adjSourceX, adjSourceY, adjTargetX, adjTargetY, isSelfLoop);
       
-      // İlk segment kırılma noktasını her zaman 40px marjinde tut
-      activePoints[1] = { x: adjSourceX + startMarginX, y: adjSourceY + startMarginY };
+      // İlk segment kırılma noktasını her zaman mesafeye göre tut
+      activePoints[1] = { x: adjSourceX + smX, y: adjSourceY + smY };
       
       activePoints[activePoints.length - 1] = { x: adjTargetX, y: adjTargetY };
-      const endMarginX = targetPosition === 'left' ? -40 : targetPosition === 'right' ? 40 : 0;
-      const endMarginY = targetPosition === 'top' ? -40 : targetPosition === 'bottom' ? 40 : 0;
       
-      // Son segment kırılma noktasını her zaman 40px marjinde tut
-      activePoints[activePoints.length - 2] = { x: adjTargetX + endMarginX, y: adjTargetY + endMarginY };
+      // Son segment kırılma noktasını her zaman mesafeye göre tut
+      activePoints[activePoints.length - 2] = { x: adjTargetX + emX, y: adjTargetY + emY };
   }
 
   const onHandlePointerDown = (event, segmentIndex) => {
