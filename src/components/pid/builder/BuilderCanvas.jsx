@@ -162,25 +162,23 @@ const BuilderCanvasInner = () => {
   const transform = useStore((s) => s.transform);
   const wrapperRef = useRef(null);
 
-  // ResizeObserver: Tablet/Web geçişlerinde diyagramın boyutlara uyum sağlaması için
+  // Window Resize Listener: Cihaz rotasyonu (tablet/telefon) veya tarayıcı boyutu 
+  // gerçekten değiştiğinde diyagramı ekrana sığdırmak için (fitView).
+  // Bu sayede özellikler paneli açıldığında değil, sadece asıl ekran boyutu değiştiğinde tetiklenir.
   useEffect(() => {
-    if (!wrapperRef.current) return;
-    
-    // Küçük boyut değişikliklerini ignore etmek ve performansı korumak için timeout
     let timeoutId = null;
     
-    const observer = new ResizeObserver(() => {
+    const handleResize = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        // Yeni boyuta göre diyagramı anında merkeze al
         fitView({ padding: 0.1 });
-      }, 100);
-    });
+      }, 150);
+    };
 
-    observer.observe(wrapperRef.current);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      observer.disconnect();
+      window.removeEventListener('resize', handleResize);
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [fitView]);
